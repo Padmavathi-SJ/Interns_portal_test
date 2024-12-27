@@ -13,6 +13,7 @@ app.use(cors({
 
 app.use(express.json());
 
+
 // Define the routes
 app.use('/auth', adminRouter);
 

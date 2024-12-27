@@ -2,8 +2,7 @@ import express from "express";
 import connection from "../DB/db.js";
 import jwt from "jsonwebtoken";
 import bcrypt from 'bcrypt';
-import multer from "multer";
-import path from "path";
+
 
 const router = express.Router();
 
@@ -52,45 +51,163 @@ router.post("/add_department", (req, res) => {
   });
 });
 
-//profile picture upload
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/images'); // Fixed typo here
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.fieldname + "_" + Date.now() + path.extname(file.originalname));
-  }
-});
+router.delete("/delete_department/:id", (req, res) => {
+  const departmentId = req.params.id;
 
-const upload = multer({
-  storage: storage
-});
-
-router.post("/add_employee", upload.single('profile_picture'), (req, res) => {
-  console.log(req.body);
-  console.log(req.file);
-
-  const sql =
-    `INSERT INTO employees (name, email, password, education, experience, department_id, salary, profile_picture) VALUES (?,?,?,?,?,?,?,?)`;
+  // Query to delete the department by ID
+  const sql = "DELETE FROM department WHERE id = ?";
   
-  bcrypt.hash(req.body.password.toString(), 10,  (err, hash) => {
-    if (err) return res.json({ Status: false, Error: "Query Error" })
+  connection.query(sql, [departmentId], (err, result) => {
+    if (err) {
+      console.error("Error deleting department:", err);
+      return res.json({ Status: false, Error: "Query Error" });
+    }
+
+    if (result.affectedRows > 0) {
+      return res.json({ Status: true });
+    } else {
+      return res.json({ Status: false, Error: "Department not found" });
+    }
+  });
+});
+
+
+router.post("/add_employee", (req, res) => {
+
+  const { name, email, password, role, experience, department_id, salary } = req.body;
+
+  if (!name || !email || !password || !role || !department_id || !salary) {
+    return res.status(400).json({ Status: false, Error: "Missing required fields" });
+  }
+
+  const sql = `INSERT INTO employees (name, email, password, role, experience, department_id, salary) VALUES (?,?,?,?,?,?,?)`;
+
+  bcrypt.hash(password, 10, (err, hash) => {
+    if (err) {
+      console.error("Password Hashing Error:", err);
+      return res.status(500).json({ Status: false, Error: "Password Hashing Error" });
+    }
+
     const values = [
-      req.body.name,
-      req.body.email,
+      name,
+      email,
       hash,
-      req.body.education,
-      req.body.experience,
-      req.body.department_id,
-      req.body.salary,
-      req.file ? req.file.path : null
-    ]
+      role,
+      experience || 0, // Default experience to 0 if not provided
+      department_id,
+      salary,
+    ];
 
     connection.query(sql, values, (err, result) => {
-      if (err) return res.json({ Status: false, Error: "Query Error" });
+      if (err) {
+        console.error("Database Query Error:", err);
+        return res.status(500).json({ Status: false, Error: "Database Query Error" });
+      }
       return res.json({ Status: true, Result: result });
-    })
-  })
+    });
+  });
+});
+
+router.get("/get_employees", (req, res) => {
+  const sql = `
+    SELECT 
+      employees.id AS employeeId, 
+      employees.name, 
+      department.name AS department, 
+      employees.role 
+    FROM employees 
+    LEFT JOIN department ON employees.department_id = department.id;
+  `;
+  connection.query(sql, (err, result) => {
+    if (err) {
+      console.error("Query Error:", err);
+      return res.json({ Status: false, Error: "Query Error" });
+    }
+    return res.json({ Status: true, Result: result });
+  });
+});
+
+
+router.delete("/delete_employee/:employeeId", (req, res) => {
+  const { employeeId } = req.params;  // Extract employeeId from URL params
+
+  // Update the query to use the correct column name 'id'
+  const sql = "DELETE FROM employees WHERE id = ?"; // Use 'id' instead of 'employeeId'
+
+  connection.query(sql, [employeeId], (err, result) => {
+    if (err) {
+      console.error("Query Error:", err);
+      return res.json({ Status: false, Error: "Query Error" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.json({ Status: false, Message: "Employee not found" });
+    }
+
+    return res.json({ Status: true, Message: "Employee deleted successfully" });
+  });
+});
+
+router.put("/edit_employee/:employeeId", (req, res) => {
+  const { employeeId } = req.params;
+  const { name, email, password, role, experience, department_id, salary } = req.body;
+
+  if (!name || !email || !password || !role || !department_id || !salary) {
+    return res.status(400).json({ Status: false, Error: "Missing required fields" });
+  }
+
+  // If password is provided, hash it; otherwise, retain the existing password
+  const passwordUpdate = password ? bcrypt.hashSync(password, 10) : undefined;
+
+  const sql = `UPDATE employees SET 
+    name = ?, 
+    email = ?, 
+    password = ?, 
+    role = ?, 
+    experience = ?, 
+    department_id = ?, 
+    salary = ? 
+    WHERE id = ?`;
+
+  const values = [
+    name,
+    email,
+    passwordUpdate || null, // If password is not provided, set it as null
+    role,
+    experience,
+    department_id,
+    salary,
+    employeeId,
+  ];
+
+  connection.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("Database Query Error:", err);
+      return res.status(500).json({ Status: false, Error: "Database Query Error" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ Status: false, Error: "Employee not found" });
+    }
+
+    return res.json({ Status: true, Result: result });
+  });
+});
+
+router.get("/get_employee_by_id/:employeeId", (req, res) => {
+  const { employeeId } = req.params;
+
+  const sql = "SELECT * FROM employees WHERE id = ?";
+  connection.query(sql, [employeeId], (err, result) => {
+    if (err) {
+      console.error("Query Error:", err);
+      return res.json({ Status: false, Error: "Query Error" });
+    }
+    if (result.length === 0) {
+      return res.json({ Status: false, Error: "Employee not found" });
+    }
+    return res.json({ Status: true, Result: result });
+  });
 });
 
 
