@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const Department = () => {
   const [departments, setDepartments] = useState([]);
-  
+
   useEffect(() => {
     axios.get('http://localhost:3000/auth/get_departments')
       .then((response) => {
@@ -20,13 +20,32 @@ const Department = () => {
         alert('Error fetching departments');
       });
   }, []);
-  
+
+  const handleDelete = (departmentId) => {
+    // Confirm delete action
+    const confirmDelete = window.confirm('Are you sure you want to delete this department?');
+    if (confirmDelete) {
+      axios.delete(`http://localhost:3000/auth/delete_department/${departmentId}`)
+        .then((response) => {
+          if (response.data.Status) {
+            // Remove the department from the state to update the UI
+            setDepartments(departments.filter((department) => department.id !== departmentId));
+          } else {
+            alert('Failed to delete department');
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          alert('Error deleting department');
+        });
+    }
+  };
 
   return (
     <div className="p-6 bg-white shadow-lg rounded-lg max-w-4xl mx-auto">
       <h2 className="text-2xl font-semibold text-gray-800 mb-4">Departments</h2>
       <p className="mb-6">Here is a list of all departments...</p>
-  
+
       {/* Link Button to Add New Department */}
       <Link
         to="/admin-dashboard/department/add_department"
@@ -34,7 +53,7 @@ const Department = () => {
       >
         Add New Department
       </Link>
-  
+
       {/* Departments Table */}
       {departments.length > 0 ? (
         <table className="min-w-full table-auto">
@@ -51,14 +70,11 @@ const Department = () => {
                 <td className="px-4 py-2 text-gray-800">{department.id}</td>
                 <td className="px-4 py-2 text-gray-800">{department.name}</td>
                 <td className="px-4 py-2">
-                  {/* Add actions like Edit or Delete here */}
-                  <Link
-                    to={`/admin-dashboard/department/edit/${department.id}`}
-                    className="text-indigo-600 hover:text-indigo-800 mr-2"
+                  {/* Delete button */}
+                  <button
+                    onClick={() => handleDelete(department.id)}
+                    className="text-red-600 hover:text-red-800"
                   >
-                    Edit
-                  </Link>
-                  <button className="text-red-600 hover:text-red-800">
                     Delete
                   </button>
                 </td>
@@ -71,7 +87,6 @@ const Department = () => {
       )}
     </div>
   );
-  
 };
 
 export default Department;

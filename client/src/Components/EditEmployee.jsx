@@ -1,71 +1,86 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 
-const AddEmployee = () => {
+const EditEmployee = () => {
   const [employee, setEmployee] = useState({
-    name: '',
-    email: '',
-    password: '',
-    role: '',
-    experience: '',
-    department_id: '',
-    salary: '',
+    name: "",
+    email: "",
+    password: "",
+    role: "",
+    experience: "",
+    department_id: "",
+    salary: "",
   });
 
   const [departments, setDepartments] = useState([]);
+  const { employeeId } = useParams(); // Get employeeId from URL params
   const navigate = useNavigate();
 
   // Fetch departments on component mount
   useEffect(() => {
-    axios.get('http://localhost:3000/auth/get_departments')
+    axios
+      .get("http://localhost:3000/auth/get_departments")
       .then((response) => {
-        console.log('Departments fetched:', response.data);
         if (response.data.Status) {
           setDepartments(response.data.Result); // Populate departments
         } else {
-          alert('Failed to fetch departments');
+          alert("Failed to fetch departments");
         }
       })
       .catch((err) => {
-        console.error('Error fetching departments:', err);
-        alert('Error fetching departments');
+        console.error("Error fetching departments:", err);
+        alert("Error fetching departments");
       });
   }, []);
 
-  // Handle form submission
+  // Fetch employee details based on employeeId
+  useEffect(() => {
+    axios
+      .get(`http://localhost:3000/auth/get_employee_by_id/${employeeId}`)
+      .then((response) => {
+        if (response.data.Status) {
+          setEmployee(response.data.Result[0]); // Set employee data
+        } else {
+          alert("Failed to fetch employee data");
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching employee data:", err);
+        alert("Error fetching employee data");
+      });
+  }, [employeeId]);
+
+  // Handle form submission for updating employee
   const handleSubmit = (e) => {
     e.preventDefault();
 
     // Validate required fields
     const { name, email, password, role, department_id, salary } = employee;
     if (!name || !email || !password || !role || !department_id || !salary) {
-      alert('Please fill in all required fields.');
+      alert("Please fill in all required fields.");
       return;
     }
 
-    axios.post('http://localhost:3000/auth/add_employee', employee, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
+    axios
+      .put(`http://localhost:3000/auth/edit_employee/${employeeId}`, employee)
       .then((response) => {
-        console.log('Employee added successfully:', response.data);
         if (response.data.Status) {
-          navigate('/admin-dashboard/employee');
+          alert("Employee updated successfully");
+          navigate("/admin-dashboard/employee");
         } else {
-          alert(response.data.Error || 'Failed to add employee');
+          alert("Failed to update employee");
         }
       })
       .catch((error) => {
-        console.error('Error adding employee:', error.response || error.message);
-        alert('Failed to add employee. Check console for details.');
+        console.error("Error updating employee:", error.response || error.message);
+        alert("Failed to update employee. Check console for details.");
       });
   };
 
   return (
     <div className="p-6 bg-white shadow-lg rounded-lg max-w-2xl mx-auto">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">Add New Employee</h2>
+      <h2 className="text-2xl font-semibold text-gray-800 mb-4">Edit Employee</h2>
       <form onSubmit={handleSubmit}>
         {/* Employee fields */}
         <div className="mb-4">
@@ -117,18 +132,6 @@ const AddEmployee = () => {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="experience" className="block text-sm font-medium text-gray-700">Experience (years)</label>
-          <input
-            type="number"
-            name="experience"
-            value={employee.experience}
-            onChange={(e) => setEmployee({ ...employee, experience: e.target.value })}
-            className="w-full px-4 py-2 mt-1 border rounded-md"
-            required
-          />
-        </div>
-
-        <div className="mb-4">
           <label htmlFor="department" className="block text-sm font-medium text-gray-700">Department</label>
           <select
             name="department"
@@ -158,15 +161,27 @@ const AddEmployee = () => {
           />
         </div>
 
+        <div className="mb-4">
+          <label htmlFor="experience" className="block text-sm font-medium text-gray-700">Experience</label>
+          <input
+            type="number"
+            name="experience"
+            value={employee.experience}
+            onChange={(e) => setEmployee({ ...employee, experience: e.target.value })}
+            className="w-full px-4 py-2 mt-1 border rounded-md"
+            required
+          />
+        </div>
+
         <button
           type="submit"
           className="w-full px-4 py-2 font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
         >
-          Add Employee
+          Update Employee
         </button>
       </form>
     </div>
   );
 };
 
-export default AddEmployee;
+export default EditEmployee;
