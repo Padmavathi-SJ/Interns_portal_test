@@ -7,6 +7,11 @@ import Department from './Components/Department';
 import AddDepartment from './Components/AddDepartment';
 import AddEmployee from './Components/AddEmployee';
 import EditEmployee from './Components/EditEmployee';
+import Leave from './Components/Leave';
+import WorkAllocation from './Components/WorkAllocation';
+import AddTask from './Components/AddTask';
+import EditTask from './Components/EditTask';
+
 
 function App() {
   return (
@@ -19,7 +24,11 @@ function App() {
           <Route path="employee/add_employee" element={<AddEmployee />} /> 
           <Route path="employee/edit_employee/:employeeId" element={<EditEmployee />} /> 
           <Route path="department" element={<Department />} />
-          <Route path="department/add_department" element={<AddDepartment />} /> {/* This will render when accessing "/admin-dashboard/department" */}
+          <Route path="department/add_department" element={<AddDepartment />} /> 
+          <Route path="work_allocation" element={<WorkAllocation />} /> 
+          <Route path="allocate_work" element={<AddTask/>} />
+          <Route path="edit_work/:taskId" element={<EditTask/>} />
+          <Route path="leave" element={<Leave />} />
         </Route>
       </Routes>
     </BrowserRouter>
