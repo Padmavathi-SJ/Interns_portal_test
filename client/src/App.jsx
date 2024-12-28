@@ -13,12 +13,17 @@ import AddTask from './Components/AddTask';
 import EditTask from './Components/EditTask';
 import UserLogin from './Components/UserLogin';
 import EmployeeDashboard from './Components/EmployeeDashboard';
+import EmployeeHome from './Components/EmployeeHome';
+import Profile from './Components/Profile';
+import EmployeeTask from './Components/EmployeeTask';
+import ApplyLeave from './Components/ApplyLeave';
 
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+
         <Route path="/adminLogin" element={<Login />} />
         <Route path="/admin-dashboard" element={<Dashboard />}>
           <Route index element={<Home />} /> 
@@ -34,7 +39,13 @@ function App() {
         </Route>
 
         <Route path="/userLogin" element={<UserLogin />} />
-        <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
+        <Route path="/employee-dashboard" element={<EmployeeDashboard />} >
+        <Route index element={<EmployeeHome />} /> 
+        <Route path="profile" element={<Profile />} /> 
+        <Route path="employee_task" element={<EmployeeTask />} /> 
+        <Route path="apply_leave" element={<ApplyLeave />} /> 
+        </Route>
+
       </Routes>
     </BrowserRouter>
   );

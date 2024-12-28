@@ -1,7 +1,9 @@
-import React from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import React from "react";
+import { Link, Outlet } from "react-router-dom";
 
 const EmployeeDashboard = () => {
+  const employeeId = localStorage.getItem("employeeId"); // Fetch employeeId from storage
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
@@ -14,22 +16,25 @@ const EmployeeDashboard = () => {
             </Link>
           </li>
           <li className="mb-4">
-            <Link to="/employee-dashboard/profile" className="hover:text-indigo-200 transition-colors">
+            <Link
+              to="/employee-dashboard/profile"
+              className="hover:text-indigo-200 transition-colors"
+            >
               Profile
             </Link>
           </li>
           <li className="mb-4">
-            <Link to="/employee-dashboard/allocated-work" className="hover:text-indigo-200 transition-colors">
+            <Link to="/employee-dashboard/employee_task" className="hover:text-indigo-200 transition-colors">
               Allocated Work
             </Link>
           </li>
           <li className="mb-4">
-            <Link to="/employee-dashboard/leave" className="hover:text-indigo-200 transition-colors">
+            <Link to="/employee-dashboard/apply_leave" className="hover:text-indigo-200 transition-colors">
               Leave
             </Link>
           </li>
           <li className="mt-8 border-t border-indigo-700 pt-4">
-            <Link to="/login" className="hover:text-indigo-200 transition-colors">
+            <Link to="/userLogin" className="hover:text-indigo-200 transition-colors">
               Logout
             </Link>
           </li>
