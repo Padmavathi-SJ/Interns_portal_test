@@ -72,6 +72,7 @@ const verifyToken = (req, res, next) => {
       }
   
       req.user = decoded; // Attach user data to request object
+      console.log("Decoded userToken:", decoded); // In backend, check employee id and role
       next();
     });
 };
@@ -102,5 +103,34 @@ router.get("/get_employee", verifyToken, (req, res) => {
     res.json({ Status: true, Data: results[0] });
   });
 });
+
+// Get tasks assigned to the logged-in employee
+router.get("/get_tasks", verifyToken, (req, res) => {
+    const { id: employeeId } = req.user; // Extract employeeId from the token
+    console.log("Fetching tasks for employee ID:", employeeId); // Debug log
+  
+    const query = `
+      SELECT id AS taskId, title, description, deadline, priority, status
+      FROM work_allocation
+      WHERE employee_id = ?;
+    `;
+  
+    connection.query(query, [employeeId], (err, results) => {
+      if (err) {
+        console.error("Error fetching tasks:", err);
+        return res.status(500).json({ Status: false, Error: "Internal server error." });
+      }
+  
+      if (results.length === 0) {
+        console.warn("No tasks found for employee ID:", employeeId); // Debug log
+        return res.status(404).json({ Status: false, Message: "No tasks found." });
+      }
+  
+      console.log("Tasks fetched:", results); // Debug log to verify the query results
+      res.json({ Status: true, Results: results }); // Ensure this is being sent back properly
+    });
+  });
+  
+  
 
 export { router as employeeRouter };
