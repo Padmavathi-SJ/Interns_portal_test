@@ -324,6 +324,7 @@ router.delete("/delete_task/:taskId", (req, res) => {
 
 
 // Get all leave requests for admin
+
 router.get("/leave_requests", (req, res) => {
   const sql = "SELECT * FROM leave_requests";
 
