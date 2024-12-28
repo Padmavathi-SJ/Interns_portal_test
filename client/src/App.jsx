@@ -11,6 +11,8 @@ import Leave from './Components/Leave';
 import WorkAllocation from './Components/WorkAllocation';
 import AddTask from './Components/AddTask';
 import EditTask from './Components/EditTask';
+import UserLogin from './Components/UserLogin';
+import EmployeeDashboard from './Components/EmployeeDashboard';
 
 
 function App() {
@@ -30,6 +32,9 @@ function App() {
           <Route path="edit_work/:taskId" element={<EditTask/>} />
           <Route path="leave" element={<Leave />} />
         </Route>
+
+        <Route path="/userLogin" element={<UserLogin />} />
+        <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
       </Routes>
     </BrowserRouter>
   );

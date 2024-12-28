@@ -1,3 +1,15 @@
+import React from 'react'
+
+const Leave = () => {
+  return (
+    <div>Leave</div>
+  )
+}
+
+export default Leave
+
+
+/*
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -92,3 +104,4 @@ const Leave = () => {
 };
 
 export default Leave;
+*/
