@@ -1,15 +1,14 @@
 import express from "express";
 import connection from "../DB/db.js";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
+import bcrypt from "bcrypt"; 
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const router = express.Router();
-const JWT_KEY = process.env.JWT_KEY;
+const JWT_SECRET = process.env.JWT_KEY; // Ensure this is the same key
 
-// Login route for employees
 router.post("/user_login", (req, res) => {
     const { employee_id, email, password } = req.body;
 
@@ -38,9 +37,11 @@ router.post("/user_login", (req, res) => {
 
             const token = jwt.sign(
                 { id: employee.id, role: employee.role },
-                JWT_KEY,
-                { expiresIn: "1h" }
+                JWT_SECRET, // Ensure this key matches the one used for admin login
+                { expiresIn: "3h" }
             );
+
+            console.log("Generated Token:", token); // Log the token for debugging
 
             res.json({
                 Status: true,
@@ -56,26 +57,50 @@ router.post("/user_login", (req, res) => {
 
 // Middleware to verify JWT Token
 const verifyToken = (req, res, next) => {
-    const authHeader = req.header("Authorization");
-    const token = authHeader?.split(" ")[1]; // Extract token from "Bearer <token>"
-
+    const token = req.headers['authorization']?.split(' ')[1];
+  
     if (!token) {
-        return res.status(401).json({ Status: false, Error: "Access Denied: No token provided." });
+      return res.status(401).json({ message: 'Token not provided, Unauthorized' });
     }
-
-    try {
-        const decoded = jwt.verify(token, JWT_KEY);
-        req.user = decoded;
-        next();
-    } catch (err) {
-        console.error("JWT verification failed:", err);
-        res.status(401).json({ Status: false, Error: "Invalid or expired token." });
-    }
+  
+   // console.log("Received Token:", token);
+  
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+      if (err) {
+      //  console.error("Token verification failed:", err);
+        return res.status(401).json({ message: 'Invalid or expired token' });
+      }
+  
+      req.user = decoded; // Attach user data to request object
+      next();
+    });
 };
 
-// Example protected route
-router.get("/employee-dashboard", verifyToken, (req, res) => {
-    res.json({ Status: true, Message: "Welcome to the employee dashboard", user: req.user });
+// Get employee details based on logged-in employee's ID from the token
+router.get("/get_employee", verifyToken, (req, res) => {
+  const { id: employeeId } = req.user; // Extract employeeId from the verified token
+
+  //console.log("Fetching details for employee ID:", employeeId);
+
+  const query = `
+    SELECT e.id, e.name, d.name AS department, e.role, e.experience, e.salary
+    FROM employees e
+    JOIN department d ON e.department_id = d.id
+    WHERE e.id = ?;
+  `;
+
+  connection.query(query, [employeeId], (err, results) => {
+    if (err) {
+      console.error("Error fetching employee details:", err);
+      return res.status(500).json({ Status: false, Error: "Internal server error." });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ Status: false, Message: "Employee not found." });
+    }
+
+    res.json({ Status: true, Data: results[0] });
+  });
 });
 
 export { router as employeeRouter };

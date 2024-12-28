@@ -2,8 +2,12 @@ import express from "express";
 import connection from "../DB/db.js";
 import jwt from "jsonwebtoken";
 import bcrypt from 'bcrypt';
-0
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 const router = express.Router();
+const JWT_SECRET = process.env.JWT_KEY;
 
 router.post("/adminLogin", (req, res) => {
   const sql = "SELECT * FROM admin WHERE email = ? AND password = ?";
@@ -13,7 +17,7 @@ router.post("/adminLogin", (req, res) => {
       const email = result[0].email;
       const token = jwt.sign(
         { role: "admin", email: email },
-        "jwt_secret_key",
+        JWT_SECRET, // Use JWT_SECRET from environment variable
         { expiresIn: "1d" }
       );
       res.cookie("token", token);
@@ -23,6 +27,9 @@ router.post("/adminLogin", (req, res) => {
     }
   });
 });
+
+
+
 
 router.get("/get_departments", (req, res) => {
   const sql = "SELECT * FROM department";
