@@ -326,6 +326,7 @@ router.get("/get_tasks", (req, res) => {
       work_allocation.description, 
       work_allocation.deadline, 
       work_allocation.priority, 
+      work_allocation.status,  -- Include the status field
       employees.name AS employee_name 
     FROM work_allocation 
     JOIN employees ON work_allocation.employee_id = employees.id
@@ -338,6 +339,7 @@ router.get("/get_tasks", (req, res) => {
     return res.json({ Status: true, Result: result });
   });
 });
+
 
 router.get("/get_task/:taskId", (req, res) => {
   const { taskId } = req.params;
@@ -408,6 +410,7 @@ router.delete("/delete_task/:taskId", (req, res) => {
 });
 
 
+
 // Get all leave requests for admin
 
 router.get("/leave_requests", (req, res) => {
@@ -442,38 +445,7 @@ router.put("/leave_requests/:id", (req, res) => {
     }
 
     if (result.affectedRows > 0) {
-      // If approved, update leave balance (if applicable)
-      if (status === 'approved') {
-        const requestSql = "SELECT * FROM leave_requests WHERE id = ?";
-        connection.query(requestSql, [id], (err, requestResult) => {
-          if (err) {
-            console.error("Error fetching leave request details:", err);
-            return res.json({ Status: false, Error: "Error fetching leave request details" });
-          }
-
-          const { employee_id, leave_type } = requestResult[0];
-
-          // Logic for updating leave balance (deduct from annual or sick leave)
-          let leaveBalanceSql = "";
-          if (leave_type === 'annual') {
-            leaveBalanceSql = "UPDATE leave_balances SET annual_leave = annual_leave - 1 WHERE employee_id = ?";
-          } else if (leave_type === 'sick') {
-            leaveBalanceSql = "UPDATE leave_balances SET sick_leave = sick_leave - 1 WHERE employee_id = ?";
-          }
-
-          if (leaveBalanceSql) {
-            connection.query(leaveBalanceSql, [employee_id], (err) => {
-              if (err) {
-                console.error("Error updating leave balance:", err);
-                return res.json({ Status: false, Error: "Error updating leave balance" });
-              }
-              return res.json({ Status: true, Message: "Leave request approved and balance updated" });
-            });
-          }
-        });
-      } else {
-        return res.json({ Status: true, Message: "Leave request rejected" });
-      }
+      return res.json({ Status: true, Message: "Leave request status updated successfully" });
     } else {
       return res.json({ Status: false, Error: "Leave request not found" });
     }

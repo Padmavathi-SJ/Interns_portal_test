@@ -41,7 +41,7 @@ router.post("/user_login", (req, res) => {
                 { expiresIn: "3h" }
             );
 
-            console.log("Generated Token:", token); // Log the token for debugging
+           // console.log("Generated Token:", token); // Log the token for debugging
 
             res.json({
                 Status: true,
@@ -72,7 +72,7 @@ const verifyToken = (req, res, next) => {
       }
   
       req.user = decoded; // Attach user data to request object
-      console.log("Decoded userToken:", decoded); // In backend, check employee id and role
+    //  console.log("Decoded userToken:", decoded); // In backend, check employee id and role
       next();
     });
 };
@@ -105,31 +105,103 @@ router.get("/get_employee", verifyToken, (req, res) => {
 });
 
 // Get tasks assigned to the logged-in employee
-router.get("/get_tasks", verifyToken, (req, res) => {
-    const { id: employeeId } = req.user; // Extract employeeId from the token
-    console.log("Fetching tasks for employee ID:", employeeId); // Debug log
-  
-    const query = `
+router.get("/get_task", verifyToken, (req, res) => {
+  const { id: employeeId } = req.user; // Extract employeeId from the token
+ // console.log("Fetching tasks for employee ID:", employeeId); // Debug log
+
+  const query = `
       SELECT id AS taskId, title, description, deadline, priority, status
       FROM work_allocation
       WHERE employee_id = ?;
-    `;
-  
-    connection.query(query, [employeeId], (err, results) => {
+  `;
+
+  connection.query(query, [employeeId], (err, results) => {
       if (err) {
-        console.error("Error fetching tasks:", err);
-        return res.status(500).json({ Status: false, Error: "Internal server error." });
+        //  console.error("Error fetching tasks:", err);
+          return res.status(500).json({ Status: false, Error: "Internal server error." });
       }
-  
+
       if (results.length === 0) {
-        console.warn("No tasks found for employee ID:", employeeId); // Debug log
-        return res.status(404).json({ Status: false, Message: "No tasks found." });
+         // console.warn("No tasks found for employee ID:", employeeId); // Debug log
+          return res.status(404).json({ Status: false, Message: "No tasks found." });
       }
-  
-      console.log("Tasks fetched:", results); // Debug log to verify the query results
-      res.json({ Status: true, Results: results }); // Ensure this is being sent back properly
-    });
+
+     // console.log("Tasks fetched for employee ID:", employeeId, results); // Debug log
+      res.json({ Status: true, Result: results }); // Return only the tasks for the logged-in employee
   });
+});
+
+// Backend: Update task status
+router.put("/update_task_status/:taskId", (req, res) => {
+  const { taskId } = req.params;
+  const { status } = req.body;
+
+  if (!status) {
+    return res.status(400).json({ Status: false, Error: "Status is required" });
+  }
+
+  const sql = `
+    UPDATE work_allocation
+    SET status = ?
+    WHERE id = ?
+  `;
+  connection.query(sql, [status, taskId], (err, result) => {
+    if (err) {
+      console.error("Query Error:", err);
+      return res.status(500).json({ Status: false, Error: "Query Error" });
+    }
+    return res.json({ Status: true, Result: result });
+  });
+});
+
+router.post("/apply_leave", (req, res) => {
+  const { employee_id, leave_type, start_date, end_date, reason } = req.body;
+
+  if (!employee_id || !leave_type || !start_date || !end_date || !reason) {
+    return res.status(400).json({ Status: false, Error: "All fields are required." });
+  }
+
+  const sql = `
+    INSERT INTO leave_requests (employee_id, leave_type, start_date, end_date, reason, status)
+    VALUES (?, ?, ?, ?, ?, 'Pending')
+  `;
+
+  connection.query(
+    sql,
+    [employee_id, leave_type, start_date, end_date, reason],
+    (err, result) => {
+      if (err) {
+        console.error("Query Error:", err);
+        return res.status(500).json({ Status: false, Error: "Failed to apply leave." });
+      }
+      // Send back the status along with the successful response
+      return res.json({ Status: true, Result: result, status: 'Pending' });
+    }
+  );
+});
+
+// Assuming you have a logged-in user and can get the employee_id from the session or JWT
+router.get('/leave_request', verifyToken, (req, res) => {
+  const { id: employeeId } = req.user; // Extract employeeId from the verified token
+
+  // Query to fetch leave requests for the logged-in employee
+  const query = "SELECT * FROM leave_requests WHERE employee_id = ?";
+
+  connection.query(query, [employeeId], (err, results) => {
+    if (err) {
+      console.error("Error fetching leave requests:", err);
+      return res.status(500).json({ Status: false, Error: "Error fetching leave requests" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ Status: false, Message: "No leave requests found for the employee." });
+    }
+
+    res.json({ Status: true, Result: results });
+  });
+});
+
+
   
   
 
