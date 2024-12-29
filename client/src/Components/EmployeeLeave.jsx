@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const EmployeeLeave = () => {
   const [leaveRequests, setLeaveRequests] = useState([]);
+  const [message, setMessage] = useState(""); // State to display no leaves message
   const [error, setError] = useState("");
   const navigate = useNavigate(); // Initialize the navigate hook
 
@@ -25,7 +26,7 @@ const EmployeeLeave = () => {
         if (response.data.Status) {
           setLeaveRequests(response.data.Result); // Set the leave requests in state
         } else {
-          setError(response.data.Message || "Unable to fetch leave requests");
+          setMessage(response.data.Message || "You have not applied for any leaves yet."); // Handle no leave requests case
         }
       } catch (err) {
         setError("An error occurred while fetching leave requests");
@@ -36,12 +37,30 @@ const EmployeeLeave = () => {
     fetchLeaveRequests();
   }, []); // Empty dependency array to run once when component mounts
 
-  // Display loading or error message if necessary
+  // Display loading, error, or no leaves message if necessary
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <div className="bg-red-100 text-red-600 p-4 rounded-md shadow-md max-w-lg">
           {error}
+        </div>
+      </div>
+    );
+  }
+
+  // Display no leaves message
+  if (message) {
+    return (
+      <div className="container mx-auto p-4">
+        <h2 className="text-center text-2xl font-semibold mb-6">Employee Leave Requests</h2>
+        <div className="text-center text-gray-600 mb-6">{message}</div>
+        <div className="text-center">
+          <button
+            onClick={() => navigate("/employee-dashboard/apply_leave")} // Navigate to ApplyLeave component
+            className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+          >
+            Apply Leave
+          </button>
         </div>
       </div>
     );
@@ -80,7 +99,7 @@ const EmployeeLeave = () => {
       {/* Apply Leave Button */}
       <div className="mt-4 text-center">
         <button
-          onClick={() => navigate("/employee-dashboard/apply_leave")} // Navigate to the ApplyLeave component
+          onClick={() => navigate("/employee-dashboard/apply_leave")} // Navigate to ApplyLeave component
           className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
         >
           Apply Leave

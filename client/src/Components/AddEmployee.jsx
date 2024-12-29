@@ -11,6 +11,11 @@ const AddEmployee = () => {
     experience: '',
     department_id: '',
     salary: '',
+    degree: '',
+    university: '',
+    graduation_year: '',
+    skills: '',
+    certifications: '',
   });
 
   const [departments, setDepartments] = useState([]);
@@ -155,6 +160,66 @@ const AddEmployee = () => {
             onChange={(e) => setEmployee({ ...employee, salary: e.target.value })}
             className="w-full px-4 py-2 mt-1 border rounded-md"
             required
+          />
+        </div>
+
+        {/* Educational Details */}
+        <div className="mb-4">
+          <label htmlFor="degree" className="block text-sm font-medium text-gray-700">Degree</label>
+          <input
+            type="text"
+            name="degree"
+            value={employee.degree}
+            onChange={(e) => setEmployee({ ...employee, degree: e.target.value })}
+            className="w-full px-4 py-2 mt-1 border rounded-md"
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="university" className="block text-sm font-medium text-gray-700">University</label>
+          <input
+            type="text"
+            name="university"
+            value={employee.university}
+            onChange={(e) => setEmployee({ ...employee, university: e.target.value })}
+            className="w-full px-4 py-2 mt-1 border rounded-md"
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="graduation_year" className="block text-sm font-medium text-gray-700">Graduation Year</label>
+          <input
+            type="number"
+            name="graduation_year"
+            value={employee.graduation_year}
+            onChange={(e) => setEmployee({ ...employee, graduation_year: e.target.value })}
+            className="w-full px-4 py-2 mt-1 border rounded-md"
+            required
+          />
+        </div>
+
+        {/* Professional Details */}
+        <div className="mb-4">
+          <label htmlFor="skills" className="block text-sm font-medium text-gray-700">Skills</label>
+          <textarea
+            name="skills"
+            value={employee.skills}
+            onChange={(e) => setEmployee({ ...employee, skills: e.target.value })}
+            className="w-full px-4 py-2 mt-1 border rounded-md"
+            rows="3"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="certifications" className="block text-sm font-medium text-gray-700">Certifications</label>
+          <textarea
+            name="certifications"
+            value={employee.certifications}
+            onChange={(e) => setEmployee({ ...employee, certifications: e.target.value })}
+            className="w-full px-4 py-2 mt-1 border rounded-md"
+            rows="3"
           />
         </div>
 

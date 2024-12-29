@@ -3,7 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const EmployeeTask = () => {
-  const [tasks, setTasks] = useState([]); // Updated to handle multiple tasks
+  const [tasks, setTasks] = useState([]); // State for tasks
+  const [message, setMessage] = useState(""); // State for no tasks message
   const [error, setError] = useState("");
   const navigate = useNavigate(); // Hook to navigate between routes
 
@@ -34,11 +35,10 @@ const EmployeeTask = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const employeeTasks = response.data.Result || [];
-        if (employeeTasks.length > 0) {
-          setTasks(employeeTasks);
+        if (response.data.Status) {
+          setTasks(response.data.Result);
         } else {
-          setError("No tasks found for the logged-in employee.");
+          setMessage(response.data.Message || "No tasks assigned for you.");
         }
       } catch (err) {
         console.error("Error fetching tasks:", err.response || err);
@@ -56,9 +56,11 @@ const EmployeeTask = () => {
         { status: "completed" }
       );
       if (response.data.Status) {
-        setTasks(tasks.map(task => 
-          task.taskId === taskId ? { ...task, status: "completed" } : task
-        ));
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.taskId === taskId ? { ...task, status: "completed" } : task
+          )
+        );
       } else {
         setError("Error updating task status.");
       }
@@ -70,6 +72,10 @@ const EmployeeTask = () => {
 
   if (error) {
     return <div className="text-red-500">{error}</div>;
+  }
+
+  if (message) {
+    return <div className="text-gray-600 p-6">{message}</div>;
   }
 
   if (tasks.length === 0) {
@@ -88,12 +94,14 @@ const EmployeeTask = () => {
           <p><strong>Priority:</strong> {task.priority}</p>
           <p><strong>Status:</strong> {task.status}</p>
 
-          <button
-            className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            onClick={() => handleStatusChange(task.taskId)}
-          >
-            Mark as Completed
-          </button>
+          {task.status !== "completed" && (
+            <button
+              className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              onClick={() => handleStatusChange(task.taskId)}
+            >
+              Mark as Completed
+            </button>
+          )}
         </div>
       ))}
     </div>
