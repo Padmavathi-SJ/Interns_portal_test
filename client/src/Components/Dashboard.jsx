@@ -6,7 +6,7 @@ const Dashboard = () => {
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
       <div className="w-64 bg-indigo-600 text-white p-6">
-        <h1 className="text-3xl font-semibold mb-8">EMS</h1>
+        <h1 className="text-3xl font-semibold mb-8">BIP</h1>
         <ul>
           <li className="mb-4">
             <Link to="/admin-dashboard" className="hover:text-indigo-200 transition-colors">

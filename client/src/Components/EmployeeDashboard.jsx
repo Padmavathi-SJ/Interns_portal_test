@@ -27,6 +27,8 @@ const EmployeeDashboard = () => {
     { path: "/employee-dashboard/profile", label: "Profile" },
     { path: "/employee-dashboard/employee_task", label: "Allocated Work" },
     { path: "/employee-dashboard/employee_leave", label: "Leave" },
+    { path: "/employee-dashboard/feedback", label: "Feedback" },
+    { path: "/employee-dashboard/anouncements", label: "Anouncements" },
   ];
 
   return (
@@ -40,7 +42,7 @@ const EmployeeDashboard = () => {
         <div className="flex items-center justify-between">
           {/* Logo aligned to the left */}
           <div className="flex items-center justify-start">
-            <h1 className="text-2xl font-semibold">EMS</h1>
+            <h1 className="text-2xl font-semibold">BIP</h1>
           </div>
 
           {/* Centered Navigation Links */}

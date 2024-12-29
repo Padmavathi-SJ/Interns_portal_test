@@ -18,6 +18,10 @@ import Profile from './Components/Profile';
 import EmployeeTask from './Components/EmployeeTask';
 import ApplyLeave from './Components/ApplyLeave';
 import EmployeeLeave from './Components/EmployeeLeave';
+import EmployeeList from './Components/EmployeeList';
+import EmployeeDetails from './Components/EmployeeDetails';
+import Feedback from './Components/Feedback';
+import Anouncements from './Components/Anouncements';
 
 function App() {
   return (
@@ -31,6 +35,8 @@ function App() {
           <Route path="employee/add_employee" element={<AddEmployee />} />
           <Route path="employee/edit_employee/:employeeId" element={<EditEmployee />} />
           <Route path="department" element={<Department />} />
+          <Route path="department/:departmentId/employees" element={<EmployeeList />} />
+          <Route path="employee/:employeeId/details" element={<EmployeeDetails />} />
           <Route path="department/add_department" element={<AddDepartment />} />
           <Route path="work_allocation" element={<WorkAllocation />} />
           <Route path="allocate_work" element={<AddTask />} />
@@ -46,6 +52,8 @@ function App() {
           <Route path="employee_task" element={<EmployeeTask />} />
           <Route path="employee_leave" element={<EmployeeLeave />} />
           <Route path="apply_leave" element={<ApplyLeave />} />
+          <Route path="feedback" element={<Feedback />} />
+          <Route path="anouncements" element={<Anouncements />} />
         </Route>
       </Routes>
     </BrowserRouter>
