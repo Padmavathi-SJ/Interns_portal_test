@@ -107,7 +107,6 @@ router.get("/get_employee", verifyToken, (req, res) => {
 // Get tasks assigned to the logged-in employee
 router.get("/get_task", verifyToken, (req, res) => {
   const { id: employeeId } = req.user; // Extract employeeId from the token
- // console.log("Fetching tasks for employee ID:", employeeId); // Debug log
 
   const query = `
       SELECT id AS taskId, title, description, deadline, priority, status
@@ -116,20 +115,19 @@ router.get("/get_task", verifyToken, (req, res) => {
   `;
 
   connection.query(query, [employeeId], (err, results) => {
-      if (err) {
-        //  console.error("Error fetching tasks:", err);
-          return res.status(500).json({ Status: false, Error: "Internal server error." });
-      }
+    if (err) {
+      console.error("Error fetching tasks:", err);
+      return res.status(500).json({ Status: false, Error: "Internal server error." });
+    }
 
-      if (results.length === 0) {
-         // console.warn("No tasks found for employee ID:", employeeId); // Debug log
-          return res.status(404).json({ Status: false, Message: "No tasks found." });
-      }
+    if (results.length === 0) {
+      return res.json({ Status: false, Message: "No tasks assigned for you." });
+    }
 
-     // console.log("Tasks fetched for employee ID:", employeeId, results); // Debug log
-      res.json({ Status: true, Result: results }); // Return only the tasks for the logged-in employee
+    res.json({ Status: true, Result: results });
   });
 });
+
 
 // Backend: Update task status
 router.put("/update_task_status/:taskId", (req, res) => {
@@ -181,7 +179,7 @@ router.post("/apply_leave", (req, res) => {
 });
 
 // Assuming you have a logged-in user and can get the employee_id from the session or JWT
-router.get('/leave_request', verifyToken, (req, res) => {
+router.get("/leave_request", verifyToken, (req, res) => {
   const { id: employeeId } = req.user; // Extract employeeId from the verified token
 
   // Query to fetch leave requests for the logged-in employee
@@ -194,12 +192,13 @@ router.get('/leave_request', verifyToken, (req, res) => {
     }
 
     if (results.length === 0) {
-      return res.status(404).json({ Status: false, Message: "No leave requests found for the employee." });
+      return res.json({ Status: false, Message: "You have not applied for any leaves yet." });
     }
 
     res.json({ Status: true, Result: results });
   });
 });
+
 
 
   

@@ -28,9 +28,6 @@ router.post("/adminLogin", (req, res) => {
   });
 });
 
-
-
-
 router.get("/get_departments", (req, res) => {
   const sql = "SELECT * FROM department";
   connection.query(sql, (err, result) => {
@@ -139,14 +136,28 @@ router.delete("/delete_department/:departmentId", (req, res) => {
 
 
 router.post("/add_employee", (req, res) => {
+  const {
+    name,
+    email,
+    password,
+    role,
+    experience,
+    department_id,
+    salary,
+    degree,
+    university,
+    graduation_year,
+    skills,
+    certifications,
+  } = req.body;
 
-  const { name, email, password, role, experience, department_id, salary } = req.body;
-
-  if (!name || !email || !password || !role || !department_id || !salary) {
+  // Validate required fields
+  if (!name || !email || !password || !role || !department_id || !salary || !degree || !university || !graduation_year) {
     return res.status(400).json({ Status: false, Error: "Missing required fields" });
   }
 
-  const sql = `INSERT INTO employees (name, email, password, role, experience, department_id, salary) VALUES (?,?,?,?,?,?,?)`;
+  const sql = `INSERT INTO employees (name, email, password, role, experience, department_id, salary, degree, university, graduation_year, skills, certifications) 
+               VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`;
 
   bcrypt.hash(password, 10, (err, hash) => {
     if (err) {
@@ -162,6 +173,11 @@ router.post("/add_employee", (req, res) => {
       experience || 0, // Default experience to 0 if not provided
       department_id,
       salary,
+      degree,
+      university,
+      graduation_year,
+      skills || '', // Default to empty string if not provided
+      certifications || '', // Default to empty string if not provided
     ];
 
     connection.query(sql, values, (err, result) => {
@@ -173,6 +189,7 @@ router.post("/add_employee", (req, res) => {
     });
   });
 });
+
 
 router.get("/get_employees", (req, res) => {
   const sql = `
@@ -409,8 +426,6 @@ router.delete("/delete_task/:taskId", (req, res) => {
   });
 });
 
-
-
 // Get all leave requests for admin
 
 router.get("/leave_requests", (req, res) => {
@@ -450,6 +465,58 @@ router.put("/leave_requests/:id", (req, res) => {
       return res.json({ Status: false, Error: "Leave request not found" });
     }
   });
+});
+
+
+
+router.get("/dashboard_metrics", async (req, res) => {
+  try {
+    // Queries for the metrics
+    const queries = {
+      totalEmployees: "SELECT COUNT(*) AS total FROM employees",
+      pendingLeaves: "SELECT COUNT(*) AS total FROM leave_requests WHERE status = 'Pending'",
+      totalDepartments: "SELECT COUNT(*) AS total FROM department",
+      totalTasks: "SELECT COUNT(*) AS total FROM work_allocation",
+    };
+
+    // Execute all queries in parallel
+    const [employeeResult, leaveResult, departmentResult, taskResult] = await Promise.all([
+      new Promise((resolve, reject) =>
+        connection.query(queries.totalEmployees, (err, result) =>
+          err ? reject(err) : resolve(result)
+        )
+      ),
+      new Promise((resolve, reject) =>
+        connection.query(queries.pendingLeaves, (err, result) =>
+          err ? reject(err) : resolve(result)
+        )
+      ),
+      new Promise((resolve, reject) =>
+        connection.query(queries.totalDepartments, (err, result) =>
+          err ? reject(err) : resolve(result)
+        )
+      ),
+      new Promise((resolve, reject) =>
+        connection.query(queries.totalTasks, (err, result) =>
+          err ? reject(err) : resolve(result)
+        )
+      ),
+    ]);
+
+    // Build the response object
+    const metrics = {
+      totalEmployees: employeeResult[0].total,
+      pendingLeaveRequests: leaveResult[0].total,
+      totalDepartments: departmentResult[0].total,
+      totalTasks: taskResult[0].total,
+    };
+
+    // Send the response
+    res.json({ Status: true, Metrics: metrics });
+  } catch (err) {
+    console.error("Error fetching dashboard metrics:", err);
+    res.status(500).json({ Status: false, Error: "Error fetching dashboard metrics" });
+  }
 });
 
 
