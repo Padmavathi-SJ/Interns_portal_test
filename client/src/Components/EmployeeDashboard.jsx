@@ -29,7 +29,7 @@ const EmployeeDashboard = () => {
             </Link>
           </li>
           <li className="mb-4">
-            <Link to="/employee-dashboard/apply_leave" className="hover:text-indigo-200 transition-colors">
+            <Link to="/employee-dashboard/employee_leave" className="hover:text-indigo-200 transition-colors">
               Leave
             </Link>
           </li>
@@ -43,7 +43,7 @@ const EmployeeDashboard = () => {
 
       {/* Main Content */}
       <div className="flex-1 p-8">
-        <h2 className="text-3xl font-semibold text-gray-800 mb-6">Employee Dashboard</h2>
+        <h2 className="text-3xl font-semibold text-gray-800 mb-6">Welcome Employee</h2>
 
         {/* Render child components here */}
         <Outlet />

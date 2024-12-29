@@ -4,11 +4,11 @@ import { FaTasks, FaTrash, FaEdit } from "react-icons/fa"; // Icons from react-i
 import axios from "axios";
 
 const WorkAllocation = () => {
-  const navigate = useNavigate(); // Hook to navigate between routes
+  const navigate = useNavigate();
   const [tasks, setTasks] = useState([]); // State to hold fetched tasks
 
-  useEffect(() => {
-    // Fetch tasks when component is mounted
+  // Function to fetch tasks from the API
+  const fetchTasks = () => {
     axios.get("http://localhost:3000/auth/get_tasks")
       .then((response) => {
         if (response.data.Status) {
@@ -20,18 +20,27 @@ const WorkAllocation = () => {
       .catch((error) => {
         console.error("API Error:", error);
       });
+  };
+
+  useEffect(() => {
+    // Fetch tasks initially
+    fetchTasks();
+
+    // Set up polling to fetch tasks every 5 seconds (you can adjust the interval)
+    const intervalId = setInterval(fetchTasks, 5000);
+
+    // Clean up the interval when the component is unmounted
+    return () => clearInterval(intervalId);
   }, []);
 
   const handleNavigation = () => {
-    navigate("/admin-dashboard/allocate_work"); // Navigate to allocate_work route
+    navigate("/admin-dashboard/allocate_work");
   };
 
   const handleDelete = (taskId) => {
-    // Send delete request to server
     axios.delete(`http://localhost:3000/auth/delete_task/${taskId}`)
       .then((response) => {
         if (response.data.Status) {
-          // Remove the deleted task from the state to update the UI
           setTasks(tasks.filter((task) => task.taskId !== taskId));
         } else {
           console.error("Error deleting task:", response.data.Error);
@@ -43,7 +52,6 @@ const WorkAllocation = () => {
   };
 
   const handleEdit = (taskId) => {
-    // Navigate to the edit page with the taskId to allow editing
     navigate(`/admin-dashboard/edit_work/${taskId}`);
   };
 
@@ -59,7 +67,6 @@ const WorkAllocation = () => {
         </div>
       </div>
 
-      {/* Displaying the list of tasks */}
       <div className="mt-8 w-full max-w-4xl mx-auto">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">Assigned Tasks</h2>
         <div className="space-y-4">

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -24,16 +23,16 @@ const Leave = () => {
   }, []);
 
   // Handle approve/reject action
-  const handleAction = async (id, status) => {
+  const handleAction = async (id, action) => {
     try {
       // Send status change request to the backend
-      const response = await axios.put(`http://localhost:3000/auth/leave_requests/${id}`, { status });
+      const response = await axios.put(`http://localhost:3000/auth/leave_requests/${id}`, { status: action });
 
       // If the request is successful, update the local state
       if (response.data.Status) {
         setLeaveRequests((prevRequests) =>
           prevRequests.map((request) =>
-            request.id === id ? { ...request, status } : request
+            request.id === id ? { ...request, status: action } : request
           )
         );
       } else {
@@ -54,7 +53,6 @@ const Leave = () => {
             <th className="px-4 py-2 text-left">Leave Type</th>
             <th className="px-4 py-2 text-left">Start Date</th>
             <th className="px-4 py-2 text-left">End Date</th>
-            <th className="px-4 py-2 text-left">Status</th>
             <th className="px-4 py-2 text-left">Action</th>
           </tr>
         </thead>
@@ -65,9 +63,9 @@ const Leave = () => {
               <td className="px-4 py-2">{request.leave_type}</td>
               <td className="px-4 py-2">{request.start_date}</td>
               <td className="px-4 py-2">{request.end_date}</td>
-              <td className="px-4 py-2">{request.status}</td>
               <td className="px-4 py-2">
-                {request.status === 'pending' && (
+                {/* Ensure the condition is correct for 'pending' status */}
+                {request.status && request.status.toLowerCase() === 'pending' && (
                   <div className="flex space-x-2">
                     <button
                       onClick={() => handleAction(request.id, 'approved')}
@@ -83,6 +81,8 @@ const Leave = () => {
                     </button>
                   </div>
                 )}
+                {/* If the status is either approved or rejected, just show the status */}
+                {request.status && request.status.toLowerCase() !== 'pending' && <span>{request.status}</span>}
               </td>
             </tr>
           ))}
