@@ -36,6 +36,47 @@ router.get("/get_departments", (req, res) => {
   });
 });
 
+// Route to get employees by department_id
+router.get('/get_employees_by_department/:departmentId', (req, res) => {
+  const { departmentId } = req.params;
+
+  const sql = `SELECT * FROM employees WHERE department_id = ?`;
+
+  connection.query(sql, [departmentId], (err, result) => {
+    if (err) {
+      console.error('Database Query Error:', err);
+      return res.status(500).json({ Status: false, Error: 'Database Query Error' });
+    }
+
+    if (result.length > 0) {
+      res.json({ Status: true, Result: result });
+    } else {
+      res.json({ Status: false, Error: 'No employees found for this department' });
+    }
+  });
+});
+
+// Route to get employee details by employee_id
+router.get('/get_employee_details/:employeeId', (req, res) => {
+  const { employeeId } = req.params;
+
+  const sql = `SELECT * FROM employees WHERE id = ?`;
+
+  connection.query(sql, [employeeId], (err, result) => {
+    if (err) {
+      console.error('Database Query Error:', err);
+      return res.status(500).json({ Status: false, Error: 'Database Query Error' });
+    }
+
+    if (result.length > 0) {
+      res.json({ Status: true, Result: result[0] }); // Return the first employee if found
+    } else {
+      res.json({ Status: false, Error: 'Employee not found' });
+    }
+  });
+});
+
+
 router.post("/add_department", (req, res) => {
   const checkSql = "SELECT * FROM department WHERE name = ?";
   connection.query(checkSql, [req.body.department], (err, result) => {
