@@ -20,8 +20,13 @@ import ApplyLeave from './Components/ApplyLeave';
 import EmployeeLeave from './Components/EmployeeLeave';
 import EmployeeList from './Components/EmployeeList';
 import EmployeeDetails from './Components/EmployeeDetails';
-import Feedback from './Components/Feedback';
 import Anouncements from './Components/Anouncements';
+import AdminFeedback from './Components/AdminFeedback';
+import EmployeeFeedback from './Components/EmployeeFeedback';
+import AddFeedback from './Components/AddFeedback';
+import TeamManagement from './Components/TeamManagement';
+import TeamCreation from './Components/TeamCreation';
+import EditTeam from './Components/EditTeam';
 
 function App() {
   return (
@@ -41,7 +46,11 @@ function App() {
           <Route path="work_allocation" element={<WorkAllocation />} />
           <Route path="allocate_work" element={<AddTask />} />
           <Route path="edit_work/:taskId" element={<EditTask />} />
+          <Route path="teams" element={<TeamManagement />} />
+          <Route path="team_creation" element={<TeamCreation />} />
+          <Route path="teams/edit_team/:team_id" element={<EditTeam />} />
           <Route path="leave" element={<Leave />} />
+          <Route path="feedback" element={<AdminFeedback/>} />
         </Route>
 
         {/* User (Employee) Routes */}
@@ -52,7 +61,8 @@ function App() {
           <Route path="employee_task" element={<EmployeeTask />} />
           <Route path="employee_leave" element={<EmployeeLeave />} />
           <Route path="apply_leave" element={<ApplyLeave />} />
-          <Route path="feedback" element={<Feedback />} />
+          <Route path="feedback" element={<EmployeeFeedback />} />
+          <Route path="add_feedback" element={<AddFeedback />} />
           <Route path="anouncements" element={<Anouncements />} />
         </Route>
       </Routes>

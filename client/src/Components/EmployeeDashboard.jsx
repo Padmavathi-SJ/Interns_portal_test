@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
+import axios from "axios";
 
 const EmployeeDashboard = () => {
   const location = useLocation();
   const employeeId = localStorage.getItem("employeeId"); // Fetch employeeId from storage
-  const employeeName = "John Doe"; // Replace with dynamic name if available
+  const [employeeName, setEmployeeName] = useState(""); // State for employee name
   const [darkMode, setDarkMode] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -30,6 +31,27 @@ const EmployeeDashboard = () => {
     { path: "/employee-dashboard/feedback", label: "Feedback" },
     { path: "/employee-dashboard/anouncements", label: "Anouncements" },
   ];
+
+  // Fetch employee name on component mount
+  useEffect(() => {
+    const fetchEmployeeDetails = async () => {
+      try {
+        const token = localStorage.getItem("userToken"); // Token stored during login
+        const response = await axios.get("http://localhost:3000/auth/get_employee", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.data.Status) {
+          setEmployeeName(response.data.Data.name); // Set employee name
+        } else {
+          console.error(response.data.Error || "Failed to fetch employee details.");
+        }
+      } catch (error) {
+        console.error("Error fetching employee details:", error);
+      }
+    };
+
+    fetchEmployeeDetails();
+  }, []);
 
   return (
     <div className={`min-h-screen ${darkMode ? "bg-gray-800" : "bg-gray-100"} flex flex-col`}>
@@ -104,7 +126,7 @@ const EmployeeDashboard = () => {
 
       {/* Main Content */}
       <div className={`flex-1 p-8 ${darkMode ? "text-gray-200" : "text-gray-800"}`}>
-        <h2 className="text-3xl font-semibold mb-6">Welcome Employee</h2>
+        <h2 className="text-3xl font-semibold mb-6">Welcome {employeeName}</h2>
 
         {/* Render child components here */}
         <Outlet />

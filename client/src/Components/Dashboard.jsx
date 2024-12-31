@@ -24,6 +24,11 @@ const Dashboard = () => {
             </Link>
           </li>
           <li className="mb-4">
+            <Link to="/admin-dashboard/teams" className="hover:text-indigo-200 transition-colors">
+              Team Management
+            </Link>
+          </li>
+          <li className="mb-4">
             <Link to="/admin-dashboard/work_allocation" className="hover:text-indigo-200 transition-colors">
               Allocate Work
             </Link>
@@ -31,6 +36,11 @@ const Dashboard = () => {
           <li className="mb-4">
             <Link to="/admin-dashboard/leave" className="hover:text-indigo-200 transition-colors">
               Leave
+            </Link>
+          </li>
+          <li className="mb-4">
+            <Link to="/admin-dashboard/feedback" className="hover:text-indigo-200 transition-colors">
+            Feedback
             </Link>
           </li>
           <li className="mt-8 border-t border-indigo-700 pt-4">
