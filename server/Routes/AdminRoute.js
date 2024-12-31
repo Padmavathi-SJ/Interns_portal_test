@@ -292,13 +292,27 @@ router.delete("/delete_employee/:employeeId", (req, res) => {
 
 router.put("/edit_employee/:employeeId", (req, res) => {
   const { employeeId } = req.params;
-  const { name, email, password, role, experience, department_id, salary } = req.body;
+  const {
+    name,
+    email,
+    password,
+    role,
+    experience,
+    department_id,
+    salary,
+    degree,
+    university,
+    graduation_year,
+    skills,
+    certifications,
+    mobile_no,
+    address,
+  } = req.body;
 
   if (!name || !email || !password || !role || !department_id || !salary) {
     return res.status(400).json({ Status: false, Error: "Missing required fields" });
   }
 
-  // If password is provided, hash it; otherwise, retain the existing password
   const passwordUpdate = password ? bcrypt.hashSync(password, 10) : undefined;
 
   const sql = `UPDATE employees SET 
@@ -308,17 +322,31 @@ router.put("/edit_employee/:employeeId", (req, res) => {
     role = ?, 
     experience = ?, 
     department_id = ?, 
-    salary = ? 
+    salary = ?, 
+    degree = ?, 
+    university = ?, 
+    graduation_year = ?, 
+    skills = ?, 
+    certifications = ?, 
+    mobile_no = ?, 
+    address = ? 
     WHERE id = ?`;
 
   const values = [
     name,
     email,
-    passwordUpdate || null, // If password is not provided, set it as null
+    passwordUpdate || null,
     role,
     experience,
     department_id,
     salary,
+    degree,
+    university,
+    graduation_year,
+    skills,
+    certifications,
+    mobile_no,
+    address,
     employeeId,
   ];
 
@@ -335,6 +363,7 @@ router.put("/edit_employee/:employeeId", (req, res) => {
     return res.json({ Status: true, Result: result });
   });
 });
+
 
 router.get("/get_employee_by_id/:employeeId", (req, res) => {
   const { employeeId } = req.params;

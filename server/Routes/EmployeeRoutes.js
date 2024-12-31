@@ -84,7 +84,7 @@ router.get("/get_employee", verifyToken, (req, res) => {
   //console.log("Fetching details for employee ID:", employeeId);
 
   const query = `
-    SELECT e.id, e.name, d.name AS department, e.role, e.experience, e.salary
+    SELECT e.id, e.name, d.name AS department, e.role, e.experience
     FROM employees e
     JOIN department d ON e.department_id = d.id
     WHERE e.id = ?;
@@ -244,7 +244,30 @@ router.get("/feedback_list", verifyToken, (req, res) => {
   });
 });
 
+router.get("/about_employee", verifyToken, (req, res) => {
+  const { id: employeeId } = req.user;  // Extract employeeId from the verified token
+  
+  const query = `
+    SELECT e.id, e.name, d.name AS department, e.role, e.experience, e.mobile_no, e.email, e.salary, e.degree, 
+           e.university, e.graduation_year, e.skills, e.certifications
+    FROM employees e
+    JOIN department d ON e.department_id = d.id
+    WHERE e.id = ?;
+  `;
 
+  connection.query(query, [employeeId], (err, results) => {
+    if (err) {
+      console.error("Error fetching employee details:", err);
+      return res.status(500).json({ Status: false, Error: "Internal server error." });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ Status: false, Message: "Employee not found." });
+    }
+
+    res.json({ Status: true, Data: results[0] });
+  });
+});
 
   
   
