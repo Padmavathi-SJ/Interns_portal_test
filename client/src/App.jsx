@@ -27,6 +27,7 @@ import AddFeedback from './Components/AddFeedback';
 import TeamManagement from './Components/TeamManagement';
 import TeamCreation from './Components/TeamCreation';
 import EditTeam from './Components/EditTeam';
+import EmployeeProfile from './Components/EmployeeProfile';
 
 function App() {
   return (
@@ -64,6 +65,7 @@ function App() {
           <Route path="feedback" element={<EmployeeFeedback />} />
           <Route path="add_feedback" element={<AddFeedback />} />
           <Route path="anouncements" element={<Anouncements />} />
+          <Route path="my_profile" element={<EmployeeProfile/>} />
         </Route>
       </Routes>
     </BrowserRouter>

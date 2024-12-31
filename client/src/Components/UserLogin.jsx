@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import userLoginImage from "../assets/userLogin.jpg"; // Importing the image
 
 const UserLogin = () => {
     const navigate = useNavigate();
@@ -42,39 +43,64 @@ const UserLogin = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-                <h2 className="text-2xl font-semibold text-center mb-6">Employee Login</h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="space-y-4">
-                        <input
-                            type="text"
-                            name="employee_id"
-                            value={credentials.employee_id}
-                            onChange={handleChange}
-                            placeholder="Employee ID"
-                            required
-                        />
-                        <input
-                            type="email"
-                            name="email"
-                            value={credentials.email}
-                            onChange={handleChange}
-                            placeholder="Email"
-                            required
-                        />
-                        <input
-                            type="password"
-                            name="password"
-                            value={credentials.password}
-                            onChange={handleChange}
-                            placeholder="Password"
-                            required
-                        />
-                        {error && <p className="text-red-500">{error}</p>}
-                        <button type="submit">Login</button>
+        <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
+            {/* Combined Image and Form Container */}
+            <div className="h-[80vh] flex w-full max-w-6xl bg-white rounded-lg shadow-lg overflow-hidden">
+                {/* Left Section - Image */}
+                <div className="w-1/2">
+                    <img
+                        src={userLoginImage}
+                        alt="Login Illustration"
+                        className="object-cover w-full h-full"
+                    />
+                </div>
+
+                {/* Right Section - Form */}
+                <div className="w-1/2 flex items-center justify-center p-8">
+                    <div className="w-full max-w-md">
+                        <h2 className="text-3xl font-semibold text-center mb-6">
+                            Employee Login
+                        </h2>
+                        <form onSubmit={handleSubmit}>
+                            <div className="space-y-4">
+                                <input
+                                    type="text"
+                                    name="employee_id"
+                                    value={credentials.employee_id}
+                                    onChange={handleChange}
+                                    placeholder="Employee ID"
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200"
+                                    required
+                                />
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={credentials.email}
+                                    onChange={handleChange}
+                                    placeholder="Email"
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200"
+                                    required
+                                />
+                                <input
+                                    type="password"
+                                    name="password"
+                                    value={credentials.password}
+                                    onChange={handleChange}
+                                    placeholder="Password"
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200"
+                                    required
+                                />
+                                {error && <p className="text-red-500">{error}</p>}
+                                <button
+                                    type="submit"
+                                    className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition"
+                                >
+                                    Login
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     );

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import profile from "../assets/profile.jpg"; // Import the default profile picture
 
 const Profile = () => {
   const { employeeId } = useParams(); // Retrieve employeeId from route
@@ -24,15 +25,11 @@ const Profile = () => {
           return;
         }
 
-       // console.log("Token:", token);
-
         // Check if token is expired
         if (isTokenExpired(token)) {
           setError("Token expired, please log in again.");
           return;
         }
-
-       // console.log("Token is valid");
 
         // Fetch employee details
         const response = await axios.get("http://localhost:3000/auth/get_employee", {
@@ -71,38 +68,24 @@ const Profile = () => {
     );
   }
 
-  const { id, name, department, role, experience, salary } = employeeDetails;
+  const { id, name, department, role, profile: employeeProfile } = employeeDetails;
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
-      <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
-        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">Employee Profile</h2>
-        
-        <div className="space-y-4">
-          <div className="flex justify-between">
-            <span className="font-medium text-gray-700">ID:</span>
-            <span className="text-gray-600">{id}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-medium text-gray-700">Name:</span>
-            <span className="text-gray-600">{name}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-medium text-gray-700">Department:</span>
-            <span className="text-gray-600">{department}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-medium text-gray-700">Role:</span>
-            <span className="text-gray-600">{role}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-medium text-gray-700">Experience:</span>
-            <span className="text-gray-600">{experience} years</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="font-medium text-gray-700">Salary:</span>
-            <span className="text-gray-600">${salary}</span>
-          </div>
+    <div className="flex justify-center items-center h-[30vh] p-3">
+      <div className="flex items-center w-full max-w-4xl">
+        {/* Profile Picture - Square */}
+        <div className="w-40 h-40 bg-gray-300 overflow-hidden border-5" style={{
+          backgroundImage: `url(${employeeProfile || profile})`, // Use employee profile pic or default
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }} />
+
+        {/* Employee Details */}
+        <div className="ml-6 space-y-4 text-gray-600">
+          <p className="flex justify-between"><span>{id}</span></p>
+          <p className="flex justify-between"><span>{name}</span></p>
+          <p className="flex justify-between"><span>{department}</span></p>
+          <p className="flex justify-between"><span>{role}</span></p>
         </div>
       </div>
     </div>

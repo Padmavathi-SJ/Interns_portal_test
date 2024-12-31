@@ -1,32 +1,25 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 const EmployeeTask = () => {
-  const [tasks, setTasks] = useState([]); // State for tasks
-  const [message, setMessage] = useState(""); // State for no tasks message
+  const [tasks, setTasks] = useState([]); // Tasks grouped by date
+  const [selectedTask, setSelectedTask] = useState(null); // Task to display in modal
   const [error, setError] = useState("");
-  const navigate = useNavigate(); // Hook to navigate between routes
 
+  // Helper to extract employee ID
   const getLoggedInEmployeeId = () => {
     const token = localStorage.getItem("userToken");
     if (!token) return null;
-
     const payload = JSON.parse(atob(token.split(".")[1]));
     return payload.id;
   };
 
   useEffect(() => {
-    const fetchTaskDetails = async () => {
+    const fetchTasks = async () => {
       const token = localStorage.getItem("userToken");
-      if (!token) {
-        setError("No token found. Please log in.");
-        return;
-      }
-
       const employeeId = getLoggedInEmployeeId();
-      if (!employeeId) {
-        setError("Unable to retrieve employee ID.");
+      if (!token || !employeeId) {
+        setError("Unable to retrieve employee tasks. Please log in.");
         return;
       }
 
@@ -36,29 +29,40 @@ const EmployeeTask = () => {
         });
 
         if (response.data.Status) {
-          setTasks(response.data.Result);
+          // Group tasks by date
+          const groupedTasks = response.data.Result.reduce((acc, task) => {
+            const date = new Date(task.deadline).toLocaleDateString();
+            acc[date] = acc[date] ? [...acc[date], task] : [task];
+            return acc;
+          }, {});
+          setTasks(groupedTasks);
         } else {
-          setMessage(response.data.Message || "No tasks assigned for you.");
+          setError(response.data.Message || "No tasks found.");
         }
       } catch (err) {
-        console.error("Error fetching tasks:", err.response || err);
+        console.error(err);
         setError("An error occurred while fetching tasks.");
       }
     };
 
-    fetchTaskDetails();
+    fetchTasks();
   }, []);
 
   const handleStatusChange = async (taskId) => {
     try {
       const response = await axios.put(
         `http://localhost:3000/auth/update_task_status/${taskId}`,
-        { status: "completed" }
+        { status: "Completed" }
       );
       if (response.data.Status) {
         setTasks((prevTasks) =>
-          prevTasks.map((task) =>
-            task.taskId === taskId ? { ...task, status: "completed" } : task
+          Object.fromEntries(
+            Object.entries(prevTasks).map(([date, tasks]) => [
+              date,
+              tasks.map((task) =>
+                task.taskId === taskId ? { ...task, status: "Completed" } : task
+              ),
+            ])
           )
         );
       } else {
@@ -70,40 +74,65 @@ const EmployeeTask = () => {
     }
   };
 
-  if (error) {
-    return <div className="text-red-500">{error}</div>;
-  }
-
-  if (message) {
-    return <div className="text-gray-600 p-6">{message}</div>;
-  }
-
-  if (tasks.length === 0) {
-    return <div>Loading...</div>;
-  }
-
   return (
-    <div className="task-container p-6">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">Task Details</h2>
-      {tasks.map((task) => (
-        <div key={task.taskId} className="bg-white p-4 shadow-md rounded-lg mb-4">
-          <p><strong>Task ID:</strong> {task.taskId}</p>
-          <p><strong>Title:</strong> {task.title}</p>
-          <p><strong>Description:</strong> {task.description}</p>
-          <p><strong>Deadline:</strong> {new Date(task.deadline).toLocaleDateString()}</p>
-          <p><strong>Priority:</strong> {task.priority}</p>
-          <p><strong>Status:</strong> {task.status}</p>
+    <div className="p-6">
 
-          {task.status !== "completed" && (
-            <button
-              className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              onClick={() => handleStatusChange(task.taskId)}
-            >
-              Mark as Completed
-            </button>
-          )}
+      {error && <div className="text-red-500">{error}</div>}
+
+      {Object.entries(tasks).map(([date, taskList]) => (
+        <div key={date} className="mb-6">
+          <h3 className="text-lg font-bold mb-2">{date}</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {taskList.map((task) => (
+              <div
+                key={task.taskId}
+                className="bg-white p-4 rounded-lg shadow-md border border-gray-200 w-auto max-w-sm flex flex-col space-y-2"
+              >
+                <p><strong>Task ID:</strong> {task.taskId}</p>
+                <p><strong>Title:</strong> {task.title}</p>
+                <p><strong>Status:</strong> {task.status}</p>
+                <div className="mt-4 flex space-x-2">
+                  {task.status !== "Completed" && (
+                    <button
+                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                      onClick={() => handleStatusChange(task.taskId)}
+                    >
+                      Mark as Completed
+                    </button>
+                  )}
+                  <button
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    onClick={() => setSelectedTask(task)}
+                  >
+                    View Task
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       ))}
+
+{selectedTask && (
+  <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-4/5 max-w-xl relative">
+      <button
+        className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+        onClick={() => setSelectedTask(null)}
+      >
+        X
+      </button>
+      <h3 className="text-xl font-bold mb-4">{selectedTask.title}</h3>
+      <div className="flex flex-col space-y-2">
+        <p><strong>Description:</strong> {selectedTask.description}</p>
+        <p><strong>Deadline:</strong> {new Date(selectedTask.deadline).toLocaleDateString()}</p>
+        <p><strong>Priority:</strong> {selectedTask.priority}</p>
+        <p><strong>Status:</strong> {selectedTask.status}</p>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
