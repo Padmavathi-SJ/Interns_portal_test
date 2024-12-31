@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const EmployeeTask = () => {
-  const [tasks, setTasks] = useState([]); // Tasks grouped by date
-  const [selectedTask, setSelectedTask] = useState(null); // Task to display in modal
+  const [tasks, setTasks] = useState([]); // All tasks excluding today's tasks
+  const [todayTasks, setTodayTasks] = useState([]); // Today's tasks
   const [error, setError] = useState("");
+  const [showAllTasks, setShowAllTasks] = useState(false); // Toggle for all tasks
 
   // Helper to extract employee ID
   const getLoggedInEmployeeId = () => {
@@ -24,20 +25,40 @@ const EmployeeTask = () => {
       }
 
       try {
-        const response = await axios.get("http://localhost:3000/auth/get_task", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        // Fetch today's tasks
+        const todayResponse = await axios.get(
+          "http://localhost:3000/auth/get_today_tasks", // Route for today's tasks
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
-        if (response.data.Status) {
-          // Group tasks by date
-          const groupedTasks = response.data.Result.reduce((acc, task) => {
-            const date = new Date(task.deadline).toLocaleDateString();
-            acc[date] = acc[date] ? [...acc[date], task] : [task];
-            return acc;
-          }, {});
-          setTasks(groupedTasks);
+      //  console.log("Today's Tasks Response:", todayResponse.data); // Log today's tasks response
+
+        if (todayResponse.data.Status) {
+          setTodayTasks(todayResponse.data.Result); // Store today's tasks
         } else {
-          setError(response.data.Message || "No tasks found.");
+          setError(todayResponse.data.Message || "No tasks found for today.");
+        }
+
+        // Fetch all tasks excluding today's tasks
+        const allResponse = await axios.get(
+          "http://localhost:3000/auth/get_all_tasks", // Route for past tasks (excluding today's)
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+      //  console.log("All Tasks Response:", allResponse.data); // Log all tasks response
+
+        if (allResponse.data.Status) {
+          // Filter out today's tasks from all tasks
+          const allTasksExcludingToday = allResponse.data.Result.filter(
+            (task) => !todayTasks.some((todayTask) => todayTask.taskId === task.taskId)
+          );
+          setTasks(allTasksExcludingToday); // Store all tasks excluding today
+        } else {
+          setError(allResponse.data.Message || "No tasks found.");
         }
       } catch (err) {
         console.error(err);
@@ -46,93 +67,112 @@ const EmployeeTask = () => {
     };
 
     fetchTasks();
-  }, []);
-
-  const handleStatusChange = async (taskId) => {
-    try {
-      const response = await axios.put(
-        `http://localhost:3000/auth/update_task_status/${taskId}`,
-        { status: "Completed" }
-      );
-      if (response.data.Status) {
-        setTasks((prevTasks) =>
-          Object.fromEntries(
-            Object.entries(prevTasks).map(([date, tasks]) => [
-              date,
-              tasks.map((task) =>
-                task.taskId === taskId ? { ...task, status: "Completed" } : task
-              ),
-            ])
-          )
-        );
-      } else {
-        setError("Error updating task status.");
-      }
-    } catch (err) {
-      console.error("Error updating status:", err);
-      setError("An error occurred while updating task status.");
-    }
-  };
+  }, [todayTasks]); // Adding `todayTasks` to dependency to ensure filtering works correctly
 
   return (
     <div className="p-6">
-
       {error && <div className="text-red-500">{error}</div>}
 
-      {Object.entries(tasks).map(([date, taskList]) => (
-        <div key={date} className="mb-6">
-          <h3 className="text-lg font-bold mb-2">{date}</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {taskList.map((task) => (
-              <div
-                key={task.taskId}
-                className="bg-white p-4 rounded-lg shadow-md border border-gray-200 w-auto max-w-sm flex flex-col space-y-2"
-              >
-                <p><strong>Task ID:</strong> {task.taskId}</p>
-                <p><strong>Title:</strong> {task.title}</p>
-                <p><strong>Status:</strong> {task.status}</p>
-                <div className="mt-4 flex space-x-2">
-                  {task.status !== "Completed" && (
-                    <button
-                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                      onClick={() => handleStatusChange(task.taskId)}
-                    >
-                      Mark as Completed
-                    </button>
-                  )}
-                  <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                    onClick={() => setSelectedTask(task)}
-                  >
-                    View Task
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Today's Task Section */}
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-bold">Today's Tasks</h3>
+          
+          {/* "View All" Button */}
+          <button
+            onClick={() => setShowAllTasks(!showAllTasks)}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            {showAllTasks ? "View Today's Tasks" : "View All Tasks"}
+          </button>
         </div>
-      ))}
 
-{selectedTask && (
-  <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-    <div className="bg-white p-6 rounded-lg shadow-lg w-4/5 max-w-xl relative">
-      <button
-        className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
-        onClick={() => setSelectedTask(null)}
-      >
-        X
-      </button>
-      <h3 className="text-xl font-bold mb-4">{selectedTask.title}</h3>
-      <div className="flex flex-col space-y-2">
-        <p><strong>Description:</strong> {selectedTask.description}</p>
-        <p><strong>Deadline:</strong> {new Date(selectedTask.deadline).toLocaleDateString()}</p>
-        <p><strong>Priority:</strong> {selectedTask.priority}</p>
-        <p><strong>Status:</strong> {selectedTask.status}</p>
+        {/* Table for Today's Tasks */}
+        <table className="min-w-full table-auto border-collapse bg-white shadow-lg rounded-lg mb-6">
+          <thead>
+            <tr className="bg-gray-100 text-gray-600">
+              <th className="px-4 py-2 text-left">Task ID</th>
+              <th className="px-4 py-2 text-left">Title</th>
+              <th className="px-4 py-2 text-left">Priority</th>
+              <th className="px-4 py-2 text-left">Status</th>
+              <th className="px-4 py-2 text-left">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {todayTasks.map((task) => {
+              const priorityStyles = {
+                high: "bg-red-500 text-white animate-pulse",
+                medium: "bg-yellow-500 text-white",
+                low: "bg-green-500 text-white",
+              };
+              return (
+                <tr key={task.taskId} className="border-t hover:bg-gray-50">
+                  <td className="px-4 py-2">{task.taskId}</td>
+                  <td className="px-4 py-2">{task.title}</td>
+                  <td className="px-4 py-2">
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-semibold ${priorityStyles[task.priority.toLowerCase()]}`}
+                    >
+                      {task.priority}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2">{task.status}</td>
+                  <td className="px-4 py-2">
+                    {task.status !== "Completed" && (
+                      <button
+                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                        onClick={() => handleStatusChange(task.taskId)}
+                      >
+                        Mark as Completed
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
-    </div>
-  </div>
-)}
 
+      {/* Show All Tasks if "View All" is toggled */}
+      {showAllTasks && (
+        <div>
+          <h3 className="text-lg font-bold mb-2">All Tasks</h3>
+          <table className="min-w-full table-auto border-collapse bg-white shadow-lg rounded-lg">
+            <thead>
+              <tr className="bg-gray-100 text-gray-600">
+                <th className="px-4 py-2 text-left">Task ID</th>
+                <th className="px-4 py-2 text-left">Title</th>
+                <th className="px-4 py-2 text-left">Priority</th>
+                <th className="px-4 py-2 text-left">Status</th>
+                <th className="px-4 py-2 text-left">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tasks.map((task) => {
+                return (
+                  <tr key={task.taskId} className="border-t hover:bg-gray-50">
+                    <td className="px-4 py-2">{task.taskId}</td>
+                    <td className="px-4 py-2">{task.title}</td>
+                    <td className="px-4 py-2">{task.priority}</td>
+                    <td className="px-4 py-2">{task.status}</td>
+                    <td className="px-4 py-2">
+                      {task.status !== "Completed" && (
+                        <button
+                          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                          onClick={() => handleStatusChange(task.taskId)}
+                        >
+                          Mark as Completed
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

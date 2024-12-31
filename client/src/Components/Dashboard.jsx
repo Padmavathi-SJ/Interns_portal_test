@@ -34,6 +34,11 @@ const Dashboard = () => {
             </Link>
           </li>
           <li className="mb-4">
+            <Link to="/admin-dashboard/manage_announcements" className="hover:text-indigo-200 transition-colors">
+              Announcements
+            </Link>
+          </li>
+          <li className="mb-4">
             <Link to="/admin-dashboard/leave" className="hover:text-indigo-200 transition-colors">
               Leave
             </Link>

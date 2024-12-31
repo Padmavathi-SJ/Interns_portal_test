@@ -37,8 +37,10 @@ const EmployeeDashboard = () => {
     { path: "/employee-dashboard", label: "Dashboard" },
     { path: "/employee-dashboard/employee_task", label: "Allocated Work" },
     { path: "/employee-dashboard/employee_leave", label: "Leave" },
-    { path: "/employee-dashboard/feedback", label: "Feedback" },
+    { path: "/employee-dashboard/my_team", label: "My Team" },
     { path: "/employee-dashboard/anouncements", label: "Anouncements" },
+    { path: "/employee-dashboard/feedback", label: "Feedback" },
+
   ];
 
   useEffect(() => {

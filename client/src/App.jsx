@@ -28,6 +28,8 @@ import TeamManagement from './Components/TeamManagement';
 import TeamCreation from './Components/TeamCreation';
 import EditTeam from './Components/EditTeam';
 import EmployeeProfile from './Components/EmployeeProfile';
+import MyTeam from './Components/MyTeam';
+import ManageAnnouncements from './Components/ManageAnnouncements';
 
 function App() {
   return (
@@ -52,6 +54,7 @@ function App() {
           <Route path="teams/edit_team/:team_id" element={<EditTeam />} />
           <Route path="leave" element={<Leave />} />
           <Route path="feedback" element={<AdminFeedback/>} />
+          <Route path="manage_announcements" element={<ManageAnnouncements/>} />
         </Route>
 
         {/* User (Employee) Routes */}
@@ -66,6 +69,7 @@ function App() {
           <Route path="add_feedback" element={<AddFeedback />} />
           <Route path="anouncements" element={<Anouncements />} />
           <Route path="my_profile" element={<EmployeeProfile/>} />
+          <Route path="my_team" element={<MyTeam/>} />
         </Route>
       </Routes>
     </BrowserRouter>

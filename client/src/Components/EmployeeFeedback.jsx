@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 
 const EmployeeFeedback = () => {
   const [feedbackList, setFeedbackList] = useState([]);
   const [selectedSolution, setSelectedSolution] = useState(null);
+  const navigate = useNavigate(); // Hook to navigate to another page
 
   useEffect(() => {
     const fetchFeedbackList = async () => {
@@ -30,6 +32,17 @@ const EmployeeFeedback = () => {
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-center text-2xl font-semibold mb-6">My Feedback</h2>
+
+      {/* Button to navigate to the AddFeedback component */}
+      <div className="text-center mb-6">
+        <button
+          onClick={() => navigate("/employee-dashboard/add_feedback")} // Navigate to AddFeedback page
+          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+        >
+          Give Feedback
+        </button>
+      </div>
+
       <table className="min-w-full table-auto border-collapse bg-white shadow-lg rounded-lg">
         <thead>
           <tr className="bg-gray-100 text-gray-600">
