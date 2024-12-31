@@ -200,6 +200,51 @@ router.get("/leave_request", verifyToken, (req, res) => {
 });
 
 
+router.post("/feedback", (req, res) => {
+  const { employee_id, feedback_type, description, priority } = req.body;
+
+  if (!employee_id || !feedback_type || !description) {
+    return res.status(400).json({ success: false, error: "All fields are required." });
+  }
+
+  const sql = `
+    INSERT INTO feedback (employee_id, feedback_type, description, priority, status)
+    VALUES (?, ?, ?, ?, 'Pending')
+  `;
+
+  connection.query(
+    sql,
+    [employee_id, feedback_type, description, priority || "Medium"],
+    (err, result) => {
+      if (err) {
+        console.error("Query Error:", err);
+        return res.status(500).json({ success: false, error: "Failed to submit feedback." });
+      }
+      return res.json({ success: true, message: "Feedback submitted successfully!", status: "Pending" });
+    }
+  );
+});
+
+
+router.get("/feedback_list", verifyToken, (req, res) => {
+  const { id: employeeId } = req.user;
+
+  const query = "SELECT * FROM feedback WHERE employee_id = ?";
+  connection.query(query, [employeeId], (err, results) => {
+    if (err) {
+      console.error("Error fetching feedbacks:", err);
+      return res.status(500).json({ Status: false, Error: "Error fetching feedbacks" });
+    }
+
+    if (results.length === 0) {
+      return res.json({ Status: false, Message: "No feedbacks submitted yet." });
+    }
+
+    res.json({ Status: true, Result: results });
+  });
+});
+
+
 
   
   

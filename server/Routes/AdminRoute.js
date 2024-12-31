@@ -482,7 +482,6 @@ router.get("/leave_requests", (req, res) => {
   });
 });
 
-
 // Approve or Reject a leave request
 router.put("/leave_requests/:id", (req, res) => {
   const { id } = req.params;
@@ -507,7 +506,6 @@ router.put("/leave_requests/:id", (req, res) => {
     }
   });
 });
-
 
 
 router.get("/dashboard_metrics", async (req, res) => {
@@ -560,6 +558,165 @@ router.get("/dashboard_metrics", async (req, res) => {
   }
 });
 
+// Fetch all feedback
+router.get("/feedback", (req, res) => {
+  const sql = "SELECT * FROM feedback";
+
+  connection.query(sql, (err, result) => {
+    if (err) {
+      console.error("Query Error:", err);
+      return res.json({ Status: false, Error: "Error fetching feedback" });
+    }
+
+    return res.json({ Status: true, Result: result });
+  });
+});
+
+// Approve or Reject feedback
+// Update feedback status (approved or rejected)
+router.put("/feedback/:id", (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body; // 'approved' or 'rejected'
+
+  if (status !== 'approved' && status !== 'rejected') {
+    return res.status(400).json({ Status: false, Error: "Invalid status" });
+  }
+
+  const updateStatusSql = "UPDATE feedback SET status = ? WHERE id = ?";
+  connection.query(updateStatusSql, [status, id], (err, result) => {
+    if (err) {
+      console.error("Query Error:", err);
+      return res.json({ Status: false, Error: "Error updating feedback status" });
+    }
+
+    if (result.affectedRows > 0) {
+      return res.json({ Status: true, Message: "Feedback status updated successfully" });
+    } else {
+      return res.json({ Status: false, Error: "Feedback not found" });
+    }
+  });
+});
+
+// Update feedback solution
+router.put("/feedback/:id/solution", (req, res) => {
+  const { id } = req.params;
+  const { solution } = req.body;
+
+  if (!solution) {
+    return res.status(400).json({ Status: false, Error: "Solution cannot be empty" });
+  }
+
+  const updateSolutionSql = "UPDATE feedback SET solution = ? WHERE id = ?";
+  connection.query(updateSolutionSql, [solution, id], (err, result) => {
+    if (err) {
+      console.error("Query Error:", err);
+      return res.json({ Status: false, Error: "Error updating feedback solution" });
+    }
+
+    if (result.affectedRows > 0) {
+      return res.json({ Status: true, Message: "Solution updated successfully" });
+    } else {
+      return res.json({ Status: false, Error: "Feedback not found" });
+    }
+  });
+});
+
+router.post('/create_team', (req, res) => {
+  const { team_name, team_members, department_id } = req.body;
+
+  // Validate inputs
+  if (!team_name || !Array.isArray(team_members) || team_members.length === 0) {
+    return res.status(400).json({ Status: false, Message: "Invalid input. Please provide a valid team name and select members." });
+  }
+
+  // Prepare the SQL query to insert the team into the database
+  const query = "INSERT INTO teams (team_name, team_members, department_id, created_at) VALUES (?, ?, ?, NOW())";
+
+  // Convert the team_members array to JSON format before inserting into the database
+  const teamMembersJson = JSON.stringify(team_members);
+
+  connection.query(query, [team_name, teamMembersJson, department_id], (err, results) => {
+    if (err) {
+      console.error("Error creating team:", err);
+      return res.status(500).json({ Status: false, Error: "Error creating team." });
+    }
+
+    // Return a success response if the team is created
+    res.json({ Status: true, Message: "Team created successfully", TeamId: results.insertId });
+  });
+});
+
+
+router.get('/get_teams', (req, res) => {
+  const query = "SELECT * FROM teams";
+
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching teams:", err);
+      return res.status(500).json({ Status: false, Error: "Error fetching teams." });
+    }
+
+    // Parse team_members JSON to make it easier to work with in the frontend
+    const teams = results.map(team => ({
+      ...team,
+      team_members: JSON.parse(team.team_members) // Parse the JSON field to get employee IDs
+    }));
+
+    res.json({ Status: true, Result: teams });
+  });
+});
+
+
+router.get("/get_team/:team_id", (req, res) => {
+  const { team_id } = req.params;
+  const sql = "SELECT * FROM teams WHERE team_id = ?";
+  
+  connection.query(sql, [team_id], (err, result) => {
+    if (err) {
+      console.error("Error fetching team:", err);
+      return res.status(500).json({ Status: false, Error: "Error fetching team" });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ Status: false, Error: "Team not found" });
+    }
+
+    return res.json({ Status: true, Result: result[0] }); // Return the team details as JSON
+  });
+});
+
+
+// Update team details
+router.put("/edit_team/:team_id", (req, res) => {
+  const { team_id } = req.params;
+  const { team_name, team_members } = req.body;
+
+  // Check for required fields in the request body
+  if (!team_name || !team_members) {
+    return res.status(400).json({ Status: false, Error: "Missing required fields" });
+  }
+
+  const sql = `
+    UPDATE teams
+    SET team_name = ?, team_members = ?
+    WHERE team_id = ?
+  `;
+  
+  const values = [team_name, JSON.stringify(team_members), team_id]; // team_members will be stored as a JSON string
+  
+  connection.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("Query Error:", err);
+      return res.status(500).json({ Status: false, Error: "Query Error" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ Status: false, Error: "Team not found" });
+    }
+
+    return res.json({ Status: true, Message: "Team updated successfully" });
+  });
+});
 
 
 
