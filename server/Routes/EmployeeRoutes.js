@@ -128,6 +128,77 @@ router.get("/get_task", verifyToken, (req, res) => {
   });
 });
 
+router.get('/get_today_tasks', verifyToken, (req, res) => {
+  const { id: employeeId } = req.user; // Extract employeeId from the token
+
+  // Get today's date in the format YYYY-MM-DD
+  const today = new Date().toISOString().split('T')[0];
+
+  // Query to fetch tasks created today for the logged-in employee
+  const query = `
+    SELECT id AS taskId, title, description, deadline, priority, status, created_at
+    FROM work_allocation
+    WHERE employee_id = ?
+    AND DATE(created_at) = ?
+    ORDER BY created_at DESC;
+  `;
+
+  connection.query(query, [employeeId, today], (err, results) => {
+    if (err) {
+      console.error("Error fetching today's tasks:", err);
+      return res.status(500).json({ Status: false, Error: "An error occurred while fetching today's tasks." });
+    }
+
+    if (results.length > 0) {
+      return res.json({
+        Status: true,
+        Result: results
+      });
+    } else {
+      return res.json({
+        Status: false,
+        Message: "No tasks found for today."
+      });
+    }
+  });
+});
+
+// Get tasks for the logged-in employee excluding today's tasks
+router.get('/get_all_tasks', verifyToken, (req, res) => {
+  const { id: employeeId } = req.user; // Extract employeeId from the token
+
+  // Get today's date in the format YYYY-MM-DD
+  const today = new Date().toISOString().split('T')[0];
+
+  // Query to fetch tasks created except today for the logged-in employee
+  const query = `
+    SELECT id AS taskId, title, description, deadline, priority, status, created_at
+    FROM work_allocation
+    WHERE employee_id = ?
+    AND DATE(created_at) != ?
+    ORDER BY created_at DESC;
+  `;
+
+  connection.query(query, [employeeId, today], (err, results) => {
+    if (err) {
+      console.error("Error fetching tasks:", err);
+      return res.status(500).json({ Status: false, Error: "An error occurred while fetching tasks." });
+    }
+
+    if (results.length > 0) {
+      return res.json({
+        Status: true,
+        Result: results
+      });
+    } else {
+      return res.json({
+        Status: false,
+        Message: "No tasks found except today's tasks."
+      });
+    }
+  });
+});
+
 
 // Backend: Update task status
 router.put("/update_task_status/:taskId", (req, res) => {
@@ -269,7 +340,7 @@ router.get("/about_employee", verifyToken, (req, res) => {
   });
 });
 
-  
+
   
 
 export { router as employeeRouter };
