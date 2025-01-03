@@ -21,6 +21,16 @@ const EmployeeDetails = () => {
       });
   }, [employeeId]);
 
+  const handleResumeClick = () => {
+    if (employee.resume) {
+      // Assuming employee.resume contains the path to the resume file
+      window.open(`http://localhost:3000/uploads/resumes/${employee.resume}`, '_blank');
+    } else {
+      alert('No resume available for this employee');
+    }
+  };
+  
+
   if (!employee) {
     return <p>Loading employee details...</p>;
   }
@@ -41,6 +51,17 @@ const EmployeeDetails = () => {
         <p className="text-gray-600">Skills: {employee.skills}</p>
         <p className="text-gray-600">Certifications: {employee.certifications}</p>
       </div>
+
+      {employee.resume && (
+        <div className="mt-4">
+          <button
+            onClick={handleResumeClick}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            View Resume
+          </button>
+        </div>
+      )}
     </div>
   );
 };

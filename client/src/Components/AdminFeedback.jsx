@@ -70,6 +70,7 @@ const AdminFeedback = () => {
       <table className="min-w-full table-auto border-collapse bg-white shadow-lg rounded-lg">
         <thead>
           <tr className="bg-gray-100 text-gray-600">
+            <th className="px-4 py-2 text-left">Employee ID</th> {/* New column for employee_id */}
             <th className="px-4 py-2 text-left">Feedback Type</th>
             <th className="px-4 py-2 text-left">Description</th>
             <th className="px-4 py-2 text-left">Priority</th>
@@ -81,6 +82,7 @@ const AdminFeedback = () => {
         <tbody>
           {feedbackList.map((feedback) => (
             <tr key={feedback.id} className="border-t hover:bg-gray-50">
+              <td className="px-4 py-2">{feedback.employee_id}</td> {/* Display employee_id */}
               <td className="px-4 py-2">{feedback.feedback_type}</td>
               <td className="px-4 py-2">{feedback.description}</td>
               <td className="px-4 py-2">{feedback.priority}</td>
