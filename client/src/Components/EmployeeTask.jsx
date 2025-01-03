@@ -6,6 +6,8 @@ const EmployeeTask = () => {
   const [todayTasks, setTodayTasks] = useState([]); // Today's tasks
   const [error, setError] = useState("");
   const [showAllTasks, setShowAllTasks] = useState(false); // Toggle for all tasks
+  const [selectedTask, setSelectedTask] = useState(null); // Store the selected task for viewing description
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility state
 
   // Helper to extract employee ID
   const getLoggedInEmployeeId = () => {
@@ -33,8 +35,6 @@ const EmployeeTask = () => {
           }
         );
 
-      //  console.log("Today's Tasks Response:", todayResponse.data); // Log today's tasks response
-
         if (todayResponse.data.Status) {
           setTodayTasks(todayResponse.data.Result); // Store today's tasks
         } else {
@@ -48,8 +48,6 @@ const EmployeeTask = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-
-      //  console.log("All Tasks Response:", allResponse.data); // Log all tasks response
 
         if (allResponse.data.Status) {
           // Filter out today's tasks from all tasks
@@ -68,6 +66,57 @@ const EmployeeTask = () => {
 
     fetchTasks();
   }, [todayTasks]); // Adding `todayTasks` to dependency to ensure filtering works correctly
+
+  // Function to handle opening the view task modal
+  const handleViewTask = (task) => {
+    setSelectedTask(task); // Store selected task to show its description
+    setIsModalOpen(true); // Open the modal
+  };
+
+  // Function to close the modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false); // Close the modal
+    setSelectedTask(null); // Clear selected task
+  };
+
+  // Function to handle status change to "Completed"
+  const handleStatusChange = async (taskId) => {
+    const token = localStorage.getItem("userToken");
+    if (!token) {
+      setError("Unable to retrieve user token. Please log in.");
+      return;
+    }
+
+    try {
+      const response = await axios.put(
+        `http://localhost:3000/update_task_status/${taskId}`,
+        { status: "Completed" },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.data.Status) {
+        // Update the status in local state to reflect the change immediately
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.taskId === taskId ? { ...task, status: "Completed" } : task
+          )
+        );
+        setTodayTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.taskId === taskId ? { ...task, status: "Completed" } : task
+          )
+        );
+        setError(""); // Clear error if the update was successful
+      } else {
+        setError("Failed to update task status.");
+      }
+    } catch (err) {
+      console.error("Error updating status:", err);
+      setError("An error occurred while updating the task status.");
+    }
+  };
 
   return (
     <div className="p-6">
@@ -118,10 +167,16 @@ const EmployeeTask = () => {
                   </td>
                   <td className="px-4 py-2">{task.status}</td>
                   <td className="px-4 py-2">
+                    <button
+                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                      onClick={() => handleViewTask(task)} // Open modal with task description
+                    >
+                      View Task
+                    </button>
                     {task.status !== "Completed" && (
                       <button
-                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                        onClick={() => handleStatusChange(task.taskId)}
+                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ml-2"
+                        onClick={() => handleStatusChange(task.taskId)} // Mark as completed
                       >
                         Mark as Completed
                       </button>
@@ -157,10 +212,16 @@ const EmployeeTask = () => {
                     <td className="px-4 py-2">{task.priority}</td>
                     <td className="px-4 py-2">{task.status}</td>
                     <td className="px-4 py-2">
+                      <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        onClick={() => handleViewTask(task)} // Open modal with task description
+                      >
+                        View Task
+                      </button>
                       {task.status !== "Completed" && (
                         <button
-                          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                          onClick={() => handleStatusChange(task.taskId)}
+                          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ml-2"
+                          onClick={() => handleStatusChange(task.taskId)} // Mark as completed
                         >
                           Mark as Completed
                         </button>
@@ -171,6 +232,24 @@ const EmployeeTask = () => {
               })}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* Modal for Viewing Task Description */}
+      {isModalOpen && selectedTask && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-bold">Task Description</h3>
+              <button
+                className="text-red-500"
+                onClick={handleCloseModal} // Close the modal
+              >
+                Close
+              </button>
+            </div>
+            <p className="mt-4">{selectedTask.description}</p>
+          </div>
         </div>
       )}
     </div>

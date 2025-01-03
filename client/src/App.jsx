@@ -31,6 +31,8 @@ import EmployeeProfile from './Components/EmployeeProfile';
 import MyTeam from './Components/MyTeam';
 import ManageAnnouncements from './Components/ManageAnnouncements';
 import Admins from './Components/Admins';
+import AddAdmin from './Components/AddAdmin';
+import TeamWorkAllocation from './Components/TeamWorkAllocation';
 
 function App() {
   return (
@@ -57,6 +59,8 @@ function App() {
           <Route path="feedback" element={<AdminFeedback/>} />
           <Route path="manage_announcements" element={<ManageAnnouncements/>} />
           <Route path="admins" element={<Admins/>} />
+          <Route path="add_admin" element={<AddAdmin/>} />
+          <Route path="team_work_allocation" element={<TeamWorkAllocation/>} />
         </Route>
 
         {/* User (Employee) Routes */}

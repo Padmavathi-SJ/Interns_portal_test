@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaTasks, FaTrash, FaEdit } from "react-icons/fa"; // Icons from react-icons
+import { FaTasks, FaTrash, FaEdit, FaUsers } from "react-icons/fa"; // Added FaUsers for team work icon
 import axios from "axios";
 
 const WorkAllocation = () => {
@@ -37,6 +37,10 @@ const WorkAllocation = () => {
     navigate("/admin-dashboard/allocate_work");
   };
 
+  const handleTeamNavigation = () => {
+    navigate("/admin-dashboard/team_work_allocation");
+  };
+
   const handleDelete = (taskId) => {
     axios.delete(`http://localhost:3000/auth/delete_task/${taskId}`)
       .then((response) => {
@@ -56,14 +60,32 @@ const WorkAllocation = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <div className="p-6 bg-white shadow-lg rounded-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 flex items-center space-x-4" onClick={handleNavigation}>
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+      {/* Individual Work Allocation Container */}
+      <div
+        className="p-6 bg-white shadow-lg rounded-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 flex items-center space-x-4"
+        onClick={handleNavigation}
+      >
         <div className="p-4 bg-indigo-100 rounded-full">
           <FaTasks className="text-indigo-600 text-3xl" />
         </div>
         <div>
           <h2 className="text-xl font-semibold text-gray-800">Allocate Work</h2>
           <p className="text-gray-500">Click here to allocate tasks to employees.</p>
+        </div>
+      </div>
+
+      {/* Team Work Allocation Container */}
+      <div
+        className="p-6 bg-white shadow-lg rounded-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 flex items-center space-x-4 mt-6"
+        onClick={handleTeamNavigation}
+      >
+        <div className="p-4 bg-green-100 rounded-full">
+          <FaUsers className="text-green-600 text-3xl" />
+        </div>
+        <div>
+          <h2 className="text-xl font-semibold text-gray-800">Allocate Work for a Team</h2>
+          <p className="text-gray-500">Click here to allocate tasks for a team.</p>
         </div>
       </div>
 
