@@ -30,6 +30,7 @@ import EditTeam from './Components/EditTeam';
 import EmployeeProfile from './Components/EmployeeProfile';
 import MyTeam from './Components/MyTeam';
 import ManageAnnouncements from './Components/ManageAnnouncements';
+import Admins from './Components/Admins';
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
           <Route path="leave" element={<Leave />} />
           <Route path="feedback" element={<AdminFeedback/>} />
           <Route path="manage_announcements" element={<ManageAnnouncements/>} />
+          <Route path="admins" element={<Admins/>} />
         </Route>
 
         {/* User (Employee) Routes */}

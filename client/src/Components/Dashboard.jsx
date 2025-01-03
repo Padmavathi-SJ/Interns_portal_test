@@ -48,6 +48,11 @@ const Dashboard = () => {
             Feedback
             </Link>
           </li>
+          <li className="mb-4">
+            <Link to="/admin-dashboard/admins" className="hover:text-indigo-200 transition-colors">
+            Admins
+            </Link>
+          </li>
           <li className="mt-8 border-t border-indigo-700 pt-4">
             <Link to="/AdminLogin" className="hover:text-indigo-200 transition-colors">
               Logout

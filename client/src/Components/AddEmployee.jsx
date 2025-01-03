@@ -16,7 +16,10 @@ const AddEmployee = () => {
     graduation_year: '',
     skills: '',
     certifications: '',
+    mobile_no: '', // Added mobile_no field
+    address: '',    // Added address field
   });
+  
 
   const [departments, setDepartments] = useState([]);
   const navigate = useNavigate();
@@ -41,17 +44,15 @@ const AddEmployee = () => {
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Validate required fields
-    const { name, email, password, role, department_id, salary } = employee;
-    if (!name || !email || !password || !role || !department_id || !salary) {
-      alert('Please fill in all required fields.');
-      return;
-    }
-
-    axios.post('http://localhost:3000/auth/add_employee', employee, {
+  
+    const formData = new FormData();
+    Object.keys(employee).forEach((key) => {
+      formData.append(key, employee[key]);
+    });
+  
+    axios.post('http://localhost:3000/auth/add_employee', formData, {
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'multipart/form-data',
       },
     })
       .then((response) => {
@@ -67,7 +68,8 @@ const AddEmployee = () => {
         alert('Failed to add employee. Check console for details.');
       });
   };
-
+  
+  
   return (
     <div className="p-6 bg-white shadow-lg rounded-lg max-w-2xl mx-auto">
       <h2 className="text-2xl font-semibold text-gray-800 mb-4">Add New Employee</h2>
@@ -222,6 +224,54 @@ const AddEmployee = () => {
             rows="3"
           />
         </div>
+        <div className="mb-4">
+  <label htmlFor="mobile_no" className="block text-sm font-medium text-gray-700">Mobile Number</label>
+  <input
+    type="text"
+    name="mobile_no"
+    value={employee.mobile_no}
+    onChange={(e) => setEmployee({ ...employee, mobile_no: e.target.value })}
+    className="w-full px-4 py-2 mt-1 border rounded-md"
+    required
+  />
+</div>
+
+<div className="mb-4">
+  <label htmlFor="address" className="block text-sm font-medium text-gray-700">Address</label>
+  <textarea
+    name="address"
+    value={employee.address}
+    onChange={(e) => setEmployee({ ...employee, address: e.target.value })}
+    className="w-full px-4 py-2 mt-1 border rounded-md"
+    rows="3"
+    required
+  ></textarea>
+</div>
+
+<div className="mb-4">
+  <label htmlFor="resume" className="block text-sm font-medium text-gray-700">Resume</label>
+  <input
+    type="file"
+    name="resume"
+    accept=".pdf,.doc,.docx"
+    onChange={(e) => setEmployee({ ...employee, resume: e.target.files[0] })}
+    className="w-full px-4 py-2 mt-1 border rounded-md"
+  />
+</div>
+
+<div className="mb-4">
+  <label htmlFor="profile_img" className="block text-sm font-medium text-gray-700">Profile Image</label>
+  <input
+    type="file"
+    name="profile_img"
+    accept="image/*"
+    onChange={(e) => setEmployee({ ...employee, profile_img: e.target.files[0] })}
+    className="w-full px-4 py-2 mt-1 border rounded-md"
+  />
+</div>
+
+
+
 
         <button
           type="submit"
