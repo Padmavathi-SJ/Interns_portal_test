@@ -3,6 +3,23 @@ import connection from "../DB/db.js";
 import jwt from "jsonwebtoken";
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
+import multer from 'multer';
+
+
+// Configure Multer for file storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const folder = file.fieldname === 'profile_img' ? 'uploads/profile_images/' : 'uploads/resumes/';
+    cb(null, folder); // Different folders for profile images and resumes
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = `${Date.now()}-${file.originalname}`;
+    cb(null, uniqueName); // Ensure unique filenames
+  },
+});
+
+const upload = multer({ storage });
+
 
 dotenv.config();
 
@@ -42,19 +59,25 @@ router.get('/get_employees_by_department/:departmentId', (req, res) => {
 
   const sql = `SELECT * FROM employees WHERE department_id = ?`;
 
+  console.log('Received departmentId:', departmentId);
+
   connection.query(sql, [departmentId], (err, result) => {
     if (err) {
       console.error('Database Query Error:', err);
       return res.status(500).json({ Status: false, Error: 'Database Query Error' });
     }
 
+    console.log('SQL Query:', sql);
+    console.log('Query Result:', result);
+
     if (result.length > 0) {
       res.json({ Status: true, Result: result });
     } else {
-      res.json({ Status: false, Error: 'No employees found for this department' });
+      res.json({ Status: false, Message: 'No employees found for this department' });
     }
   });
 });
+
 
 // Route to get employee details by employee_id
 router.get('/get_employee_details/:employeeId', (req, res) => {
@@ -176,7 +199,10 @@ router.delete("/delete_department/:departmentId", (req, res) => {
 });
 
 
-router.post("/add_employee", (req, res) => {
+router.post('/add_employee', upload.fields([
+  { name: 'resume', maxCount: 1 },
+  { name: 'profile_img', maxCount: 1 }
+]), (req, res) => {
   const {
     name,
     email,
@@ -190,20 +216,24 @@ router.post("/add_employee", (req, res) => {
     graduation_year,
     skills,
     certifications,
+    mobile_no,
+    address,
   } = req.body;
 
-  // Validate required fields
-  if (!name || !email || !password || !role || !department_id || !salary || !degree || !university || !graduation_year) {
-    return res.status(400).json({ Status: false, Error: "Missing required fields" });
+  if (!name || !email || !password || !role || !department_id || !salary || !degree || !university || !graduation_year || !mobile_no || !address) {
+    return res.status(400).json({ Status: false, Error: 'Missing required fields' });
   }
 
-  const sql = `INSERT INTO employees (name, email, password, role, experience, department_id, salary, degree, university, graduation_year, skills, certifications) 
-               VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`;
+  const resume = req.files?.resume?.[0]?.path || null;
+  const profileImg = req.files?.profile_img?.[0]?.path || null;
+
+  const sql = `INSERT INTO employees (name, email, password, role, experience, department_id, salary, degree, university, graduation_year, skills, certifications, mobile_no, address, resume, profile_img) 
+               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
 
   bcrypt.hash(password, 10, (err, hash) => {
     if (err) {
-      console.error("Password Hashing Error:", err);
-      return res.status(500).json({ Status: false, Error: "Password Hashing Error" });
+      console.error('Password Hashing Error:', err);
+      return res.status(500).json({ Status: false, Error: 'Password Hashing Error' });
     }
 
     const values = [
@@ -211,25 +241,31 @@ router.post("/add_employee", (req, res) => {
       email,
       hash,
       role,
-      experience || 0, // Default experience to 0 if not provided
+      experience || 0,
       department_id,
       salary,
       degree,
       university,
       graduation_year,
-      skills || '', // Default to empty string if not provided
-      certifications || '', // Default to empty string if not provided
+      skills || '',
+      certifications || '',
+      mobile_no,
+      address,
+      resume,
+      profileImg,
     ];
 
     connection.query(sql, values, (err, result) => {
       if (err) {
-        console.error("Database Query Error:", err);
-        return res.status(500).json({ Status: false, Error: "Database Query Error" });
+        console.error('Database Query Error:', err);
+        return res.status(500).json({ Status: false, Error: 'Database Query Error' });
       }
       return res.json({ Status: true, Result: result });
     });
   });
 });
+
+
 
 
 router.get("/get_employees", (req, res) => {
@@ -747,6 +783,31 @@ router.put("/edit_team/:team_id", (req, res) => {
   });
 });
 
+router.delete("/delete_team/:team_id", (req, res) => {
+  const { team_id } = req.params;
+
+  if (!team_id) {
+    return res.status(400).json({ Status: false, Error: "Team ID is required" });
+  }
+
+  const sql = `
+    DELETE FROM teams
+    WHERE team_id = ?
+  `;
+
+  connection.query(sql, [team_id], (err, result) => {
+    if (err) {
+      console.error("Query Error:", err);
+      return res.status(500).json({ Status: false, Error: "Database query error" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ Status: false, Error: "Team not found" });
+    }
+
+    return res.json({ Status: true, Message: "Team deleted successfully" });
+  });
+});
 
 
 export { router as adminRouter };
