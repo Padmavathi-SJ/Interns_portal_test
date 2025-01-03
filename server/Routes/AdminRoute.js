@@ -27,23 +27,75 @@ const upload = multer({ storage });
 
 
 router.post("/adminLogin", (req, res) => {
-  const sql = "SELECT * FROM admin WHERE email = ? AND password = ?";
-  connection.query(sql, [req.body.email, req.body.password], (err, result) => {
+  const sql = "SELECT * FROM admin WHERE email = ?";
+  connection.query(sql, [req.body.email], async (err, result) => {
     if (err) return res.json({ loginStatus: false, Error: "Query error" });
+    
     if (result.length > 0) {
-      const email = result[0].email;
-      const token = jwt.sign(
-        { role: "admin", email: email },
-        JWT_SECRET, // Use JWT_SECRET from environment variable
-        { expiresIn: "1d" }
-      );
-      res.cookie("token", token);
-      return res.json({ loginStatus: true });
+      // Retrieve stored hash from the database
+      const storedPasswordHash = result[0].password;
+      
+      // Compare the provided password with the stored hash using bcrypt
+      const isMatch = await bcrypt.compare(req.body.password, storedPasswordHash);
+
+      if (isMatch) {
+        const email = result[0].email;
+        const token = jwt.sign(
+          { role: "admin", email: email },
+          JWT_SECRET, // Use JWT_SECRET from environment variable
+          { expiresIn: "1d" }
+        );
+        res.cookie("token", token);
+        return res.json({ loginStatus: true });
+      } else {
+        return res.json({ loginStatus: false, Error: "Wrong email or password" });
+      }
     } else {
-      return res.json({ loginStatus: false, Error: "wrong email or password" });
+      return res.json({ loginStatus: false, Error: "Wrong email or password" });
     }
   });
 });
+
+
+// Fetch all admin details
+router.get('/admins', (req, res) => {
+  const sql = 'SELECT * FROM admin';
+  connection.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error fetching admins:', err);
+      return res.status(500).json({ Status: false, Error: 'Database Query Error' });
+    }
+    return res.json({ Status: true, Admins: results });
+  });
+});
+
+
+router.post('/add_admin', (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ Status: false, Error: 'Missing required fields' });
+  }
+
+  bcrypt.hash(password, 10, (err, hash) => {
+    if (err) {
+      console.error('Password Hashing Error:', err);
+      return res.status(500).json({ Status: false, Error: 'Password Hashing Error' });
+    }
+
+    const sql = 'INSERT INTO admin (email, password) VALUES (?, ?)';
+    const values = [email, hash];
+
+    connection.query(sql, values, (err, result) => {
+      if (err) {
+        console.error('Error inserting new admin:', err);
+        return res.status(500).json({ Status: false, Error: 'Database Query Error' });
+      }
+      return res.json({ Status: true, Result: result });
+    });
+  });
+});
+
 
 router.get("/get_departments", (req, res) => {
   const sql = "SELECT * FROM department";
@@ -839,6 +891,10 @@ router.delete("/delete_team/:team_id", (req, res) => {
     return res.json({ Status: true, Message: "Team deleted successfully" });
   });
 });
+
+
+
+
 
 
 export { router as adminRouter };
