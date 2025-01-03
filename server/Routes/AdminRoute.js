@@ -5,6 +5,11 @@ import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import multer from 'multer';
 
+dotenv.config();
+
+const router = express.Router();
+const JWT_SECRET = process.env.JWT_KEY;
+
 
 // Configure Multer for file storage
 const storage = multer.diskStorage({
@@ -20,11 +25,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-
-dotenv.config();
-
-const router = express.Router();
-const JWT_SECRET = process.env.JWT_KEY;
 
 router.post("/adminLogin", (req, res) => {
   const sql = "SELECT * FROM admin WHERE email = ? AND password = ?";
@@ -59,7 +59,7 @@ router.get('/get_employees_by_department/:departmentId', (req, res) => {
 
   const sql = `SELECT * FROM employees WHERE department_id = ?`;
 
-  console.log('Received departmentId:', departmentId);
+//  console.log('Received departmentId:', departmentId);
 
   connection.query(sql, [departmentId], (err, result) => {
     if (err) {
@@ -67,8 +67,8 @@ router.get('/get_employees_by_department/:departmentId', (req, res) => {
       return res.status(500).json({ Status: false, Error: 'Database Query Error' });
     }
 
-    console.log('SQL Query:', sql);
-    console.log('Query Result:', result);
+   // console.log('SQL Query:', sql);
+    // console.log('Query Result:', result);
 
     if (result.length > 0) {
       res.json({ Status: true, Result: result });
@@ -83,7 +83,7 @@ router.get('/get_employees_by_department/:departmentId', (req, res) => {
 router.get('/get_employee_details/:employeeId', (req, res) => {
   const { employeeId } = req.params;
 
-  const sql = `SELECT * FROM employees WHERE id = ?`;
+  const sql = `SELECT id, name, email, role, experience, department_id, salary, degree, university, graduation_year, skills, certifications, mobile_no, address, resume, profile_img FROM employees WHERE id = ?`;
 
   connection.query(sql, [employeeId], (err, result) => {
     if (err) {
@@ -92,7 +92,16 @@ router.get('/get_employee_details/:employeeId', (req, res) => {
     }
 
     if (result.length > 0) {
-      res.json({ Status: true, Result: result[0] }); // Return the first employee if found
+      const employeeDetails = result[0];
+
+      // Check if the employee has a resume (file) and return the URL or file path
+      if (employeeDetails.resume) {
+        employeeDetails.resume = `/uploads/resumes/${employeeDetails.resume}`; // Assuming resumes are stored in 'uploads/resumes' folder
+      } else {
+        employeeDetails.resume = null; // No resume uploaded
+      }
+
+      res.json({ Status: true, Result: employeeDetails });
     } else {
       res.json({ Status: false, Error: 'Employee not found' });
     }
@@ -132,45 +141,54 @@ router.delete("/delete_department/:departmentId", (req, res) => {
     const employeeIds = employees.map((emp) => emp.id);
 
     if (employeeIds.length > 0) {
-      // Delete work_allocation for employees in the department
-      const deleteWorkAllocationSql = "DELETE FROM work_allocation WHERE employee_id IN (?)";
-      connection.query(deleteWorkAllocationSql, [employeeIds], (err) => {
+      // Delete feedback for employees in the department
+      const deleteFeedbackSql = "DELETE FROM feedback WHERE employee_id IN (?)";
+      connection.query(deleteFeedbackSql, [employeeIds], (err) => {
         if (err) {
-          console.error("Error deleting work allocation:", err);
-          return res.json({ Status: false, Error: "Error deleting work allocation" });
+          console.error("Error deleting feedback:", err);
+          return res.json({ Status: false, Error: "Error deleting feedback" });
         }
 
-        // Delete leave_requests for employees in the department
-        const deleteLeaveRequestsSql = "DELETE FROM leave_requests WHERE employee_id IN (?)";
-        connection.query(deleteLeaveRequestsSql, [employeeIds], (err) => {
+        // Delete work_allocation for employees in the department
+        const deleteWorkAllocationSql = "DELETE FROM work_allocation WHERE employee_id IN (?)";
+        connection.query(deleteWorkAllocationSql, [employeeIds], (err) => {
           if (err) {
-            console.error("Error deleting leave requests:", err);
-            return res.json({ Status: false, Error: "Error deleting leave requests" });
+            console.error("Error deleting work allocation:", err);
+            return res.json({ Status: false, Error: "Error deleting work allocation" });
           }
 
-          // Delete employees in the department
-          const deleteEmployeesSql = "DELETE FROM employees WHERE department_id = ?";
-          connection.query(deleteEmployeesSql, [departmentId], (err) => {
+          // Delete leave_requests for employees in the department
+          const deleteLeaveRequestsSql = "DELETE FROM leave_requests WHERE employee_id IN (?)";
+          connection.query(deleteLeaveRequestsSql, [employeeIds], (err) => {
             if (err) {
-              console.error("Error deleting employees:", err);
-              return res.json({ Status: false, Error: "Error deleting employees" });
+              console.error("Error deleting leave requests:", err);
+              return res.json({ Status: false, Error: "Error deleting leave requests" });
             }
 
-            // Finally, delete the department
-            const deleteDepartmentSql = "DELETE FROM department WHERE id = ?";
-            connection.query(deleteDepartmentSql, [departmentId], (err, result) => {
+            // Delete employees in the department
+            const deleteEmployeesSql = "DELETE FROM employees WHERE department_id = ?";
+            connection.query(deleteEmployeesSql, [departmentId], (err) => {
               if (err) {
-                console.error("Error deleting department:", err);
-                return res.json({ Status: false, Error: "Error deleting department" });
+                console.error("Error deleting employees:", err);
+                return res.json({ Status: false, Error: "Error deleting employees" });
               }
 
-              if (result.affectedRows === 0) {
-                return res.json({ Status: false, Message: "Department not found" });
-              }
+              // Finally, delete the department
+              const deleteDepartmentSql = "DELETE FROM department WHERE id = ?";
+              connection.query(deleteDepartmentSql, [departmentId], (err, result) => {
+                if (err) {
+                  console.error("Error deleting department:", err);
+                  return res.json({ Status: false, Error: "Error deleting department" });
+                }
 
-              return res.json({
-                Status: true,
-                Message: "Department, employees, leave requests, and work allocations deleted successfully",
+                if (result.affectedRows === 0) {
+                  return res.json({ Status: false, Message: "Department not found" });
+                }
+
+                return res.json({
+                  Status: true,
+                  Message: "Department and all related data deleted successfully",
+                });
               });
             });
           });
@@ -197,6 +215,7 @@ router.delete("/delete_department/:departmentId", (req, res) => {
     }
   });
 });
+
 
 
 router.post('/add_employee', upload.fields([
@@ -291,39 +310,49 @@ router.get("/get_employees", (req, res) => {
 router.delete("/delete_employee/:employeeId", (req, res) => {
   const { employeeId } = req.params;
 
-  // Delete work_allocation related to the employee
-  const deleteWorkAllocationSql = "DELETE FROM work_allocation WHERE employee_id = ?";
-  connection.query(deleteWorkAllocationSql, [employeeId], (err) => {
+  // Delete feedback related to the employee
+  const deleteFeedbackSql = "DELETE FROM feedback WHERE employee_id = ?";
+  connection.query(deleteFeedbackSql, [employeeId], (err) => {
     if (err) {
-      console.error("Error deleting work allocation:", err);
-      return res.json({ Status: false, Error: "Error deleting work allocation" });
+      console.error("Error deleting feedback:", err);
+      return res.json({ Status: false, Error: "Error deleting feedback" });
     }
 
-    // Delete leave_requests related to the employee
-    const deleteLeaveRequestsSql = "DELETE FROM leave_requests WHERE employee_id = ?";
-    connection.query(deleteLeaveRequestsSql, [employeeId], (err) => {
+    // Delete work_allocation related to the employee
+    const deleteWorkAllocationSql = "DELETE FROM work_allocation WHERE employee_id = ?";
+    connection.query(deleteWorkAllocationSql, [employeeId], (err) => {
       if (err) {
-        console.error("Error deleting leave requests:", err);
-        return res.json({ Status: false, Error: "Error deleting leave requests" });
+        console.error("Error deleting work allocation:", err);
+        return res.json({ Status: false, Error: "Error deleting work allocation" });
       }
 
-      // Finally, delete the employee
-      const deleteEmployeeSql = "DELETE FROM employees WHERE id = ?";
-      connection.query(deleteEmployeeSql, [employeeId], (err, result) => {
+      // Delete leave_requests related to the employee
+      const deleteLeaveRequestsSql = "DELETE FROM leave_requests WHERE employee_id = ?";
+      connection.query(deleteLeaveRequestsSql, [employeeId], (err) => {
         if (err) {
-          console.error("Error deleting employee:", err);
-          return res.json({ Status: false, Error: "Error deleting employee" });
+          console.error("Error deleting leave requests:", err);
+          return res.json({ Status: false, Error: "Error deleting leave requests" });
         }
 
-        if (result.affectedRows === 0) {
-          return res.json({ Status: false, Message: "Employee not found" });
-        }
+        // Finally, delete the employee
+        const deleteEmployeeSql = "DELETE FROM employees WHERE id = ?";
+        connection.query(deleteEmployeeSql, [employeeId], (err, result) => {
+          if (err) {
+            console.error("Error deleting employee:", err);
+            return res.json({ Status: false, Error: "Error deleting employee" });
+          }
 
-        return res.json({ Status: true, Message: "Employee and related data deleted successfully" });
+          if (result.affectedRows === 0) {
+            return res.json({ Status: false, Message: "Employee not found" });
+          }
+
+          return res.json({ Status: true, Message: "Employee and all related data deleted successfully" });
+        });
       });
     });
   });
 });
+
 
 
 router.put("/edit_employee/:employeeId", (req, res) => {
@@ -399,6 +428,8 @@ router.put("/edit_employee/:employeeId", (req, res) => {
     return res.json({ Status: true, Result: result });
   });
 });
+
+
 
 
 router.get("/get_employee_by_id/:employeeId", (req, res) => {
