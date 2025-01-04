@@ -199,7 +199,6 @@ router.get('/get_all_tasks', verifyToken, (req, res) => {
   });
 });
 
-
 // Backend: Update task status
 router.put("/update_task_status/:taskId", (req, res) => {
   const { taskId } = req.params;
@@ -223,49 +222,59 @@ router.put("/update_task_status/:taskId", (req, res) => {
   });
 });
 
+// Employee applying for leave
 router.post("/apply_leave", (req, res) => {
-  const { employee_id, leave_type, start_date, end_date, reason } = req.body;
+  // Destructure required fields from the request body
+  const { employee_id, leave_type, from_date, to_date, from_time, to_time, Reason } = req.body;
 
-  if (!employee_id || !leave_type || !start_date || !end_date || !reason) {
+  // Validate the required fields
+  if (!employee_id || !leave_type || !from_date || !to_date || !from_time || !to_time || !Reason) {
     return res.status(400).json({ Status: false, Error: "All fields are required." });
   }
 
+  // SQL query to insert leave request
   const sql = `
-    INSERT INTO leave_requests (employee_id, leave_type, start_date, end_date, reason, status)
-    VALUES (?, ?, ?, ?, ?, 'Pending')
+    INSERT INTO leave_requests (employee_id, leave_type, from_date, to_date, from_time, to_time, Reason, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending')
   `;
 
+  // Execute the query
   connection.query(
     sql,
-    [employee_id, leave_type, start_date, end_date, reason],
+    [employee_id, leave_type, from_date, to_date, from_time, to_time, Reason],
     (err, result) => {
       if (err) {
         console.error("Query Error:", err);
         return res.status(500).json({ Status: false, Error: "Failed to apply leave." });
       }
-      // Send back the status along with the successful response
+      // Send the success response
       return res.json({ Status: true, Result: result, status: 'Pending' });
     }
   );
 });
 
-// Assuming you have a logged-in user and can get the employee_id from the session or JWT
-router.get("/leave_request", verifyToken, (req, res) => {
-  const { id: employeeId } = req.user; // Extract employeeId from the verified token
 
-  // Query to fetch leave requests for the logged-in employee
+// Fetch leave requests for logged-in employee
+router.get("/leave_request", verifyToken, (req, res) => {
+  // Extract employeeId from the verified token
+  const { id: employeeId } = req.user;
+
+  // SQL query to fetch leave requests for the logged-in employee
   const query = "SELECT * FROM leave_requests WHERE employee_id = ?";
 
+  // Execute the query
   connection.query(query, [employeeId], (err, results) => {
     if (err) {
       console.error("Error fetching leave requests:", err);
       return res.status(500).json({ Status: false, Error: "Error fetching leave requests" });
     }
 
+    // Check if there are any results
     if (results.length === 0) {
       return res.json({ Status: false, Message: "You have not applied for any leaves yet." });
     }
 
+    // Send the response with the leave requests
     res.json({ Status: true, Result: results });
   });
 });
@@ -341,6 +350,158 @@ router.get("/about_employee", verifyToken, (req, res) => {
 });
 
 
+router.get("/get_my_team", verifyToken, (req, res) => {
+  const { id: employeeId } = req.user;
+
+  const query = `
+    SELECT team_id, team_name, team_members
+    FROM teams
+    WHERE JSON_CONTAINS(team_members, JSON_ARRAY(?), '$');
+  `;
+
+  connection.query(query, [employeeId], (err, results) => {
+    if (err) {
+      console.error("Error fetching team details:", err);
+      return res.status(500).json({ Status: false, Error: "Internal server error." });
+    }
+
+    if (results.length === 0) {
+      return res.json({ Status: false, Message: "You are not part of any team." });
+    }
+
+    res.json({ Status: true, Result: results });
+  });
+});
+
+
+router.get("/get_team_tasks/:teamId", verifyToken, (req, res) => {
+  const { teamId } = req.params;
+
+  const query = `
+    SELECT id, team_id, title, description, deadline, priority, status, created_at
+    FROM team_work_allocation
+    WHERE team_id = ?;
+  `;
+
+  connection.query(query, [teamId], (err, results) => {
+    if (err) {
+      console.error("Error fetching team tasks:", err);
+      return res.status(500).json({ Status: false, Error: "Internal server error." });
+    }
+
+    if (results.length === 0) {
+      return res.json({ Status: false, Message: "No tasks found for the team." });
+    }
+
+    res.json({ Status: true, Result: results });
+  });
+});
+
+// Router to fetch the number of teams the employee is part of
+router.get("/get_team_count", verifyToken, (req, res) => {
+  const { id: employeeId } = req.user;
+
+  const query = `
+    SELECT COUNT(*) AS team_count
+    FROM teams
+    WHERE JSON_CONTAINS(team_members, JSON_ARRAY(?), '$');
+  `;
+
+  connection.query(query, [employeeId], (err, results) => {
+    if (err) {
+      console.error("Error fetching team count:", err);
+      return res.status(500).json({ Status: false, Error: "Internal server error." });
+    }
+
+    const teamCount = results[0]?.team_count || 0;
+
+    res.json({ Status: true, Result: { teamCount } });
+  });
+});
+
+
+// Route to get leave dashboard data for an employee
+router.get("/leave_dashboard", verifyToken, (req, res) => {
+  const { id: employeeId } = req.user;
+
+  const currentMonth = new Date().getMonth() + 1; // Get current month (1-12)
+  const currentYear = new Date().getFullYear(); // Get current year
+
+  // Query to get leave data for the current month (Including Pending or Approved status if needed)
+  const query = `
+    SELECT leave_type, from_date, to_date 
+    FROM leave_requests 
+    WHERE employee_id = ? 
+    AND MONTH(from_date) = ? 
+    AND YEAR(from_date) = ? 
+    AND (status = 'Approved' OR status = 'Pending')  -- Include Pending status if needed
+  `;
   
+  connection.query(query, [employeeId, currentMonth, currentYear], (err, results) => {
+    if (err) {
+      console.error("Error fetching leave requests:", err);
+      return res.status(500).json({ Status: false, Error: "Error fetching leave requests" });
+    }
+
+    if (results.length === 0) {
+      return res.json({ Status: false, Message: "No leave data available for this month." });
+    }
+
+    let totalLeaveDays = 0;
+    let onDutyDays = 0;
+    let internalODDays = 0;
+    let internalTrainingDays = 0;
+    let presentDays = 0;
+
+    // Calculate leave, on-duty, internal OD, and internal training days
+    results.forEach((request) => {
+      const fromDate = new Date(request.from_date);
+      const toDate = new Date(request.to_date);
+
+      const leaveDays = (toDate - fromDate) / (1000 * 3600 * 24) + 1; // Calculate total leave days
+
+      switch (request.leave_type) {
+        case "ON DUTY":
+          onDutyDays += leaveDays;
+          break;
+        case "INTERNAL OD":
+          internalODDays += leaveDays;
+          break;
+        case "Internal Training":
+          internalTrainingDays += leaveDays;
+          break;
+        case "Leave":
+          totalLeaveDays += leaveDays;
+          break;
+        default:
+          break;
+      }
+    });
+
+    // Assuming a month has 30 days (this can be adjusted based on the actual month)
+    const totalDaysInMonth = 30;
+    presentDays = totalDaysInMonth - (totalLeaveDays + onDutyDays + internalODDays + internalTrainingDays);
+
+    // Calculate the percentage of present days
+    const presentPercentage = ((presentDays / totalDaysInMonth) * 100).toFixed(2);
+
+    return res.json({
+      Status: true,
+      Data: {
+        totalDaysInMonth,
+        totalLeaveDays,
+        onDutyDays,
+        internalODDays,
+        internalTrainingDays,
+        presentDays,
+        presentPercentage,
+      },
+    });
+  });
+});
+
+
+
+
 
 export { router as employeeRouter };

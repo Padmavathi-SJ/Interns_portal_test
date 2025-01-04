@@ -630,6 +630,24 @@ router.get("/leave_requests", (req, res) => {
   });
 });
 
+router.get("/leave_request_reason/:id", (req, res) => {
+  const leaveRequestId = req.params.id; // Fetch leave request id from the URL parameter
+  const sql = "SELECT Reason FROM leave_requests WHERE id = ?"; // Modify query to use leave request ID
+  
+  connection.query(sql, [leaveRequestId], (err, result) => {
+    if (err) {
+      console.error("Query Error:", err);
+      return res.json({ Status: false, Error: "Error fetching reason" });
+    }
+
+    if (result.length > 0) {
+      return res.json({ Status: true, Reason: result[0].Reason }); // Make sure to return the correct column name
+    } else {
+      return res.json({ Status: false, Error: "No reason found" });
+    }
+  });
+});
+
 // Approve or Reject a leave request
 router.put("/leave_requests/:id", (req, res) => {
   const { id } = req.params;
@@ -893,6 +911,30 @@ router.delete("/delete_team/:team_id", (req, res) => {
 });
 
 
+router.post("/allocate_team_work", (req, res) => {
+  const { team_id, title, description, deadline, priority, status } = req.body;
+
+  if (!team_id || !title || !deadline) {
+    return res.status(400).json({ Status: false, Message: "Invalid input." });
+  }
+
+  const query = `
+    INSERT INTO team_work_allocation (team_id, title, description, deadline, priority, status, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, NOW())
+  `;
+
+  connection.query(
+    query,
+    [team_id, title, description, deadline, priority, status],
+    (err, results) => {
+      if (err) {
+        console.error("Error allocating team work:", err);
+        return res.status(500).json({ Status: false, Error: "Error allocating work." });
+      }
+      res.json({ Status: true, Message: "Work allocated successfully." });
+    }
+  );
+});
 
 
 
