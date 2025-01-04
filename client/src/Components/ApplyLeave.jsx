@@ -7,40 +7,44 @@ const ApplyLeave = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [reason, setReason] = useState("");
+  const [fromTime, setFromTime] = useState(""); // New state for from time
+  const [toTime, setToTime] = useState(""); // New state for to time
   const [status, setStatus] = useState(""); // Added status state
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  const leaveTypes = ["Sick Leave", "Vacation", "Personal Leave", "Maternity Leave", "Other"];
+  const leaveTypes = ["Leave", "ON DUTY", "INTERNAL OD", "Internal Training"];
 
   const navigate = useNavigate(); // Create navigate function
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     // Confirmation alert
     const isConfirmed = window.confirm("Are you sure you want to apply for this leave?");
     if (!isConfirmed) {
-      return; // If the user clicks "Cancel", exit the function
+      return;
     }
-
+  
     const token = localStorage.getItem("userToken");
     if (!token) {
       setError("You must be logged in to apply for leave.");
       return;
     }
-
+  
     const employeeId = JSON.parse(atob(token.split(".")[1])).id;
-
+  
     try {
       const response = await axios.post(
         "http://localhost:3000/auth/apply_leave",
         {
           employee_id: employeeId,
           leave_type: leaveType,
-          start_date: startDate,
-          end_date: endDate,
-          reason: reason,
+          from_date: startDate,  // Use from_date and to_date (aligned with schema)
+          to_date: endDate,
+          from_time: fromTime,
+          to_time: toTime,
+          Reason: reason,  // Use Reason (case-sensitive to match the MySQL column)
         },
         {
           headers: {
@@ -48,18 +52,19 @@ const ApplyLeave = () => {
           },
         }
       );
-
+  
       if (response.data.Status) {
         setSuccessMessage("Leave request submitted successfully.");
-        setStatus("Pending");  // Set status to "Pending" after submission
+        setStatus("Pending");
         setLeaveType("");
         setStartDate("");
         setEndDate("");
         setReason("");
+        setFromTime("");
+        setToTime("");
         setError("");
-
-        // Navigate to "employee-dashboard/employee_leave" component after success
-        navigate('/employee-dashboard/employee_leave');  // Navigate to the EmployeeLeave component
+  
+        navigate('/employee-dashboard/employee_leave');
       } else {
         setError(response.data.Error || "Something went wrong.");
       }
@@ -99,7 +104,7 @@ const ApplyLeave = () => {
         </div>
 
         <div>
-          <label htmlFor="startDate" className="block text-gray-700">Start Date</label>
+          <label htmlFor="startDate" className="block text-gray-700">From Date</label>
           <input
             type="date"
             id="startDate"
@@ -111,12 +116,36 @@ const ApplyLeave = () => {
         </div>
 
         <div>
-          <label htmlFor="endDate" className="block text-gray-700">End Date</label>
+          <label htmlFor="fromTime" className="block text-gray-700">From Time</label>
+          <input
+            type="time"
+            id="fromTime"
+            value={fromTime}
+            onChange={(e) => setFromTime(e.target.value)}
+            className="w-full p-2 border rounded-lg"
+            required
+          />
+        </div>
+
+        <div>
+          <label htmlFor="endDate" className="block text-gray-700">To Date</label>
           <input
             type="date"
             id="endDate"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
+            className="w-full p-2 border rounded-lg"
+            required
+          />
+        </div>
+
+        <div>
+          <label htmlFor="toTime" className="block text-gray-700">To Time</label>
+          <input
+            type="time"
+            id="toTime"
+            value={toTime}
+            onChange={(e) => setToTime(e.target.value)}
             className="w-full p-2 border rounded-lg"
             required
           />
@@ -133,12 +162,11 @@ const ApplyLeave = () => {
           />
         </div>
 
-        <button
-          type="submit"
-          className="w-full p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300"
-        >
-          Submit Leave Request
-        </button>
+        <div className="text-center">
+          <button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600">
+            Submit Leave Request
+          </button>
+        </div>
       </form>
     </div>
   );

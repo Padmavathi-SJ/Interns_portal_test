@@ -33,6 +33,7 @@ import ManageAnnouncements from './Components/ManageAnnouncements';
 import Admins from './Components/Admins';
 import AddAdmin from './Components/AddAdmin';
 import TeamWorkAllocation from './Components/TeamWorkAllocation';
+import EmployeeTeamWork from './Components/EmployeeTeamWork';
 
 function App() {
   return (
@@ -76,6 +77,7 @@ function App() {
           <Route path="anouncements" element={<Anouncements />} />
           <Route path="my_profile" element={<EmployeeProfile/>} />
           <Route path="my_team" element={<MyTeam/>} />
+          <Route path="team_tasks/:teamId" element={<EmployeeTeamWork/>} />
         </Route>
       </Routes>
     </BrowserRouter>

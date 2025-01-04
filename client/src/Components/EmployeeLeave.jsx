@@ -18,7 +18,6 @@ const EmployeeLeave = () => {
           return;
         }
 
-        // Send request to backend to fetch leave requests for the logged-in employee
         const response = await axios.get("http://localhost:3000/auth/leave_request", {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -26,7 +25,7 @@ const EmployeeLeave = () => {
         if (response.data.Status) {
           setLeaveRequests(response.data.Result); // Set the leave requests in state
         } else {
-          setMessage(response.data.Message || "You have not applied for any leaves yet."); // Handle no leave requests case
+          setMessage(response.data.Message || "You have not applied for any leaves yet.");
         }
       } catch (err) {
         setError("An error occurred while fetching leave requests");
@@ -37,7 +36,6 @@ const EmployeeLeave = () => {
     fetchLeaveRequests();
   }, []); // Empty dependency array to run once when component mounts
 
-  // Display loading, error, or no leaves message if necessary
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -48,29 +46,16 @@ const EmployeeLeave = () => {
     );
   }
 
-  // Display no leaves message
-  if (message) {
-    return (
-      <div className="container mx-auto p-4">
-        <h2 className="text-center text-2xl font-semibold mb-6">Employee Leave Requests</h2>
-        <div className="text-center text-gray-600 mb-6">{message}</div>
-        <div className="text-center">
-          <button
-            onClick={() => navigate("/employee-dashboard/apply_leave")} // Navigate to ApplyLeave component
-            className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
-          >
-            Apply Leave
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Display leave requests in a table
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-center text-2xl font-semibold mb-6">Employee Leave Requests</h2>
 
+      {/* Message for no leave requests */}
+      {message && (
+        <div className="text-center text-gray-600 mb-6">{message}</div>
+      )}
+
+      {/* Table to display leave requests */}
       {leaveRequests.length === 0 ? (
         <div className="text-center text-gray-600">No leave requests found.</div>
       ) : (
@@ -78,8 +63,11 @@ const EmployeeLeave = () => {
           <thead>
             <tr className="bg-gray-100 text-gray-600">
               <th className="px-4 py-2 text-left">Leave Type</th>
-              <th className="px-4 py-2 text-left">Start Date</th>
-              <th className="px-4 py-2 text-left">End Date</th>
+              <th className="px-4 py-2 text-left">From Date</th>
+              <th className="px-4 py-2 text-left">From Time</th>
+              <th className="px-4 py-2 text-left">To Date</th>
+              <th className="px-4 py-2 text-left">To Time</th>
+              <th className="px-4 py-2 text-left">Reason</th>
               <th className="px-4 py-2 text-left">Status</th>
             </tr>
           </thead>
@@ -87,8 +75,11 @@ const EmployeeLeave = () => {
             {leaveRequests.map((request) => (
               <tr key={request.id} className="border-t hover:bg-gray-50">
                 <td className="px-4 py-2">{request.leave_type}</td>
-                <td className="px-4 py-2">{request.start_date}</td>
-                <td className="px-4 py-2">{request.end_date}</td>
+                <td className="px-4 py-2">{request.from_date}</td>
+                <td className="px-4 py-2">{request.from_time}</td>
+                <td className="px-4 py-2">{request.to_date}</td>
+                <td className="px-4 py-2">{request.to_time}</td>
+                <td className="px-4 py-2">{request.Reason}</td>
                 <td className="px-4 py-2">{request.status}</td>
               </tr>
             ))}
@@ -97,9 +88,9 @@ const EmployeeLeave = () => {
       )}
 
       {/* Apply Leave Button */}
-      <div className="mt-4 text-center">
+      <div className="text-center mt-6">
         <button
-          onClick={() => navigate("/employee-dashboard/apply_leave")} // Navigate to ApplyLeave component
+          onClick={() => navigate("/employee-dashboard/apply_leave")}
           className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
         >
           Apply Leave

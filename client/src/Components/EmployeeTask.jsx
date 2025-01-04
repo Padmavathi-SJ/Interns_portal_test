@@ -89,7 +89,7 @@ const EmployeeTask = () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:3000/update_task_status/${taskId}`,
+        `http://localhost:3000/auth/update_task_status/${taskId}`,
         { status: "Completed" },
         {
           headers: { Authorization: `Bearer ${token}` },
