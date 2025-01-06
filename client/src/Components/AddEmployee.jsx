@@ -270,9 +270,6 @@ const AddEmployee = () => {
   />
 </div>
 
-
-
-
         <button
           type="submit"
           className="w-full px-4 py-2 font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700"

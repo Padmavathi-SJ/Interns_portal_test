@@ -58,9 +58,6 @@ const UserLogin = () => {
                 {/* Right Section - Form */}
                 <div className="w-1/2 flex items-center justify-center p-8">
                     <div className="w-full max-w-md">
-                        <h2 className="text-3xl font-semibold text-center mb-6">
-                            Employee Login
-                        </h2>
                         <form onSubmit={handleSubmit}>
                             <div className="space-y-4">
                                 <input

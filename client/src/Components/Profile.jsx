@@ -82,7 +82,7 @@ const Profile = () => {
 
         {/* Employee Details */}
         <div className="ml-6 space-y-4 text-gray-600">
-          <p className="flex justify-between"><span>{id}</span></p>
+          <p className="flex justify-between"><span>12345678IT{id}</span></p>
           <p className="flex justify-between"><span>{name}</span></p>
           <p className="flex justify-between"><span>{department}</span></p>
           <p className="flex justify-between"><span>{role}</span></p>
