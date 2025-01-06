@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import axios from "axios";
+import { useParams } from "react-router-dom"; // <-- Correctly imported
 import profile from "../assets/profile.jpg"; // Import the default profile picture
 
 const Profile = () => {
@@ -37,7 +37,7 @@ const Profile = () => {
         });
 
         if (response.data.Status) {
-          setEmployeeDetails(response.data.Data);
+          setEmployeeDetails(response.data.Data); // Set the employee details
         } else {
           setError(response.data.Message || "Unable to fetch employee details");
         }
@@ -61,33 +61,54 @@ const Profile = () => {
   }
 
   if (!employeeDetails) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
-        <div className="text-gray-600 font-semibold">Loading employee details...</div>
-      </div>
-    );
+    return <div className="text-center text-gray-600">Loading...</div>;
   }
 
-  const { id, name, department, role, profile: employeeProfile } = employeeDetails;
+  const {
+    id,
+    name,
+    department,
+    role,
+    degree,
+    experience,
+    mobile_no,
+    skills,
+    profile: employeeProfile,
+  } = employeeDetails;
 
   return (
-    <div className="flex justify-center items-center h-[30vh] p-3">
-      <div className="flex items-center w-full max-w-4xl">
+    <div className="flex flex-col justify-start items-start p-6 w-full space-y-6">
+      <div className="flex flex-col md:flex-row w-full max-w-4xl space-x-6">
         {/* Profile Picture - Square */}
-        <div className="w-40 h-40 bg-gray-300 overflow-hidden border-5" style={{
+        <div className="w-40 h-40 bg-gray-300 overflow-hidden border-5 mb-4" style={{
           backgroundImage: `url(${employeeProfile || profile})`, // Use employee profile pic or default
           backgroundSize: "cover",
           backgroundPosition: "center",
         }} />
 
         {/* Employee Details */}
-        <div className="ml-6 space-y-4 text-gray-600">
-          <p className="flex justify-between"><span>12345678IT{id}</span></p>
-          <p className="flex justify-between"><span>{name}</span></p>
-          <p className="flex justify-between"><span>{department}</span></p>
-          <p className="flex justify-between"><span>{role}</span></p>
+        <div className="flex flex-col w-full text-gray-600">
+          {/* ID, Name, Dept, Role */}
+          <div className="flex flex-col space-y-2">
+            <p><span>12345678IT{id}</span></p>
+            <p><span>{name}</span></p>
+            <p><span>{department}</span></p>
+            <p><span>{role}</span></p>
+          </div>
         </div>
       </div>
+
+      {/* Remaining Details */}
+      <div className="bg-white dark:bg-gray-800  dark:border-gray-700  p-4 w-full">
+        <div className="flex flex-col space-y-2">
+          <p><span>Degree: {degree}</span></p>
+          <p><span>Experience: {experience} years</span></p>
+          <p><span>Mobile no: {mobile_no}</span></p>
+          <p><span>High Skills: {skills.join(", ")}</span></p>
+          <h3>CONTINUING</h3>
+        </div>
+      </div>
+
     </div>
   );
 };

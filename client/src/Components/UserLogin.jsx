@@ -4,6 +4,9 @@ import axios from "axios";
 import landingImg from "../assets/employee.jpg"; // Importing the image
 import BITLogo from "../assets/bit-logo.png"; // Import company logo
 
+// Global import of Google Font (Roboto)
+import "@fontsource/roboto"; // Importing the font from Google Fonts
+
 const UserLogin = () => {
     const navigate = useNavigate();
     const [credentials, setCredentials] = useState({
@@ -60,7 +63,7 @@ const UserLogin = () => {
                 <div className="w-1/2 flex items-center justify-center p-8">
                     <div className="w-full max-w-md">
                         {/* Company Logo */}
-                        <div className="flex justify-center mb-4">
+                        <div className="flex justify-center mb-6">
                             <img
                                 src={BITLogo}
                                 alt="Company Logo"
@@ -69,7 +72,9 @@ const UserLogin = () => {
                         </div>
 
                         {/* Heading */}
-                        <h1 className="text-3xl font-bold text-center mb-6">Bannari Amman Institute Of Technology</h1>
+                        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
+                            Bannari Amman Institute Of Technology
+                        </h1>
 
                         <form onSubmit={handleSubmit}>
                             <div className="space-y-4">
@@ -79,7 +84,7 @@ const UserLogin = () => {
                                     value={credentials.employee_id}
                                     onChange={handleChange}
                                     placeholder="Employee ID"
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200"
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200 text-sm font-roboto"
                                     required
                                 />
                                 <input
@@ -88,7 +93,7 @@ const UserLogin = () => {
                                     value={credentials.email}
                                     onChange={handleChange}
                                     placeholder="Email"
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200"
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200 text-sm font-roboto"
                                     required
                                 />
                                 <input
@@ -97,13 +102,13 @@ const UserLogin = () => {
                                     value={credentials.password}
                                     onChange={handleChange}
                                     placeholder="Password"
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200"
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200 text-sm font-roboto"
                                     required
                                 />
-                                {error && <p className="text-red-500">{error}</p>}
+                                {error && <p className="text-red-500 text-sm">{error}</p>}
                                 <button
                                     type="submit"
-                                    className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition"
+                                    className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition text-sm font-roboto"
                                 >
                                     Login
                                 </button>
