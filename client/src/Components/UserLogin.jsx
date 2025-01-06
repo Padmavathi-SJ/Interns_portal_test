@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import userLoginImage from "../assets/userLogin.jpg"; // Importing the image
+import landingImg from "../assets/employee.jpg"; // Importing the image
+import BITLogo from "../assets/bit-logo.png"; // Import company logo
 
 const UserLogin = () => {
     const navigate = useNavigate();
@@ -49,7 +50,7 @@ const UserLogin = () => {
                 {/* Left Section - Image */}
                 <div className="w-1/2">
                     <img
-                        src={userLoginImage}
+                        src={landingImg}
                         alt="Login Illustration"
                         className="object-cover w-full h-full"
                     />
@@ -58,6 +59,18 @@ const UserLogin = () => {
                 {/* Right Section - Form */}
                 <div className="w-1/2 flex items-center justify-center p-8">
                     <div className="w-full max-w-md">
+                        {/* Company Logo */}
+                        <div className="flex justify-center mb-4">
+                            <img
+                                src={BITLogo}
+                                alt="Company Logo"
+                                className="h-16 w-auto"
+                            />
+                        </div>
+
+                        {/* Heading */}
+                        <h1 className="text-3xl font-bold text-center mb-6">Bannari Amman Institute Of Technology</h1>
+
                         <form onSubmit={handleSubmit}>
                             <div className="space-y-4">
                                 <input
