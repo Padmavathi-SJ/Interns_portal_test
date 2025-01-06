@@ -81,10 +81,9 @@ const verifyToken = (req, res, next) => {
 router.get("/get_employee", verifyToken, (req, res) => {
   const { id: employeeId } = req.user; // Extract employeeId from the verified token
 
-  //console.log("Fetching details for employee ID:", employeeId);
-
+  // SQL query to fetch employee details with additional fields
   const query = `
-    SELECT e.id, e.name, d.name AS department, e.role, e.experience
+    SELECT e.id, e.name, d.name AS department, e.role, e.degree, e.experience, e.mobile_no, e.skills
     FROM employees e
     JOIN department d ON e.department_id = d.id
     WHERE e.id = ?;
@@ -100,9 +99,17 @@ router.get("/get_employee", verifyToken, (req, res) => {
       return res.status(404).json({ Status: false, Message: "Employee not found." });
     }
 
-    res.json({ Status: true, Data: results[0] });
+    // Return the employee details along with the new fields
+    res.json({
+      Status: true,
+      Data: {
+        ...results[0], // All the fetched employee data
+        skills: results[0].skills ? results[0].skills.split(",") : [], // Assuming skills are stored as a comma-separated string
+      },
+    });
   });
 });
+
 
 // Get tasks assigned to the logged-in employee
 router.get("/get_task", verifyToken, (req, res) => {
