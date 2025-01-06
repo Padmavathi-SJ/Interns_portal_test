@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom"; // <-- Correctly imported
+import { useParams } from "react-router-dom";
 import profile from "../assets/profile.jpg"; // Import the default profile picture
 
 const Profile = () => {
@@ -73,22 +73,26 @@ const Profile = () => {
     experience,
     mobile_no,
     skills,
-    profile: employeeProfile,
+    university,
+    profile_img, // Ensure correct field name for profile image
   } = employeeDetails;
 
   return (
     <div className="flex flex-col justify-start items-start p-6 w-full space-y-6">
       <div className="flex flex-col md:flex-row w-full max-w-4xl space-x-6">
         {/* Profile Picture - Square */}
-        <div className="w-40 h-40 bg-gray-300 overflow-hidden border-5 mb-4" style={{
-          backgroundImage: `url(${employeeProfile || profile})`, // Use employee profile pic or default
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }} />
+        <div 
+          className="w-52 h-40 bg-gray-300 overflow-hidden border-5 mb-4" 
+          style={{
+            backgroundImage: `url(${profile_img || profile})`, // Use employee profile pic or default
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            borderRadius: "20%", // Apply border radius for circular shape
+          }} 
+        />
 
         {/* Employee Details */}
-        <div className="flex flex-col w-full text-gray-600">
-          {/* ID, Name, Dept, Role */}
+        <div className="flex flex-col w-full text-gray-600 dark:text-gray-200">
           <div className="flex flex-col space-y-2">
             <p><span>12345678IT{id}</span></p>
             <p><span>{name}</span></p>
@@ -99,15 +103,15 @@ const Profile = () => {
       </div>
 
       {/* Remaining Details */}
-      <div className="bg-white dark:bg-gray-800  dark:border-gray-700  p-4 w-full">
-        <div className="flex flex-col space-y-2">
-          <p><span>Degree: {degree}</span></p>
-          <p><span>Experience: {experience} years</span></p>
-          <p><span>Mobile no: {mobile_no}</span></p>
-          <p><span>High Skills: {skills.join(", ")}</span></p>
-          <h3>CONTINUING</h3>
-        </div>
-      </div>
+      <div className="bg-white dark:bg-gray-800 dark:border-gray-700 p-4 w-full -mt-4"> {/* Added negative margin */}
+  <div className="flex flex-col space-y-2">
+    <p><span>Degree: {degree}</span></p>
+    <p><span>University: {university}</span></p>
+    <p><span>Experience: {experience} years</span></p>
+    <p><span>Mobile no: {mobile_no}</span></p>
+    <p><span>High Skills: {skills.join(", ")}</span></p>
+  </div>
+</div>
 
     </div>
   );

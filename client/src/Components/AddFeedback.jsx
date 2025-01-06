@@ -6,7 +6,7 @@ const AddFeedback = () => {
   const [feedbackType, setFeedbackType] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("Medium");
-  const [status, setStatus] = useState(""); // Added status tracking
+  const [status, setStatus] = useState("Pending");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -50,7 +50,6 @@ const AddFeedback = () => {
         setPriority("Medium");
         setError("");
 
-        // Navigate to a feedback dashboard or another relevant page
         navigate("/employee-dashboard/feedback");
       } else {
         setError(response.data.error || "Something went wrong.");
@@ -61,25 +60,26 @@ const AddFeedback = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h2 className="text-center text-2xl font-semibold mb-6">Submit Feedback</h2>
-      {error && <div className="text-red-500">{error}</div>}
-      {successMessage && <div className="text-green-500">{successMessage}</div>}
+    <div className="container mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-lg">
+      <h2 className="text-center text-3xl font-semibold mb-6 text-blue-600 dark:text-blue-400">Submit Feedback</h2>
+
+      {error && <div className="text-red-500 mb-4">{error}</div>}
+      {successMessage && <div className="text-green-500 mb-4">{successMessage}</div>}
 
       {status && (
-        <div className="text-lg mt-4">
+        <div className="text-lg mt-4 font-medium text-gray-700 dark:text-gray-300">
           <strong>Status:</strong> {status}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="max-w-lg mx-auto space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="feedbackType" className="block text-gray-700">Feedback Type</label>
+          <label htmlFor="feedbackType" className="block text-gray-700 dark:text-gray-200">Feedback Type</label>
           <select
             id="feedbackType"
             value={feedbackType}
             onChange={(e) => setFeedbackType(e.target.value)}
-            className="w-full p-2 border rounded-lg"
+            className="w-full p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           >
             <option value="">Select Feedback Type</option>
@@ -91,12 +91,12 @@ const AddFeedback = () => {
         </div>
 
         <div>
-          <label htmlFor="priority" className="block text-gray-700">Priority Level</label>
+          <label htmlFor="priority" className="block text-gray-700 dark:text-gray-200">Priority Level</label>
           <select
             id="priority"
             value={priority}
             onChange={(e) => setPriority(e.target.value)}
-            className="w-full p-2 border rounded-lg"
+            className="w-full p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           >
             <option value="Low">Low</option>
@@ -106,12 +106,12 @@ const AddFeedback = () => {
         </div>
 
         <div>
-          <label htmlFor="description" className="block text-gray-700">Description</label>
+          <label htmlFor="description" className="block text-gray-700 dark:text-gray-200">Description</label>
           <textarea
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full p-2 border rounded-lg"
+            className="w-full p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             rows="4"
             required
           />

@@ -14,7 +14,7 @@ const ApplyLeave = () => {
   const [successMessage, setSuccessMessage] = useState("");
 
   const leaveTypes = ["Leave", "ON DUTY", "INTERNAL OD", "Internal Training"];
-
+  
   const navigate = useNavigate(); // Create navigate function
 
   const handleSubmit = async (e) => {
@@ -74,26 +74,27 @@ const ApplyLeave = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h2 className="text-center text-2xl font-semibold mb-6">Apply for Leave</h2>
-      {error && <div className="text-red-500">{error}</div>}
-      {successMessage && <div className="text-green-500">{successMessage}</div>}
+    <div className="container mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-lg">
+      <h2 className="text-center text-3xl font-semibold mb-6 text-blue-600 dark:text-blue-400">Apply for Leave</h2>
+      
+      {error && <div className="text-red-500 mb-4">{error}</div>}
+      {successMessage && <div className="text-green-500 mb-4">{successMessage}</div>}
 
       {/* Display leave request status */}
       {status && (
-        <div className="text-lg mt-4">
+        <div className="text-lg mt-4 font-medium text-gray-700 dark:text-gray-300">
           <strong>Status:</strong> {status}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="max-w-lg mx-auto space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="leaveType" className="block text-gray-700">Leave Type</label>
+          <label htmlFor="leaveType" className="block text-gray-700 dark:text-gray-200">Leave Type</label>
           <select
             id="leaveType"
             value={leaveType}
             onChange={(e) => setLeaveType(e.target.value)}
-            className="w-full p-2 border rounded-lg"
+            className="w-full p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           >
             <option value="">Select Leave Type</option>
@@ -104,66 +105,66 @@ const ApplyLeave = () => {
         </div>
 
         <div>
-          <label htmlFor="startDate" className="block text-gray-700">From Date</label>
+          <label htmlFor="startDate" className="block text-gray-700 dark:text-gray-200">From Date</label>
           <input
             type="date"
             id="startDate"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="w-full p-2 border rounded-lg"
+            className="w-full p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
 
         <div>
-          <label htmlFor="fromTime" className="block text-gray-700">From Time</label>
+          <label htmlFor="fromTime" className="block text-gray-700 dark:text-gray-200">From Time</label>
           <input
             type="time"
             id="fromTime"
             value={fromTime}
             onChange={(e) => setFromTime(e.target.value)}
-            className="w-full p-2 border rounded-lg"
+            className="w-full p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
 
         <div>
-          <label htmlFor="endDate" className="block text-gray-700">To Date</label>
+          <label htmlFor="endDate" className="block text-gray-700 dark:text-gray-200">To Date</label>
           <input
             type="date"
             id="endDate"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="w-full p-2 border rounded-lg"
+            className="w-full p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
 
         <div>
-          <label htmlFor="toTime" className="block text-gray-700">To Time</label>
+          <label htmlFor="toTime" className="block text-gray-700 dark:text-gray-200">To Time</label>
           <input
             type="time"
             id="toTime"
             value={toTime}
             onChange={(e) => setToTime(e.target.value)}
-            className="w-full p-2 border rounded-lg"
+            className="w-full p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
 
         <div>
-          <label htmlFor="reason" className="block text-gray-700">Reason</label>
+          <label htmlFor="reason" className="block text-gray-700 dark:text-gray-200">Reason</label>
           <textarea
             id="reason"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            className="w-full p-2 border rounded-lg"
+            className="w-full p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
 
         <div className="text-center">
-          <button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600">
+          <button type="submit" className="bg-blue-500 text-white px-8 py-3 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
             Submit Leave Request
           </button>
         </div>

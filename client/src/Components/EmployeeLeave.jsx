@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 
 const EmployeeLeave = () => {
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [message, setMessage] = useState(""); // State to display no leaves message
   const [error, setError] = useState("");
-  const navigate = useNavigate(); // Initialize the navigate hook
+  const navigate = useNavigate();
 
   // Function to fetch leave requests for the logged-in employee
   useEffect(() => {
@@ -38,8 +38,8 @@ const EmployeeLeave = () => {
 
   if (error) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
-        <div className="bg-red-100 text-red-600 p-4 rounded-md shadow-md max-w-lg">
+      <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900">
+        <div className="bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 p-4 rounded-md shadow-md max-w-lg">
           {error}
         </div>
       </div>
@@ -47,21 +47,23 @@ const EmployeeLeave = () => {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <h2 className="text-center text-2xl font-semibold mb-6">Employee Leave Requests</h2>
+    <div className="container mx-auto p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md">
+      <h2 className="text-center text-2xl font-semibold mb-6 text-blue-500 dark:text-blue-300">
+        Employee Leave Requests
+      </h2>
 
       {/* Message for no leave requests */}
       {message && (
-        <div className="text-center text-gray-600 mb-6">{message}</div>
+        <div className="text-center text-gray-600 dark:text-gray-300 mb-6">{message}</div>
       )}
 
       {/* Table to display leave requests */}
       {leaveRequests.length === 0 ? (
-        <div className="text-center text-gray-600">No leave requests found.</div>
+        <div className="text-center text-gray-600 dark:text-gray-300">No leave requests found.</div>
       ) : (
-        <table className="min-w-full table-auto border-collapse bg-white shadow-lg rounded-lg">
+        <table className="min-w-full table-auto border-collapse bg-white dark:bg-gray-700 shadow-lg rounded-lg">
           <thead>
-            <tr className="bg-gray-100 text-gray-600">
+            <tr className="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-300">
               <th className="px-4 py-2 text-left">Leave Type</th>
               <th className="px-4 py-2 text-left">From Date</th>
               <th className="px-4 py-2 text-left">From Time</th>
@@ -73,7 +75,7 @@ const EmployeeLeave = () => {
           </thead>
           <tbody>
             {leaveRequests.map((request) => (
-              <tr key={request.id} className="border-t hover:bg-gray-50">
+              <tr key={request.id} className="border-t hover:bg-gray-50 dark:hover:bg-gray-600">
                 <td className="px-4 py-2">{request.leave_type}</td>
                 <td className="px-4 py-2">{request.from_date}</td>
                 <td className="px-4 py-2">{request.from_time}</td>
@@ -91,7 +93,7 @@ const EmployeeLeave = () => {
       <div className="text-center mt-6">
         <button
           onClick={() => navigate("/employee-dashboard/apply_leave")}
-          className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+          className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 ease-in-out"
         >
           Apply Leave
         </button>
