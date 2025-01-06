@@ -83,11 +83,12 @@ router.get("/get_employee", verifyToken, (req, res) => {
 
   // SQL query to fetch employee details with additional fields
   const query = `
-    SELECT e.id, e.name, d.name AS department, e.role, e.degree, e.experience, e.mobile_no, e.skills
-    FROM employees e
-    JOIN department d ON e.department_id = d.id
-    WHERE e.id = ?;
-  `;
+  SELECT e.id, e.name, d.name AS department, e.role, e.degree, e.experience, e.mobile_no, e.skills, e.university
+  FROM employees e
+  JOIN department d ON e.department_id = d.id
+  WHERE e.id = ?;
+`;
+
 
   connection.query(query, [employeeId], (err, results) => {
     if (err) {
