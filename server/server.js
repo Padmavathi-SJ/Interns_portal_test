@@ -15,7 +15,7 @@ app.use(cors({
 // Middleware to handle JSON requests
 app.use(express.json());
 
-
+app.use('/uploads', express.static('uploads'));
 
 // Define the routes
 app.use('/auth', adminRouter);  // Admin routes for handling file uploads

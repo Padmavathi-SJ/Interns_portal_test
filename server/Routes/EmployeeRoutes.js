@@ -500,6 +500,75 @@ router.get("/leave_dashboard", verifyToken, (req, res) => {
   });
 });
 
+router.get("/employee-performance", verifyToken, (req, res) => {
+  const { id: employeeId } = req.user;
+
+  // Queries to fetch different performance metrics
+  const leaveCountQuery = `
+    SELECT MONTH(created_at) AS month, COUNT(*) AS leave_count 
+    FROM leave_requests 
+    WHERE employee_id = ? 
+    GROUP BY MONTH(created_at)`;
+
+  // Modified team contribution query to follow get_team_count structure
+  const teamContributionQuery = `
+    SELECT COUNT(*) AS team_contribution 
+    FROM teams 
+    WHERE JSON_CONTAINS(team_members, JSON_ARRAY(?), '$')`;
+
+  const feedbackCountQuery = `
+    SELECT MONTH(created_at) AS month, COUNT(*) AS feedback_count 
+    FROM feedback 
+    WHERE employee_id = ? 
+    GROUP BY MONTH(created_at)`;
+
+  const workCompletionQuery = `
+    SELECT COUNT(*) AS completed_tasks 
+    FROM work_allocation 
+    WHERE employee_id = ? AND status = 'Completed' AND deadline >= CURRENT_DATE`;
+
+  // Execute queries and handle results
+  connection.query(leaveCountQuery, [employeeId], (err, leaveCountResults) => {
+    if (err) {
+      console.error("Error fetching leave count:", err);
+      return res.status(500).json({ Status: false, Error: "Error fetching leave count" });
+    }
+
+    connection.query(teamContributionQuery, [employeeId], (err, teamContributionResults) => {
+      if (err) {
+        console.error("Error fetching team contribution:", err);
+        return res.status(500).json({ Status: false, Error: "Error fetching team contribution" });
+      }
+
+      connection.query(feedbackCountQuery, [employeeId], (err, feedbackCountResults) => {
+        if (err) {
+          console.error("Error fetching feedback count:", err);
+          return res.status(500).json({ Status: false, Error: "Error fetching feedback count" });
+        }
+
+        connection.query(workCompletionQuery, [employeeId], (err, workCompletionResults) => {
+          if (err) {
+            console.error("Error fetching work completion:", err);
+            return res.status(500).json({ Status: false, Error: "Error fetching work completion" });
+          }
+
+          // Compile the results and send the response
+          const responseData = {
+            leaveCount: leaveCountResults,
+            teamContribution: teamContributionResults[0]?.team_contribution || 0,
+            feedbackCount: feedbackCountResults,
+            workCompletion: workCompletionResults[0]?.completed_tasks || 0,
+          };
+
+          return res.json({ Status: true, Data: responseData });
+        });
+      });
+    });
+  });
+});
+
+
+
 
 
 

@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import multer from 'multer';
 
+
 dotenv.config();
 
 const router = express.Router();
@@ -24,6 +25,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+
 
 
 router.post("/adminLogin", (req, res) => {
@@ -161,6 +163,9 @@ router.get('/get_employee_details/:employeeId', (req, res) => {
 });
 
 
+
+
+
 router.post("/add_department", (req, res) => {
   const checkSql = "SELECT * FROM department WHERE name = ?";
   connection.query(checkSql, [req.body.department], (err, result) => {
@@ -269,7 +274,7 @@ router.delete("/delete_department/:departmentId", (req, res) => {
 });
 
 
-
+// Route to add an employee
 router.post('/add_employee', upload.fields([
   { name: 'resume', maxCount: 1 },
   { name: 'profile_img', maxCount: 1 }
@@ -335,8 +340,6 @@ router.post('/add_employee', upload.fields([
     });
   });
 });
-
-
 
 
 router.get("/get_employees", (req, res) => {
