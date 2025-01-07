@@ -162,10 +162,6 @@ router.get('/get_employee_details/:employeeId', (req, res) => {
   });
 });
 
-
-
-
-
 router.post("/add_department", (req, res) => {
   const checkSql = "SELECT * FROM department WHERE name = ?";
   connection.query(checkSql, [req.body.department], (err, result) => {
@@ -483,8 +479,6 @@ router.put("/edit_employee/:employeeId", (req, res) => {
     return res.json({ Status: true, Result: result });
   });
 });
-
-
 
 
 router.get("/get_employee_by_id/:employeeId", (req, res) => {
@@ -913,7 +907,6 @@ router.delete("/delete_team/:team_id", (req, res) => {
   });
 });
 
-
 router.post("/allocate_team_work", (req, res) => {
   const { team_id, title, description, deadline, priority, status } = req.body;
 
@@ -938,6 +931,23 @@ router.post("/allocate_team_work", (req, res) => {
     }
   );
 });
+
+router.post("/add_announcement", (req, res) => {
+  const { category, target, title, description, extraInfo, priority } = req.body;
+
+  const sql = `
+      INSERT INTO announcements (category, target_id, title, description, extra_info, priority)
+      VALUES (?, ?, ?, ?, ?, ?)
+  `;
+  connection.query(sql, [category, target, title, description, extraInfo, priority], (err, result) => {
+      if (err) {
+          console.error("Insert Error:", err);
+          return res.status(500).json({ Status: false, Error: "Failed to add announcement." });
+      }
+      res.json({ Status: true, Message: "Announcement added successfully." });
+  });
+});
+
 
 
 
