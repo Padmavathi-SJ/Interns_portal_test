@@ -932,21 +932,65 @@ router.post("/allocate_team_work", (req, res) => {
   );
 });
 
-router.post("/add_announcement", (req, res) => {
+
+router.post("/add_announcement", async (req, res) => {
   const { category, target, title, description, extraInfo, priority } = req.body;
 
-  const sql = `
-      INSERT INTO announcements (category, target_id, title, description, extra_info, priority)
+  let targetIdsJson;
+  try {
+    if (category === 'all') {
+      const departmentIds = await new Promise((resolve, reject) => {
+        connection.query("SELECT id FROM department WHERE id IN (?)", [target], (err, results) => {
+          if (err) reject(err);
+          resolve(results.map(dept => dept.id));
+        });
+      });
+
+      const employeeIds = await new Promise((resolve, reject) => {
+        connection.query("SELECT id FROM employees WHERE department_id IN (?)", [departmentIds], (err, results) => {
+          if (err) reject(err);
+          resolve(results.map(emp => emp.id));
+        });
+      });
+
+      targetIdsJson = JSON.stringify(employeeIds);
+    } else if (category === 'team') {
+      const teamIds = await new Promise((resolve, reject) => {
+        connection.query("SELECT team_members FROM teams WHERE team_id IN (?)", [target], (err, results) => {
+          if (err) reject(err);
+          const allMembers = results.flatMap(team => JSON.parse(team.team_members));
+          resolve(allMembers);
+        });
+      });
+
+      targetIdsJson = JSON.stringify(teamIds);
+    } else if (category === 'individual') {
+      targetIdsJson = JSON.stringify(target);
+    } else {
+      return res.status(400).json({ Status: false, Error: "Invalid category" });
+    }
+
+    const sql = `
+      INSERT INTO announcements (category, target_ids, title, description, extra_info, priority)
       VALUES (?, ?, ?, ?, ?, ?)
-  `;
-  connection.query(sql, [category, target, title, description, extraInfo, priority], (err, result) => {
+    `;
+
+    connection.query(sql, [category, targetIdsJson, title, description, extraInfo, priority], (err, result) => {
       if (err) {
-          console.error("Insert Error:", err);
-          return res.status(500).json({ Status: false, Error: "Failed to add announcement." });
+        console.error("Insert Error:", err);
+        return res.status(500).json({ Status: false, Error: "Failed to add announcement." });
       }
       res.json({ Status: true, Message: "Announcement added successfully." });
-  });
+    });
+  } catch (error) {
+    console.error("Error processing request:", error);
+    res.status(500).json({ Status: false, Error: "Internal server error." });
+  }
 });
+
+
+
+
 
 
 
