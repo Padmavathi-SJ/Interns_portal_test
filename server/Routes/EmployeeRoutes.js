@@ -508,17 +508,28 @@ router.get("/leave_dashboard", verifyToken, (req, res) => {
   });
 });
 
+
+// Employee performance route with the token verification middleware
 router.get("/employee-performance", verifyToken, (req, res) => {
   const { id: employeeId } = req.user;
+  const { monthRange } = req.query;  // Get the selected month range
 
-  // Queries to fetch different performance metrics
+  // Mapping months to numbers
+  const monthMap = {
+    'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
+    'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12
+  };
+
+  // Extract start and end months from the selected range
+  const [startMonth, endMonth] = monthRange.split('-').map((month) => monthMap[month]);
+
+  // Modified queries to filter data based on the selected month range
   const leaveCountQuery = `
     SELECT MONTH(created_at) AS month, COUNT(*) AS leave_count 
     FROM leave_requests 
-    WHERE employee_id = ? 
+    WHERE employee_id = ? AND MONTH(created_at) BETWEEN ? AND ? 
     GROUP BY MONTH(created_at)`;
 
-  // Modified team contribution query to follow get_team_count structure
   const teamContributionQuery = `
     SELECT COUNT(*) AS team_contribution 
     FROM teams 
@@ -527,16 +538,15 @@ router.get("/employee-performance", verifyToken, (req, res) => {
   const feedbackCountQuery = `
     SELECT MONTH(created_at) AS month, COUNT(*) AS feedback_count 
     FROM feedback 
-    WHERE employee_id = ? 
+    WHERE employee_id = ? AND MONTH(created_at) BETWEEN ? AND ? 
     GROUP BY MONTH(created_at)`;
 
   const workCompletionQuery = `
     SELECT COUNT(*) AS completed_tasks 
     FROM work_allocation 
-    WHERE employee_id = ? AND status = 'Completed' AND deadline >= CURRENT_DATE`;
+    WHERE employee_id = ? AND status = 'Completed' AND MONTH(deadline) BETWEEN ? AND ?`;
 
-  // Execute queries and handle results
-  connection.query(leaveCountQuery, [employeeId], (err, leaveCountResults) => {
+  connection.query(leaveCountQuery, [employeeId, startMonth, endMonth], (err, leaveCountResults) => {
     if (err) {
       console.error("Error fetching leave count:", err);
       return res.status(500).json({ Status: false, Error: "Error fetching leave count" });
@@ -548,13 +558,13 @@ router.get("/employee-performance", verifyToken, (req, res) => {
         return res.status(500).json({ Status: false, Error: "Error fetching team contribution" });
       }
 
-      connection.query(feedbackCountQuery, [employeeId], (err, feedbackCountResults) => {
+      connection.query(feedbackCountQuery, [employeeId, startMonth, endMonth], (err, feedbackCountResults) => {
         if (err) {
           console.error("Error fetching feedback count:", err);
           return res.status(500).json({ Status: false, Error: "Error fetching feedback count" });
         }
 
-        connection.query(workCompletionQuery, [employeeId], (err, workCompletionResults) => {
+        connection.query(workCompletionQuery, [employeeId, startMonth, endMonth], (err, workCompletionResults) => {
           if (err) {
             console.error("Error fetching work completion:", err);
             return res.status(500).json({ Status: false, Error: "Error fetching work completion" });
@@ -576,6 +586,31 @@ router.get("/employee-performance", verifyToken, (req, res) => {
 });
 
 
+
+
+
+router.get("/get_announcements", verifyToken, (req, res) => {
+  const { id: employeeId } = req.user;
+
+  const query = `
+    SELECT a.id, a.title, a.description, a.extra_info, a.priority, a.created_at
+    FROM announcements a
+    WHERE JSON_CONTAINS(a.target_ids, JSON_QUOTE(?), '$');
+  `;
+
+  connection.query(query, [employeeId], (err, results) => {
+    if (err) {
+      console.error("Error fetching announcements:", err);
+      return res.status(500).json({ Status: false, Error: "Internal server error." });
+    }
+
+    if (results.length === 0) {
+      return res.json({ Status: false, Message: "No announcements found for you." });
+    }
+
+    res.json({ Status: true, Result: results });
+  });
+});
 
 
 

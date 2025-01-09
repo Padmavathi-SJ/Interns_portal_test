@@ -938,16 +938,10 @@ router.post("/add_announcement", async (req, res) => {
 
   let targetIdsJson;
   try {
-    if (category === 'all') {
-      const departmentIds = await new Promise((resolve, reject) => {
-        connection.query("SELECT id FROM department WHERE id IN (?)", [target], (err, results) => {
-          if (err) reject(err);
-          resolve(results.map(dept => dept.id));
-        });
-      });
-
+    if (category === 'individual') {
+      // Fetch employee IDs based on provided names
       const employeeIds = await new Promise((resolve, reject) => {
-        connection.query("SELECT id FROM employees WHERE department_id IN (?)", [departmentIds], (err, results) => {
+        connection.query("SELECT id FROM employees WHERE name IN (?)", [target], (err, results) => {
           if (err) reject(err);
           resolve(results.map(emp => emp.id));
         });
@@ -964,8 +958,22 @@ router.post("/add_announcement", async (req, res) => {
       });
 
       targetIdsJson = JSON.stringify(teamIds);
-    } else if (category === 'individual') {
-      targetIdsJson = JSON.stringify(target);
+    } else if (category === 'all') {
+      const departmentIds = await new Promise((resolve, reject) => {
+        connection.query("SELECT id FROM department WHERE id IN (?)", [target], (err, results) => {
+          if (err) reject(err);
+          resolve(results.map(dept => dept.id));
+        });
+      });
+
+      const employeeIds = await new Promise((resolve, reject) => {
+        connection.query("SELECT id FROM employees WHERE department_id IN (?)", [departmentIds], (err, results) => {
+          if (err) reject(err);
+          resolve(results.map(emp => emp.id));
+        });
+      });
+
+      targetIdsJson = JSON.stringify(employeeIds);
     } else {
       return res.status(400).json({ Status: false, Error: "Invalid category" });
     }
@@ -989,11 +997,82 @@ router.post("/add_announcement", async (req, res) => {
 });
 
 
+router.get("/get_announcements", (req, res) => {
+  const query = `
+    SELECT id, category, target_ids, title, description, extra_info, priority, created_at
+    FROM announcements
+    ORDER BY created_at DESC;
+  `;
+
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching announcements:", err);
+      return res.status(500).json({ Status: false, Error: "Internal server error." });
+    }
+
+    res.json({
+      Status: true,
+      Result: results,
+    });
+  });
+});
+
+
+// Route to fetch a specific announcement by ID
+router.get('/announcements/:id', (req, res) => {
+  const { id } = req.params;
+
+  const query = 'SELECT * FROM announcements WHERE id = ?';
+  connection.query(query, [id], (err, result) => {
+    if (err) {
+      console.error('Error fetching announcement:', err);
+      return res.status(500).json({ Status: false, Error: 'Internal server error.' });
+    }
+    res.json(result[0]);
+  });
+});
+
+// Route to update a specific announcement by ID
+router.put('/announcements/:id', (req, res) => {
+  const { id } = req.params;
+  const { category, target_ids, title, description, extra_info, priority } = req.body;
+
+  const query = `
+    UPDATE announcements
+    SET category = ?, target_ids = ?, title = ?, description = ?, extra_info = ?, priority = ?
+    WHERE id = ?;
+  `;
+
+  connection.query(query, [category, JSON.stringify(target_ids), title, description, extra_info, priority, id], (err, result) => {
+    if (err) {
+      console.error('Error updating announcement:', err);
+      return res.status(500).json({ Status: false, Error: 'Internal server error.' });
+    }
+    res.json({ Status: true, Message: 'Announcement updated successfully.' });
+  });
+});
 
 
 
 
 
+router.delete("/delete_announcement/:id", (req, res) => {
+  const { id } = req.params;
+
+  const query = `
+    DELETE FROM announcements
+    WHERE id = ?;
+  `;
+
+  connection.query(query, [id], (err, result) => {
+    if (err) {
+      console.error("Error deleting announcement:", err);
+      return res.status(500).json({ Status: false, Error: "Internal server error." });
+    }
+
+    res.json({ Status: true, Message: "Announcement deleted successfully." });
+  });
+});
 
 
 export { router as adminRouter };
