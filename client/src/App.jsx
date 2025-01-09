@@ -35,6 +35,7 @@ import AddAdmin from './Components/AddAdmin';
 import TeamWorkAllocation from './Components/TeamWorkAllocation';
 import EmployeeTeamWork from './Components/EmployeeTeamWork';
 import AnnouncementForm from './Components/AnnouncementsForm';
+import EditAnnouncement from './Components/EditAnnouncement';
 
 function App() {
   return (
@@ -61,6 +62,7 @@ function App() {
           <Route path="feedback" element={<AdminFeedback/>} />
           <Route path="manage_announcements" element={<ManageAnnouncements/>} />
           <Route path="push_announcements" element={<AnnouncementForm/>} />
+          <Route path="edit_announcement/:id" element={<EditAnnouncement/>} />
           <Route path="admins" element={<Admins/>} />
           <Route path="add_admin" element={<AddAdmin/>} />
           <Route path="team_work_allocation" element={<TeamWorkAllocation/>} />

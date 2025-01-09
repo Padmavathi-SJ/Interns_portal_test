@@ -6,6 +6,7 @@ const Performance = () => {
   const [performanceData, setPerformanceData] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [monthRange, setMonthRange] = useState("Jan-Feb");
 
   const isTokenExpired = (token) => {
     try {
@@ -17,6 +18,10 @@ const Performance = () => {
       console.error("Error decoding token:", e);
       return true;
     }
+  };
+
+  const handleMonthRangeChange = (e) => {
+    setMonthRange(e.target.value);
   };
 
   useEffect(() => {
@@ -35,8 +40,10 @@ const Performance = () => {
           return;
         }
 
+        // Fetch data for the selected month range
         const response = await axios.get("http://localhost:3000/auth/employee-performance", {
           headers: { Authorization: `Bearer ${token}` },
+          params: { monthRange }
         });
 
         if (response.status === 200 && response.data) {
@@ -65,7 +72,7 @@ const Performance = () => {
     };
 
     fetchPerformanceData();
-  }, []);
+  }, [monthRange]);
 
   if (loading) {
     return (
@@ -88,6 +95,22 @@ const Performance = () => {
   return (
     <div>
       <h2 className="text-xl font-bold mb-6 text-center">Employee Performance</h2>
+
+      {/* Month Range Selector */}
+      <div className="flex justify-center mb-4">
+        <select
+          value={monthRange}
+          onChange={handleMonthRangeChange}
+          className="p-2 border border-gray-300 rounded-md"
+        >
+          <option value="Jan-Feb">Jan to Feb</option>
+          <option value="Feb-Mar">Feb to Mar</option>
+          <option value="Mar-Apr">Mar to Apr</option>
+          <option value="Apr-May">Apr to May</option>
+          {/* Add more ranges as needed */}
+        </select>
+      </div>
+
       <div className="flex justify-center">
         <ResponsiveContainer width="100%" height={400}>
           <BarChart data={performanceData}>
@@ -96,7 +119,6 @@ const Performance = () => {
             <YAxis />
             <Tooltip />
             <Legend />
-            {/* Adjust bar sizes for each component */}
             <Bar dataKey="leaveCount" fill="#8884d8" barSize={25} />
             <Bar dataKey="feedbackCount" fill="#82ca9d" barSize={25} />
             <Bar dataKey="teamContribution" fill="#ffc658" barSize={25} />
