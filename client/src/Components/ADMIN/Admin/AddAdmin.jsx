@@ -7,6 +7,7 @@ const AddAdmin = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
   
   const navigate = useNavigate(); // Hook to navigate to another route
 
