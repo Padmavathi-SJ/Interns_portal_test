@@ -1276,4 +1276,64 @@ router.delete("/delete_announcement/:id", (req, res) => {
   });
 });
 
+// Fetch a department by ID
+router.get("/get_department_by_id/:departmentId", (req, res) => {
+  const { departmentId } = req.params;
+  //console.log("Department ID:", departmentId); // Check the ID being passed
+
+  const sql = "SELECT * FROM department WHERE id = ?";
+  connection.query(sql, [departmentId], (err, result) => {
+    if (err) {
+      console.error("Query Error:", err);
+      return res.json({ Status: false, Error: "Query Error" });
+    }
+    if (result.length === 0) {
+      return res.json({ Status: false, Error: "Department not found" });
+    }
+    return res.json({ Status: true, Result: result[0] });
+  });
+});
+
+
+// Update department details
+router.put("/edit_department/:departmentId", (req, res) => {
+  const { departmentId } = req.params;
+  const { name } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ Status: false, Error: "Department name is required" });
+  }
+
+  const sql = "UPDATE department SET name = ? WHERE id = ?";
+  connection.query(sql, [name, departmentId], (err, result) => {
+    if (err) {
+      console.error("Query Error:", err);
+      return res.json({ Status: false, Error: "Query Error" });
+    }
+    if (result.affectedRows === 0) {
+      return res.json({ Status: false, Error: "Department not found" });
+    }
+    return res.json({ Status: true, Result: result });
+  });
+});
+
+// Delete department by ID
+router.delete("/delete_department/:departmentId", (req, res) => {
+  const { departmentId } = req.params;
+
+  const sql = "DELETE FROM department WHERE id = ?";
+  connection.query(sql, [departmentId], (err, result) => {
+    if (err) {
+      console.error("Query Error:", err);
+      return res.json({ Status: false, Error: "Query Error" });
+    }
+    if (result.affectedRows === 0) {
+      return res.json({ Status: false, Error: "Department not found" });
+    }
+    return res.json({ Status: true, Result: "Department deleted successfully" });
+  });
+});
+
+
+
 export { router as adminRouter };
