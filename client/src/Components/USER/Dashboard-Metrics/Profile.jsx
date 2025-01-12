@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import profile from "../assets/profile.jpg"; // Import the default profile picture
+import profile from '../../../assets/profile.jpg';  // Import the default profile picture
 
 const Profile = () => {
   const { employeeId } = useParams(); // Retrieve employeeId from route

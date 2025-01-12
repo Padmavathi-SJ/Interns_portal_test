@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import landingImg from "../assets/employee.jpg"; // Importing the image
-import BITLogo from "../assets/bit-logo.png"; // Import company logo
+import adminImg from "../../assets/adminLogin.jpg"; // Importing the admin-specific image
+import BITLogo from "../../assets/bit-logo.png"; // Import company logo
 
 // Global import of Google Font (Roboto)
 import "@fontsource/roboto"; // Importing the font from Google Fonts
 
-const UserLogin = () => {
+const AdminLogin = () => {
     const navigate = useNavigate();
     const [credentials, setCredentials] = useState({
-        employee_id: "",
         email: "",
         password: "",
     });
@@ -27,22 +26,20 @@ const UserLogin = () => {
 
         try {
             const response = await axios.post(
-                "http://localhost:3000/auth/user_login",
-                credentials
+                "http://localhost:3000/auth/adminLogin",
+                credentials,
+                { withCredentials: true } // Set credentials for this request
             );
 
-            if (response.data.Status) {
-                const token = response.data.token;
-                localStorage.setItem("userToken", token); // Store token locally
-
-                // Navigate to employee dashboard
-                navigate("/employee-dashboard");
+            if (response.data.loginStatus) {
+                // Navigate to admin dashboard
+                navigate("/admin-dashboard");
             } else {
-                setError(response.data.Error);
+                setError(response.data.error || "An unknown error occurred");
             }
         } catch (err) {
             console.error("Login error:", err);
-            setError("An error occurred during login. Please try again.");
+            setError("Failed to connect to the server. Please try again.");
         }
     };
 
@@ -53,8 +50,8 @@ const UserLogin = () => {
                 {/* Left Section - Image */}
                 <div className="w-1/2">
                     <img
-                        src={landingImg}
-                        alt="Login Illustration"
+                        src={adminImg}
+                        alt="Admin Login Illustration"
                         className="object-cover w-full h-full"
                     />
                 </div>
@@ -78,15 +75,6 @@ const UserLogin = () => {
 
                         <form onSubmit={handleSubmit}>
                             <div className="space-y-4">
-                                <input
-                                    type="text"
-                                    name="employee_id"
-                                    value={credentials.employee_id}
-                                    onChange={handleChange}
-                                    placeholder="Employee ID"
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200 text-sm font-roboto"
-                                    required
-                                />
                                 <input
                                     type="email"
                                     name="email"
@@ -121,4 +109,4 @@ const UserLogin = () => {
     );
 };
 
-export default UserLogin;
+export default AdminLogin;

@@ -7,6 +7,9 @@ const Home = () => {
     pendingLeaves: 0,
     departments: 0,
     tasksAllocated: 0,
+    pendingFeedbacks: 0,
+    totalTeams: 0,
+    totalAdmins: 0,
   });
   const [error, setError] = useState("");
 
@@ -29,6 +32,9 @@ const Home = () => {
             pendingLeaves: response.data.Metrics.pendingLeaveRequests,
             departments: response.data.Metrics.totalDepartments,
             tasksAllocated: response.data.Metrics.totalTasks,
+            pendingFeedbacks: response.data.Metrics.pendingFeedbacks,
+            totalTeams: response.data.Metrics.totalTeams,
+            totalAdmins: response.data.Metrics.totalAdmins,
           });
         } else {
           setError(response.data.Message || "Unable to fetch metrics");
@@ -56,22 +62,13 @@ const Home = () => {
     <div className="container mx-auto p-6">
       <h2 className="text-3xl font-bold text-center mb-8">Admin Dashboard Overview</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
-          <h3 className="text-xl font-semibold text-gray-600 mb-4">Total Employees</h3>
-          <p className="text-4xl font-bold text-blue-500">{metrics.totalEmployees}</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
-          <h3 className="text-xl font-semibold text-gray-600 mb-4">Pending Leave Requests</h3>
-          <p className="text-4xl font-bold text-yellow-500">{metrics.pendingLeaves}</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
-          <h3 className="text-xl font-semibold text-gray-600 mb-4">Departments</h3>
-          <p className="text-4xl font-bold text-green-500">{metrics.departments}</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
-          <h3 className="text-xl font-semibold text-gray-600 mb-4">Work Allocations</h3>
-          <p className="text-4xl font-bold text-purple-500">{metrics.tasksAllocated}</p>
-        </div>
+        {/* Metric Cards */}
+        {Object.entries(metrics).map(([key, value]) => (
+          <div key={key} className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
+            <h3 className="text-xl font-semibold text-gray-600 mb-4 capitalize">{key.replace(/([A-Z])/g, ' $1')}</h3>
+            <p className="text-4xl font-bold text-blue-500">{value}</p>
+          </div>
+        ))}
       </div>
     </div>
   );

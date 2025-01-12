@@ -1,41 +1,41 @@
-import Login from './Components/login';
+import Login from './Components/ADMIN/login';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Dashboard from './Components/Dashboard'; // Admin Dashboard layout
-import Home from './Components/Home';
-import Employee from './Components/Employee';
-import Department from './Components/Department';
-import AddDepartment from './Components/AddDepartment';
-import AddEmployee from './Components/AddEmployee';
-import EditEmployee from './Components/EditEmployee';
-import Leave from './Components/Leave';
-import WorkAllocation from './Components/WorkAllocation';
-import AddTask from './Components/AddTask';
-import EditTask from './Components/EditTask';
-import UserLogin from './Components/UserLogin';
-import EmployeeDashboard from './Components/EmployeeDashboard'; // Employee Dashboard layout
-import EmployeeHome from './Components/EmployeeHome';
-import Profile from './Components/Profile';
-import EmployeeTask from './Components/EmployeeTask';
-import ApplyLeave from './Components/ApplyLeave';
-import EmployeeLeave from './Components/EmployeeLeave';
-import EmployeeList from './Components/EmployeeList';
-import EmployeeDetails from './Components/EmployeeDetails';
-import Anouncements from './Components/Anouncements';
-import AdminFeedback from './Components/AdminFeedback';
-import EmployeeFeedback from './Components/EmployeeFeedback';
-import AddFeedback from './Components/AddFeedback';
-import TeamManagement from './Components/TeamManagement';
-import TeamCreation from './Components/TeamCreation';
-import EditTeam from './Components/EditTeam';
-import EmployeeProfile from './Components/EmployeeProfile';
-import MyTeam from './Components/MyTeam';
-import ManageAnnouncements from './Components/ManageAnnouncements';
-import Admins from './Components/Admins';
-import AddAdmin from './Components/AddAdmin';
-import TeamWorkAllocation from './Components/TeamWorkAllocation';
-import EmployeeTeamWork from './Components/EmployeeTeamWork';
-import AnnouncementForm from './Components/AnnouncementsForm';
-import EditAnnouncement from './Components/EditAnnouncement';
+import Dashboard from './Components/ADMIN/Dashboard'; // Admin Dashboard layout
+import Home from './Components/ADMIN/Home';
+import Employee from './Components/ADMIN/Employees/Employee';
+import Department from './Components/ADMIN/Departments/Department';
+import AddDepartment from './Components/ADMIN/Departments/AddDepartment';
+import AddEmployee from './Components/ADMIN/Employees/AddEmployee';
+import EditEmployee from './Components/ADMIN/Employees/EditEmployee';
+import Leave from './Components/ADMIN/Leave/Leave';
+import WorkAllocation from './Components/ADMIN/WorkAllocations/WorkAllocation';
+import AddTask from './Components/ADMIN/WorkAllocations/AddTask';
+import EditTask from './Components/ADMIN/WorkAllocations/EditTask';
+import UserLogin from './Components/USER/UserLogin';
+import EmployeeDashboard from './Components/USER/Dashboard-Metrics/EmployeeDashboard'; // Employee Dashboard layout
+import EmployeeHome from './Components/USER/Dashboard-Metrics/EmployeeHome';
+import Profile from './Components/USER/Dashboard-Metrics/Profile';
+import EmployeeTask from './Components/USER/Works/EmployeeTask';
+import ApplyLeave from './Components/USER/Leave/ApplyLeave';
+import EmployeeLeave from './Components/USER/Leave/EmployeeLeave';
+import EmployeeList from './Components/ADMIN/Departments/EmployeeList';
+import EmployeeDetails from './Components/ADMIN/Departments/EmployeeDetails';
+import Anouncements from './Components/USER/Announcements/Anouncements';
+import AdminFeedback from './Components/ADMIN/Feedback/AdminFeedback';
+import EmployeeFeedback from './Components/USER/Feedback/EmployeeFeedback';
+import AddFeedback from './Components/USER/Feedback/AddFeedback';
+import TeamManagement from './Components/ADMIN/Teams/TeamManagement';
+import TeamCreation from './Components/ADMIN/Teams/TeamCreation';
+import EditTeam from './Components/ADMIN/Teams/EditTeam';
+import EmployeeProfile from './Components/USER/Dashboard-Metrics/EmployeeProfile';
+import MyTeam from './Components/USER/Team/MyTeam';
+import ManageAnnouncements from './Components/ADMIN/Announcements/ManageAnnouncements';
+import Admins from './Components/ADMIN/Admin/Admins';
+import AddAdmin from './Components/ADMIN/Admin/AddAdmin';
+import TeamWorkAllocation from './Components/ADMIN/WorkAllocations/TeamWorkAllocation';
+import EmployeeTeamWork from './Components/USER/Team/EmployeeTeamWork';
+import AnnouncementForm from './Components/ADMIN/Announcements/AnnouncementsForm';
+import EditAnnouncement from './Components/ADMIN/Announcements/EditAnnouncement';
 
 function App() {
   return (

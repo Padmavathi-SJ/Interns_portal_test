@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import profile from '../assets/profile.jpg'; // Import default profile picture
+import profile from '../../../assets/profile.jpg'; // Import default profile picture
 
 const EmployeeProfile = () => {
   const [employee, setEmployee] = useState(null);

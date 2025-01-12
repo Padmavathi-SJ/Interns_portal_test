@@ -3,7 +3,7 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import axios from "axios";
 import { SunIcon, MoonIcon, UserIcon, LogoutIcon } from "@heroicons/react/solid";
 import EmployeeProfile from './EmployeeProfile';
-import profileImage from "../assets/profile.jpg";
+import profileImage from "../../../assets/profile.jpg";
 
 const EmployeeDashboard = () => {
   const location = useLocation();
