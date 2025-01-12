@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { FaTachometerAlt, FaUsers, FaBuilding, FaUserTag, FaTasks, FaBell, FaSignOutAlt } from 'react-icons/fa';
 import { MdFeedback } from 'react-icons/md';
-import logo from '../../assets/bit-logo.png';
+import logo from '../../assets/logo1.png';
+
 
 const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -15,23 +16,21 @@ const Dashboard = () => {
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
       <div
-        className={`w-${isSidebarOpen ? '64' : '20'} bg-blue-900 text-white p-6 transition-all duration-300 ease-in-out`}
+        className={`w-${isSidebarOpen ? '48' : '16'} bg-blue-900 text-white p-4 transition-all duration-300 ease-in-out`}
       >
-        <div className="flex justify-between items-center mb-8">
-        <div className="flex items-center">
-            <img src={logo} alt="Logo" className="w-10 h-10 mr-2" />
-            <div>
-              <h1 className={`text-3xl font-semibold ${isSidebarOpen ? '' : 'hidden'}`}>BIT</h1>
-              <h2 className={`text-lg font-light ${isSidebarOpen ? '' : 'hidden'}`}>INTERNS PORTAL</h2>
-            </div>
-          </div>
-          <button onClick={toggleSidebar} className="text-white">
-            {isSidebarOpen ? (
-              <span>logo</span>
-            ) : (
-              <span>logo</span>
+        <div
+          className="flex justify-between items-center mb-8 cursor-pointer"
+          onClick={toggleSidebar}
+        >
+          <div className="flex items-center">
+            <img src={logo} alt="Logo" className="w-8 h-8 mr-2" />
+            {isSidebarOpen && (
+              <div>
+                <h1 className="text-2xl font-semibold">BIT</h1>
+                <h2 className="text-sm font-light">INTERNS PORTAL</h2>
+              </div>
             )}
-          </button>
+          </div>
         </div>
         <ul>
           <li className="mb-4">
@@ -168,10 +167,14 @@ const Dashboard = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-8">
-        <h2 className="text-3xl font-semibold text-gray-800 mb-6">Dashboard</h2>
-        <Outlet />
-      </div>
+      {/* Main Content */}
+<div className="flex-1 p-8 bg-white shadow-lg rounded-lg">
+  <h2 className="text-3xl font-bold text-gray-900 mb-6 border-b-2 border-gray-200 pb-2">
+    BIT Interns Portal
+  </h2>
+  <Outlet />
+</div>
+
     </div>
   );
 };

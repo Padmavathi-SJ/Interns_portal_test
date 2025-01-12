@@ -19,7 +19,6 @@ const AddEmployee = () => {
     mobile_no: '', // Added mobile_no field
     address: '',    // Added address field
   });
-  
 
   const [departments, setDepartments] = useState([]);
   const navigate = useNavigate();
@@ -69,10 +68,9 @@ const AddEmployee = () => {
       });
   };
   
-  
   return (
-    <div className="p-6 bg-white shadow-lg rounded-lg max-w-2xl mx-auto">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">Add New Employee</h2>
+    <div className="p-6 bg-gradient-to-r from-blue-100 via-white to-blue-50 rounded-lg max-w-2xl mx-auto">
+      <h2 className="text-2xl font-semibold text-blue-700 mb-6">Add New Intern</h2>
       <form onSubmit={handleSubmit}>
         {/* Employee fields */}
         <div className="mb-4">
@@ -82,7 +80,7 @@ const AddEmployee = () => {
             name="name"
             value={employee.name}
             onChange={(e) => setEmployee({ ...employee, name: e.target.value })}
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             required
           />
         </div>
@@ -94,7 +92,7 @@ const AddEmployee = () => {
             name="email"
             value={employee.email}
             onChange={(e) => setEmployee({ ...employee, email: e.target.value })}
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             required
           />
         </div>
@@ -106,7 +104,7 @@ const AddEmployee = () => {
             name="password"
             value={employee.password}
             onChange={(e) => setEmployee({ ...employee, password: e.target.value })}
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             required
           />
         </div>
@@ -118,7 +116,7 @@ const AddEmployee = () => {
             name="role"
             value={employee.role}
             onChange={(e) => setEmployee({ ...employee, role: e.target.value })}
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             required
           />
         </div>
@@ -130,7 +128,7 @@ const AddEmployee = () => {
             name="experience"
             value={employee.experience}
             onChange={(e) => setEmployee({ ...employee, experience: e.target.value })}
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             required
           />
         </div>
@@ -141,7 +139,7 @@ const AddEmployee = () => {
             name="department"
             value={employee.department_id}
             onChange={(e) => setEmployee({ ...employee, department_id: parseInt(e.target.value, 10) })}
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             required
           >
             <option value="">Select Department</option>
@@ -160,7 +158,7 @@ const AddEmployee = () => {
             name="salary"
             value={employee.salary}
             onChange={(e) => setEmployee({ ...employee, salary: e.target.value })}
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             required
           />
         </div>
@@ -173,7 +171,7 @@ const AddEmployee = () => {
             name="degree"
             value={employee.degree}
             onChange={(e) => setEmployee({ ...employee, degree: e.target.value })}
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             required
           />
         </div>
@@ -185,7 +183,7 @@ const AddEmployee = () => {
             name="university"
             value={employee.university}
             onChange={(e) => setEmployee({ ...employee, university: e.target.value })}
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             required
           />
         </div>
@@ -197,7 +195,7 @@ const AddEmployee = () => {
             name="graduation_year"
             value={employee.graduation_year}
             onChange={(e) => setEmployee({ ...employee, graduation_year: e.target.value })}
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             required
           />
         </div>
@@ -209,7 +207,7 @@ const AddEmployee = () => {
             name="skills"
             value={employee.skills}
             onChange={(e) => setEmployee({ ...employee, skills: e.target.value })}
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             rows="3"
           />
         </div>
@@ -220,61 +218,64 @@ const AddEmployee = () => {
             name="certifications"
             value={employee.certifications}
             onChange={(e) => setEmployee({ ...employee, certifications: e.target.value })}
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             rows="3"
           />
         </div>
+
         <div className="mb-4">
-  <label htmlFor="mobile_no" className="block text-sm font-medium text-gray-700">Mobile Number</label>
-  <input
-    type="text"
-    name="mobile_no"
-    value={employee.mobile_no}
-    onChange={(e) => setEmployee({ ...employee, mobile_no: e.target.value })}
-    className="w-full px-4 py-2 mt-1 border rounded-md"
-    required
-  />
-</div>
+          <label htmlFor="mobile_no" className="block text-sm font-medium text-gray-700">Mobile Number</label>
+          <input
+            type="text"
+            name="mobile_no"
+            value={employee.mobile_no}
+            onChange={(e) => setEmployee({ ...employee, mobile_no: e.target.value })}
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
+            required
+          />
+        </div>
 
-<div className="mb-4">
-  <label htmlFor="address" className="block text-sm font-medium text-gray-700">Address</label>
-  <textarea
-    name="address"
-    value={employee.address}
-    onChange={(e) => setEmployee({ ...employee, address: e.target.value })}
-    className="w-full px-4 py-2 mt-1 border rounded-md"
-    rows="3"
-    required
-  ></textarea>
-</div>
+        <div className="mb-4">
+          <label htmlFor="address" className="block text-sm font-medium text-gray-700">Address</label>
+          <textarea
+            name="address"
+            value={employee.address}
+            onChange={(e) => setEmployee({ ...employee, address: e.target.value })}
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
+            rows="3"
+            required
+          ></textarea>
+        </div>
 
-<div className="mb-4">
-  <label htmlFor="resume" className="block text-sm font-medium text-gray-700">Resume</label>
-  <input
-    type="file"
-    name="resume"
-    accept=".pdf,.doc,.docx"
-    onChange={(e) => setEmployee({ ...employee, resume: e.target.files[0] })}
-    className="w-full px-4 py-2 mt-1 border rounded-md"
-  />
-</div>
+        {/* File Upload */}
+        <div className="mb-4">
+          <label htmlFor="resume" className="block text-sm font-medium text-gray-700">Resume</label>
+          <input
+            type="file"
+            name="resume"
+            accept=".pdf,.doc,.docx"
+            onChange={(e) => setEmployee({ ...employee, resume: e.target.files[0] })}
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
+          />
+        </div>
 
-<div className="mb-4">
-  <label htmlFor="profile_img" className="block text-sm font-medium text-gray-700">Profile Image</label>
-  <input
-    type="file"
-    name="profile_img"
-    accept="image/*"
-    onChange={(e) => setEmployee({ ...employee, profile_img: e.target.files[0] })}
-    className="w-full px-4 py-2 mt-1 border rounded-md"
-  />
-</div>
+        <div className="mb-4">
+          <label htmlFor="profile_img" className="block text-sm font-medium text-gray-700">Profile Image</label>
+          <input
+            type="file"
+            name="profile_img"
+            accept="image/*"
+            onChange={(e) => setEmployee({ ...employee, profile_img: e.target.files[0] })}
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
+          />
+        </div>
 
+        {/* Submit Button */}
         <button
           type="submit"
-          className="w-full px-4 py-2 font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-blue-700 focus:ring-2 focus:ring-indigo-600"
         >
-          Add Employee
+          Add Intern
         </button>
       </form>
     </div>

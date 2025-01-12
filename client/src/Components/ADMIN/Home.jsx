@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const Home = () => {
+const Home = ({ isSidebarOpen }) => {
   const [metrics, setMetrics] = useState({
     totalEmployees: 0,
     pendingLeaves: 0,
@@ -59,14 +59,26 @@ const Home = () => {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <h2 className="text-3xl font-bold text-center mb-8">Admin Dashboard Overview</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className={`container mx-auto p-6 transition-all duration-300 max-w-7xl ${isSidebarOpen ? 'ml-64' : 'ml-16'}`}>
+      <h2 className="text-3xl font-bold text-center mb-8 text-blue-700">
+        Admin Dashboard Overview
+      </h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {/* Metric Cards */}
         {Object.entries(metrics).map(([key, value]) => (
-          <div key={key} className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
-            <h3 className="text-xl font-semibold text-gray-600 mb-4 capitalize">{key.replace(/([A-Z])/g, ' $1')}</h3>
-            <p className="text-4xl font-bold text-blue-500">{value}</p>
+          <div
+            key={key}
+            className="bg-gradient-to-r from-blue-100 via-white to-blue-50 p-6 rounded-lg shadow-xl flex flex-col items-center transform transition duration-500 hover:scale-105 hover:shadow-2xl"
+          >
+            <div className="flex items-center justify-between w-full">
+              <h3 className="text-xl font-semibold text-gray-700 mb-4 capitalize">
+                {key.replace(/([A-Z])/g, ' $1')}
+              </h3>
+              <span className="text-sm bg-blue-200 text-blue-800 px-2 py-1 rounded-full">
+                {key.includes("pending") ? "Pending" : "Active"}
+              </span>
+            </div>
+            <p className="text-4xl font-bold text-blue-600">{value}</p>
           </div>
         ))}
       </div>

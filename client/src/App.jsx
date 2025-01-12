@@ -36,6 +36,7 @@ import TeamWorkAllocation from './Components/ADMIN/WorkAllocations/TeamWorkAlloc
 import EmployeeTeamWork from './Components/USER/Team/EmployeeTeamWork';
 import AnnouncementForm from './Components/ADMIN/Announcements/AnnouncementsForm';
 import EditAnnouncement from './Components/ADMIN/Announcements/EditAnnouncement';
+import EditDepartment from './Components/ADMIN/Departments/EditDepartment';
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
           <Route path="employee/add_employee" element={<AddEmployee />} />
           <Route path="employee/edit_employee/:employeeId" element={<EditEmployee />} />
           <Route path="department" element={<Department />} />
+          <Route path="edit_department/:departmentId" element={<EditDepartment />} />
           <Route path="department/:departmentId/employees" element={<EmployeeList />} />
           <Route path="employee/:employeeId/details" element={<EmployeeDetails />} />
           <Route path="department/add_department" element={<AddDepartment />} />

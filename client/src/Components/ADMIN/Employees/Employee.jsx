@@ -2,86 +2,120 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-const Employee = () => {
+const Employee = ({ isSidebarOpen }) => {
   const [employees, setEmployees] = useState([]);
+  const [filteredEmployees, setFilteredEmployees] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalEmployees, setTotalEmployees] = useState(0);
+  const employeesPerPage = 10;
 
   useEffect(() => {
-    // Fetch employees from the server
-    axios
-      .get("http://localhost:3000/auth/get_employees")
-      .then((response) => {
+    // Fetch employees from the server once
+    const fetchEmployees = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/auth/get_employees", {
+          params: {
+            limit: 1000, // Fetch a large enough number to handle search client-side
+          },
+        });
+
         if (response.data.Status) {
-          setEmployees(response.data.Result); // Set employees data
+          setEmployees(response.data.Result);
+          setTotalEmployees(response.data.Result.length); // Total number of employees
+          setFilteredEmployees(response.data.Result); // Initially, all employees are displayed
         } else {
           alert("Failed to fetch employees");
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error(err);
         alert("Error fetching employees");
-      });
+      }
+    };
+
+    fetchEmployees();
   }, []);
 
   const handleDelete = (employeeId) => {
-    if (window.confirm('Are you sure you want to delete this employee?')) {
+    if (window.confirm("Are you sure you want to delete this employee?")) {
       axios
         .delete(`http://localhost:3000/auth/delete_employee/${employeeId}`)
         .then((response) => {
           if (response.data.Status) {
-            alert('Employee deleted successfully');
-            // Re-fetch the employee list after deletion
-            axios
-              .get('http://localhost:3000/auth/get_employees')
-              .then((response) => {
-                if (response.data.Status) {
-                  setEmployees(response.data.Result); // Set updated employees data
-                } else {
-                  alert('Failed to fetch employees');
-                }
-              })
-              .catch((err) => {
-                console.error(err);
-                alert('Error fetching employees');
-              });
+            alert("Employee deleted successfully");
+            setEmployees((prev) => prev.filter((employee) => employee.employeeId !== employeeId));
+            setFilteredEmployees((prev) => prev.filter((employee) => employee.employeeId !== employeeId));
           } else {
-            alert('Failed to delete employee');
+            alert("Failed to delete employee");
           }
         })
         .catch((err) => {
           console.error(err);
-          alert('Error deleting employee');
+          alert("Error deleting employee");
         });
     }
   };
 
-  return (
-    <div className="p-6 bg-white shadow-lg rounded-lg max-w-4xl mx-auto">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">Employees</h2>
-      <p className="mb-6">Here is a list of all employees...</p>
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+    // Filter employees based on name locally
+    const filtered = employees.filter((employee) =>
+      employee.name.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+    setFilteredEmployees(filtered);
+    setCurrentPage(1); // Reset to first page on search change
+  };
 
-      {/* Link Button to Add New Employee */}
-      <Link
-        to="/admin-dashboard/employee/add_employee"
-        className="inline-block px-6 py-2 mb-4 font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
-      >
-        Add New Employee
-      </Link>
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredEmployees.length / employeesPerPage);
+
+  const handlePageChange = (page) => {
+    if (page > 0 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const currentEmployees = filteredEmployees.slice(
+    (currentPage - 1) * employeesPerPage,
+    currentPage * employeesPerPage
+  );
+
+  return (
+    <div className={`p-6 bg-gradient-to-r from-blue-100 via-white to-blue-50 rounded-lg max-w-8xl mx-auto transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-16"}`}>
+      <h2 className="text-3xl font-semibold text-blue-700 mb-4">Here is a list of all Interns</h2>
+
+      {/* Search Box */}
+      <div className="mb-6 flex justify-between items-center">
+        <input
+          type="text"
+          placeholder="Search employees by name..."
+          value={searchQuery}
+          onChange={handleSearch}
+          className="p-3 w-full md:w-1/3 border border-blue-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"
+        />
+        <Link
+          to="/admin-dashboard/employee/add_employee"
+          className="inline-block px-6 py-2 ml-4 font-semibold text-white bg-blue-700 rounded-md hover:bg-blue-700"
+        >
+          Add New Intern
+        </Link>
+      </div>
 
       {/* Employees Table */}
-      {employees.length > 0 ? (
-        <table className="min-w-full table-auto">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="px-4 py-2 text-left text-gray-600">Employee ID</th>
-              <th className="px-4 py-2 text-left text-gray-600">Name</th>
-              <th className="px-4 py-2 text-left text-gray-600">Department</th>
-              <th className="px-4 py-2 text-left text-gray-600">Role</th>
-              <th className="px-4 py-2 text-left text-gray-600">Actions</th>
+      {currentEmployees.length > 0 ? (
+        <table className="min-w-full table-auto mb-6 bg-white shadow-lg rounded-lg">
+          <thead className="bg-gradient-to-r from-blue-100 via-white to-blue-50 text-blue-700">
+            <tr>
+              <th className="px-4 py-2 text-left">Employee ID</th>
+              <th className="px-4 py-2 text-left">Name</th>
+              <th className="px-4 py-2 text-left">Department</th>
+              <th className="px-4 py-2 text-left">Role</th>
+              <th className="px-4 py-2 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {employees.map((employee) => (
-              <tr key={employee.employeeId} className="border-b">
+            {currentEmployees.map((employee) => (
+              <tr key={employee.employeeId} className="border-b hover:bg-indigo-50 transition-colors">
                 <td className="px-4 py-2 text-gray-800">{employee.employeeId}</td>
                 <td className="px-4 py-2 text-gray-800">{employee.name}</td>
                 <td className="px-4 py-2 text-gray-800">{employee.department}</td>
@@ -107,6 +141,29 @@ const Employee = () => {
         </table>
       ) : (
         <p>No employees available.</p>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-md mr-2 disabled:bg-gray-400"
+          >
+            Previous
+          </button>
+          <span className="px-4 py-2 text-gray-700">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-blue-700 text-white rounded-md ml-2 disabled:bg-gray-400"
+          >
+            Next
+          </button>
+        </div>
       )}
     </div>
   );

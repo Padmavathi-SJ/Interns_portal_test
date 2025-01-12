@@ -89,17 +89,12 @@ const EditEmployee = () => {
   };
 
   return (
-    <div className="p-6 bg-white shadow-lg rounded-lg max-w-2xl mx-auto">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-        Edit Employee
-      </h2>
+    <div className="p-6 bg-gradient-to-r from-blue-100 via-white to-blue-50 rounded-lg max-w-2xl mx-auto">
+      <h2 className="text-2xl font-semibold text-blue-700 mb-6">Edit Employee</h2>
       <form onSubmit={handleSubmit}>
         {/* Employee fields */}
         <div className="mb-4">
-          <label
-            htmlFor="name"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
             Name
           </label>
           <input
@@ -107,16 +102,13 @@ const EditEmployee = () => {
             name="name"
             value={employee.name}
             onChange={(e) => setEmployee({ ...employee, name: e.target.value })}
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             required
           />
         </div>
 
         <div className="mb-4">
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
             Email
           </label>
           <input
@@ -126,16 +118,13 @@ const EditEmployee = () => {
             onChange={(e) =>
               setEmployee({ ...employee, email: e.target.value })
             }
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             required
           />
         </div>
 
         <div className="mb-4">
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
             Password
           </label>
           <input
@@ -145,16 +134,13 @@ const EditEmployee = () => {
             onChange={(e) =>
               setEmployee({ ...employee, password: e.target.value })
             }
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             required
           />
         </div>
 
         <div className="mb-4">
-          <label
-            htmlFor="role"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="role" className="block text-sm font-medium text-gray-700">
             Role
           </label>
           <input
@@ -162,16 +148,13 @@ const EditEmployee = () => {
             name="role"
             value={employee.role}
             onChange={(e) => setEmployee({ ...employee, role: e.target.value })}
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             required
           />
         </div>
 
         <div className="mb-4">
-          <label
-            htmlFor="department"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="department" className="block text-sm font-medium text-gray-700">
             Department
           </label>
           <select
@@ -183,7 +166,7 @@ const EditEmployee = () => {
                 department_id: parseInt(e.target.value, 10),
               })
             }
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             required
           >
             <option value="">Select Department</option>
@@ -196,10 +179,7 @@ const EditEmployee = () => {
         </div>
 
         <div className="mb-4">
-          <label
-            htmlFor="salary"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="salary" className="block text-sm font-medium text-gray-700">
             Salary
           </label>
           <input
@@ -209,16 +189,14 @@ const EditEmployee = () => {
             onChange={(e) =>
               setEmployee({ ...employee, salary: e.target.value })
             }
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             required
           />
         </div>
 
+        {/* Additional fields */}
         <div className="mb-4">
-          <label
-            htmlFor="experience"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="experience" className="block text-sm font-medium text-gray-700">
             Experience
           </label>
           <textarea
@@ -227,50 +205,40 @@ const EditEmployee = () => {
             onChange={(e) =>
               setEmployee({ ...employee, experience: e.target.value })
             }
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
           />
         </div>
 
-        {/* Additional fields */}
         <div className="mb-4">
-          <label
-            htmlFor="degree"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="degree" className="block text-sm font-medium text-gray-700">
             Degree
           </label>
           <textarea
             name="degree"
-            value={employee.degree || ""} // fallback to empty string if degree is null or undefined
+            value={employee.degree || ""}
             onChange={(e) =>
               setEmployee({ ...employee, degree: e.target.value })
             }
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
           />
         </div>
 
         <div className="mb-4">
-          <label
-            htmlFor="university"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="university" className="block text-sm font-medium text-gray-700">
             University
           </label>
           <textarea
             name="university"
-            value={employee.university || ""} // fallback to empty string if university is null or undefined
+            value={employee.university || ""}
             onChange={(e) =>
               setEmployee({ ...employee, university: e.target.value })
             }
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
           />
         </div>
 
         <div className="mb-4">
-          <label
-            htmlFor="graduation_year"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="graduation_year" className="block text-sm font-medium text-gray-700">
             Graduation Year
           </label>
           <input
@@ -280,16 +248,13 @@ const EditEmployee = () => {
             onChange={(e) =>
               setEmployee({ ...employee, graduation_year: e.target.value })
             }
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             required
           />
         </div>
 
         <div className="mb-4">
-          <label
-            htmlFor="skills"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="skills" className="block text-sm font-medium text-gray-700">
             Skills
           </label>
           <textarea
@@ -298,16 +263,13 @@ const EditEmployee = () => {
             onChange={(e) =>
               setEmployee({ ...employee, skills: e.target.value })
             }
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             required
           />
         </div>
 
         <div className="mb-4">
-          <label
-            htmlFor="certifications"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="certifications" className="block text-sm font-medium text-gray-700">
             Certifications
           </label>
           <textarea
@@ -316,52 +278,44 @@ const EditEmployee = () => {
             onChange={(e) =>
               setEmployee({ ...employee, certifications: e.target.value })
             }
-            className="w-full px-4 py-2 mt-1 border rounded-md"
-            required
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
           />
         </div>
 
         <div className="mb-4">
-          <label
-            htmlFor="mobile_no"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="mobile_no" className="block text-sm font-medium text-gray-700">
             Mobile No
           </label>
           <input
             type="text"
             name="mobile_no"
-            value={employee.mobile_no}
+            value={employee.mobile_no || ""}
             onChange={(e) =>
               setEmployee({ ...employee, mobile_no: e.target.value })
             }
-            className="w-full px-4 py-2 mt-1 border rounded-md"
-            required
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
           />
         </div>
 
         <div className="mb-4">
-          <label
-            htmlFor="address"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="address" className="block text-sm font-medium text-gray-700">
             Address
           </label>
           <textarea
             name="address"
-            value={employee.address || ""} // fallback to empty string if address is null or undefined
+            value={employee.address || ""}
             onChange={(e) =>
               setEmployee({ ...employee, address: e.target.value })
             }
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
           />
         </div>
 
         <button
           type="submit"
-          className="w-full px-4 py-2 font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
+          className="w-full px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-700 focus:ring-2 focus:ring-indigo-600"
         >
-          Update Employee
+          Save Changes
         </button>
       </form>
     </div>
