@@ -626,6 +626,29 @@ router.get("/get_tasks", (req, res) => {
   });
 });
 
+router.get("/get_team_tasks", (req, res) => {
+  const sql = `
+    SELECT 
+  team_work_allocation.id AS taskId, 
+  team_work_allocation.title, 
+  team_work_allocation.description, 
+  team_work_allocation.deadline, 
+  team_work_allocation.priority, 
+  team_work_allocation.status, 
+  teams.team_name AS team_name 
+FROM team_work_allocation 
+LEFT JOIN teams ON team_work_allocation.team_id = teams.team_id;
+  `;
+  connection.query(sql, (err, result) => {
+    if (err) {
+      console.error("Query Error:", err);
+      return res.json({ Status: false, Error: "Query Error" });
+    }
+    return res.json({ Status: true, Result: result });
+  });
+});
+
+
 router.get("/get_task/:taskId", (req, res) => {
   const { taskId } = req.params;
   const sql = "SELECT * FROM work_allocation WHERE id = ?";
@@ -992,7 +1015,6 @@ router.get("/get_teams", (req, res) => {
     res.json({ Status: true, Result: teams });
   });
 });
-
 
 
 router.get("/get_team/:team_id", (req, res) => {
