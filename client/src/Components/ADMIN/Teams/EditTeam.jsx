@@ -27,52 +27,43 @@ const EditTeam = () => {
       onFailure(error.message || "Error loading data.");
     }
   };
-  
 
   useEffect(() => {
     const fetchInitialData = async () => {
       setLoading(true);
       try {
-        // Fetch team details
         await fetchData(
           `http://localhost:3000/auth/get_team/${team_id}`,
           async (result) => {
-            console.log("Fetched Team Details:", result);
             const { team_name, team_members, department_id } = result;
-  
+
             if (!department_id) {
               setError("Department ID is missing for this team.");
               return;
             }
-  
+
             setTeamDetails({
               team_name,
               team_members: new Set(JSON.parse(team_members)),
               department_id,
             });
-  
-            // Fetch employees within the department
+
             await fetchData(
               `http://localhost:3000/auth/get_employees_by_department/${department_id}`,
-              (employees) => {
-                console.log("Fetched Employees:", employees);
-                setEmployees(employees);
-              },
+              (employees) => setEmployees(employees),
               (message) => setError(`Error fetching employees: ${message}`)
             );
           },
           (message) => setError(`Error fetching team: ${message}`)
         );
       } catch (error) {
-        console.error("Initialization Error:", error);
         setError("Initialization failed. Please try again later.");
       }
       setLoading(false);
     };
-  
+
     fetchInitialData();
   }, [team_id]);
-  
 
   const handleEmployeeSelect = (employeeId) => {
     setTeamDetails((prev) => {
@@ -110,7 +101,6 @@ const EditTeam = () => {
         alert("Failed to update team.");
       }
     } catch (error) {
-      console.error("Error updating team:", error);
       alert("Error updating team.");
     }
   };
@@ -118,13 +108,12 @@ const EditTeam = () => {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="container mx-auto p-4">
-      <h2 className="text-center text-2xl font-semibold mb-6">Edit Team</h2>
+    <div className="p-6 bg-gradient-to-r from-blue-100 via-white to-blue-50 rounded-lg max-w-2xl mx-auto">
+      <h2 className="text-2xl font-semibold text-blue-700 mb-6">Edit Team</h2>
       {error && <p className="text-red-500">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Team Name */}
         <div>
-          <label htmlFor="team_name" className="block text-gray-700">
+          <label htmlFor="team_name" className="block text-sm font-medium text-gray-700">
             Team Name
           </label>
           <input
@@ -132,25 +121,23 @@ const EditTeam = () => {
             id="team_name"
             value={teamDetails.team_name}
             onChange={(e) => setTeamDetails({ ...teamDetails, team_name: e.target.value })}
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             required
           />
         </div>
 
-        {/* Department */}
         <div>
-          <label className="block text-gray-700">Department</label>
+          <label className="block text-sm font-medium text-gray-700">Department</label>
           <input
             type="text"
             value={teamDetails.department_id || ""}
             readOnly
-            className="border p-2 w-full bg-gray-100 cursor-not-allowed"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm bg-gray-100 cursor-not-allowed"
           />
         </div>
 
-        {/* Employee Selection */}
         <div>
-          <h3 className="text-xl mb-2">Select Employees:</h3>
+          <h3 className="text-xl mb-2 text-blue-700">Select Employees:</h3>
           {employees.length > 0 ? (
             <ul>
               {employees.map((employee) => (
@@ -170,11 +157,10 @@ const EditTeam = () => {
           )}
         </div>
 
-        {/* Submit Button */}
         <div className="flex justify-end">
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            className="w-full px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-700 focus:ring-2 focus:ring-indigo-600"
             disabled={!teamDetails.team_name || teamDetails.team_members.size === 0}
           >
             Update Team

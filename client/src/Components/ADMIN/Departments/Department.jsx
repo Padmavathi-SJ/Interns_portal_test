@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { PencilIcon, TrashIcon } from '@heroicons/react/outline'; // Import Heroicons
 
 const Department = () => {
   const [departments, setDepartments] = useState([]);
@@ -65,22 +66,24 @@ const Department = () => {
         {departments.map((department) => (
           <div
             key={department.id}
-            className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl cursor-pointer transition duration-300 ease-in-out transform hover:scale-105 border border-blue-300"
+            className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl cursor-pointer transition duration-300 ease-in-out transform hover:scale-105 border border-blue-300 relative"
             onClick={() => handleViewEmployees(department.id)}
           >
             <h3 className="text-xl font-semibold text-blue-700">{department.name}</h3>
-            <div className="mt-4 flex justify-between">
+
+            {/* Buttons positioned at the bottom right corner */}
+            <div className="absolute bottom-2 right-2 flex space-x-2">
               <button
                 className="text-blue-700 hover:text-blue-800"
                 onClick={(e) => { e.stopPropagation(); handleEditDepartment(department.id); }}
               >
-                Edit
+                <PencilIcon className="h-5 w-5" />
               </button>
               <button
                 className="text-red-600 hover:text-red-700"
                 onClick={(e) => { e.stopPropagation(); handleDeleteDepartment(department.id); }}
               >
-                Delete
+                <TrashIcon className="h-5 w-5" />
               </button>
             </div>
           </div>

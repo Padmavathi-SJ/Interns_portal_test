@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { FaEdit, FaTrashAlt } from "react-icons/fa"; // Importing icons
 
 const TeamManagement = () => {
   const [teamList, setTeamList] = useState([]);
-  const [error, setError] = useState("");
-  const [selectedTeam, setSelectedTeam] = useState(null);
+  const [filteredTeams, setFilteredTeams] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalTeams, setTotalTeams] = useState(0);
+  const teamsPerPage = 10;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -14,6 +18,8 @@ const TeamManagement = () => {
         const response = await axios.get("http://localhost:3000/auth/get_teams");
         if (Array.isArray(response.data.Result)) {
           setTeamList(response.data.Result);
+          setTotalTeams(response.data.Result.length);
+          setFilteredTeams(response.data.Result);
         } else {
           console.error("Expected an array but received:", response.data);
           setError("No teams found.");
@@ -28,12 +34,11 @@ const TeamManagement = () => {
   }, []);
 
   const handleCreateTeam = () => {
-    navigate("/admin-dashboard/team_creation"); // Navigate to the department page to create a team
+    navigate("/admin-dashboard/team_creation"); // Navigate to the team creation page
   };
 
   const handleEditTeam = (team) => {
-    // Navigate to the edit page with the selected team's id
-    navigate(`/admin-dashboard/teams/edit_team/${team.team_id}`);
+    navigate(`/admin-dashboard/teams/edit_team/${team.team_id}`); // Navigate to the edit page with the selected team's id
   };
 
   const handleDeleteTeam = async (teamId) => {
@@ -43,6 +48,7 @@ const TeamManagement = () => {
         const response = await axios.delete(`http://localhost:3000/auth/delete_team/${teamId}`);
         if (response.data.Status) {
           setTeamList(teamList.filter(team => team.team_id !== teamId));
+          setFilteredTeams(filteredTeams.filter(team => team.team_id !== teamId));
           alert("Team deleted successfully!");
         } else {
           alert("Failed to delete team.");
@@ -54,62 +60,95 @@ const TeamManagement = () => {
     }
   };
 
-  const handleSelectTeam = (team) => {
-    setSelectedTeam(team);
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+    const filtered = teamList.filter(team =>
+      team.team_name.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+    setFilteredTeams(filtered);
+    setCurrentPage(1); // Reset to first page on search change
   };
 
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredTeams.length / teamsPerPage);
+
+  const handlePageChange = (page) => {
+    if (page > 0 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const currentTeams = filteredTeams.slice(
+    (currentPage - 1) * teamsPerPage,
+    currentPage * teamsPerPage
+  );
+
   return (
-    <div className="container mx-auto p-4">
-      <h2 className="text-center text-2xl font-semibold mb-6">Team Management</h2>
-      {error && <p className="text-red-500">{error}</p>}
-      <div className="flex justify-between items-center mb-4">
+    <div className="p-6 bg-gradient-to-r from-blue-100 via-white to-blue-50 rounded-lg max-w-8xl mx-auto transition-all duration-300">
+      <h2 className="text-3xl font-semibold text-blue-700 mb-4">Team Management</h2>
+
+      {/* Search Box */}
+      <div className="mb-6 flex justify-between items-center">
+        <input
+          type="text"
+          placeholder="Search teams by name..."
+          value={searchQuery}
+          onChange={handleSearch}
+          className="p-3 w-full md:w-1/3 border border-blue-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"
+        />
         <button
           onClick={handleCreateTeam}
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+          className="inline-block px-6 py-2 ml-4 font-semibold text-white bg-blue-700 rounded-md hover:bg-blue-800"
         >
           Create New Team
         </button>
       </div>
-      <div className="overflow-x-auto bg-white shadow-lg rounded-lg">
+
+      {/* Teams Table */}
+      <div className="overflow-x-auto bg-white shadow-lg rounded-lg mb-6">
         <table className="min-w-full table-auto">
-          <thead>
-            <tr className="bg-gray-100 text-gray-600">
+          <thead className="bg-gradient-to-r from-blue-100 via-white to-blue-50 text-blue-700">
+            <tr>
+              <th className="px-4 py-2 text-left">Team ID</th>
               <th className="px-4 py-2 text-left">Team Name</th>
+              <th className="px-4 py-2 text-left">Department</th>
               <th className="px-4 py-2 text-left">Team Members</th>
               <th className="px-4 py-2 text-left">Created At</th>
               <th className="px-4 py-2 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {Array.isArray(teamList) && teamList.length > 0 ? (
-              teamList.map((team) => (
-                <tr key={team.team_id} className="border-t hover:bg-gray-50">
-                  <td className="px-4 py-2">{team.team_name}</td>
-                  <td className="px-4 py-2">
+            {currentTeams.length > 0 ? (
+              currentTeams.map((team) => (
+                <tr key={team.team_id} className="border-b hover:bg-blue-50 transition-colors">
+                  <td className="px-4 py-2 text-gray-800">{team.team_id}</td>
+                  <td className="px-4 py-2 text-gray-800">{team.team_name}</td>
+                  <td className="px-4 py-2 text-gray-800">{team.department_name || "N/A"}</td>
+                  <td className="px-4 py-2 text-gray-800">
                     {team.team_members && Array.isArray(team.team_members)
                       ? team.team_members.join(", ")
                       : "No members"}
                   </td>
-                  <td className="px-4 py-2">{team.created_at}</td>
+                  <td className="px-4 py-2 text-gray-800">{team.created_at}</td>
                   <td className="px-4 py-2 flex space-x-2">
                     <button
                       onClick={() => handleEditTeam(team)}
-                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                      className="text-blue-600 hover:text-blue-800"
                     >
-                      Edit
+                      <FaEdit className="w-5 h-5" />
                     </button>
                     <button
                       onClick={() => handleDeleteTeam(team.team_id)}
-                      className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                      className="text-red-600 hover:text-red-800"
                     >
-                      Delete
+                      <FaTrashAlt className="w-5 h-5" />
                     </button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="px-4 py-2 text-center">
+                <td colSpan="6" className="px-4 py-2 text-center text-gray-600">
                   No teams found.
                 </td>
               </tr>
@@ -118,20 +157,26 @@ const TeamManagement = () => {
         </table>
       </div>
 
-      {selectedTeam && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 shadow-lg max-w-md w-full">
-            <h3 className="text-xl font-semibold mb-4">Team Details</h3>
-            <p><strong>Team Name:</strong> {selectedTeam.team_name}</p>
-            <p><strong>Team Members:</strong> {selectedTeam.team_members.join(", ")}</p>
-            <p><strong>Created At:</strong> {selectedTeam.created_at}</p>
-            <button
-              onClick={() => setSelectedTeam(null)}
-              className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-            >
-              Close
-            </button>
-          </div>
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-md mr-2 disabled:bg-gray-400"
+          >
+            Previous
+          </button>
+          <span className="px-4 py-2 text-gray-700">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-blue-700 text-white rounded-md ml-2 disabled:bg-gray-400"
+          >
+            Next
+          </button>
         </div>
       )}
     </div>

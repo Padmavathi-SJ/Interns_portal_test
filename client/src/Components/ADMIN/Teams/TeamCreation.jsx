@@ -5,10 +5,10 @@ import { useNavigate } from "react-router-dom";
 const TeamCreation = () => {
   const [departments, setDepartments] = useState([]);
   const [employees, setEmployees] = useState([]);
-  const [selectedEmployees, setSelectedEmployees] = useState(new Set()); // Store selected employees in a Set
+  const [selectedEmployees, setSelectedEmployees] = useState(new Set());
   const [teamName, setTeamName] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState(null);
-  const [noEmployeesMessage, setNoEmployeesMessage] = useState(""); // For "No employees found"
+  const [noEmployeesMessage, setNoEmployeesMessage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,9 +30,8 @@ const TeamCreation = () => {
 
   const handleDepartmentSelect = async (departmentId) => {
     setSelectedDepartment(departmentId);
-    setNoEmployeesMessage(""); // Reset message when changing department
+    setNoEmployeesMessage("");
 
-    // Fetch employees for the selected department
     try {
       const response = await axios.get(
         `http://localhost:3000/auth/get_employees_by_department/${departmentId}`
@@ -68,7 +67,6 @@ const TeamCreation = () => {
       return;
     }
 
-    // Convert selected employees Set to an array before sending it to the backend
     const selectedEmployeesArray = Array.from(selectedEmployees);
 
     try {
@@ -90,14 +88,13 @@ const TeamCreation = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h2 className="text-center text-2xl font-semibold mb-6">Create a New Team</h2>
+    <div className="p-8 bg-gradient-to-r from-blue-100 via-white to-blue-50 rounded-lg max-w-2xl mx-auto">
+      <h2 className="text-3xl font-semibold text-blue-700 mb-6 text-center">Create a New Team</h2>
 
-      {/* Select Department */}
-      <div>
-        <label className="block mb-2">Select Department:</label>
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Select Department:</label>
         <select
-          className="border p-2 w-full"
+          className="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
           value={selectedDepartment || ""}
           onChange={(e) => handleDepartmentSelect(e.target.value)}
         >
@@ -110,21 +107,19 @@ const TeamCreation = () => {
         </select>
       </div>
 
-      {/* Team Name Input */}
-      <div className="mt-4">
-        <label className="block mb-2">Team Name:</label>
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Team Name:</label>
         <input
           type="text"
-          className="border p-2 w-full"
+          className="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
           value={teamName}
           onChange={(e) => setTeamName(e.target.value)}
         />
       </div>
 
-      {/* Employee Selection */}
       {selectedDepartment && (
-        <div className="mt-4">
-          <h3 className="text-xl mb-2">Select Employees:</h3>
+        <div className="mb-6">
+          <h3 className="text-xl text-blue-700 mb-2">Select Employees:</h3>
           {noEmployeesMessage ? (
             <p className="text-red-500">{noEmployeesMessage}</p>
           ) : (
@@ -134,7 +129,7 @@ const TeamCreation = () => {
                   <input
                     type="checkbox"
                     onChange={() => handleEmployeeSelect(employee.id)}
-                    checked={selectedEmployees.has(employee.id)} // Use Set's has method to check selection
+                    checked={selectedEmployees.has(employee.id)}
                     className="mr-2"
                   />
                   {employee.name} ({employee.department})
@@ -145,32 +140,28 @@ const TeamCreation = () => {
         </div>
       )}
 
-      {/* Selected Employees */}
       {selectedEmployees.size > 0 && (
-  <div className="mt-4">
-    <h3 className="text-lg mb-2">Selected Employees:</h3>
-    <ul>
-      {Array.from(selectedEmployees).map((employeeId) => {
-        const employee = employees.find((emp) => emp.id === employeeId);
-        // Check if employee is found
-        if (!employee) {
-          return <li key={employeeId} className="text-red-500">Employee not found</li>;
-        }
-        return (
-          <li key={employeeId} className="flex items-center">
-            {employee.name} ({employee.department})
-          </li>
-        );
-      })}
-    </ul>
-  </div>
-)}
+        <div className="mb-6">
+          <h3 className="text-lg text-blue-700 mb-2">Selected Employees:</h3>
+          <ul>
+            {Array.from(selectedEmployees).map((employeeId) => {
+              const employee = employees.find((emp) => emp.id === employeeId);
+              if (!employee) {
+                return <li key={employeeId} className="text-red-500">Employee not found</li>;
+              }
+              return (
+                <li key={employeeId}>
+                  {employee.name} ({employee.department})
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
 
-
-      {/* Create Team Button */}
       <button
         onClick={handleCreateTeam}
-        className="mt-4 px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        className="w-full px-4 py-2 font-semibold text-white bg-blue-700 rounded-md hover:bg-blue-800 transition duration-300 ease-in-out"
       >
         Create Team
       </button>

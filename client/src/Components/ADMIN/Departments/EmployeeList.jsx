@@ -6,6 +6,8 @@ import axios from 'axios';
 const EmployeeList = () => {
   const { departmentId } = useParams();  // Get department_id from URL params
   const [employees, setEmployees] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredEmployees, setFilteredEmployees] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -13,6 +15,7 @@ const EmployeeList = () => {
       .then((response) => {
         if (response.data.Status) {
           setEmployees(response.data.Result); // Populate employees
+          setFilteredEmployees(response.data.Result); // Initially, all employees are displayed
         } else {
           alert('Failed to fetch employees');
         }
@@ -27,27 +30,46 @@ const EmployeeList = () => {
     navigate(`/admin-dashboard/employee/${employeeId}/details`);
   };
 
-  return (
-    <div className="p-6 bg-white shadow-lg rounded-lg max-w-6xl mx-auto">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">Employees in Department</h2>
-      <p className="mb-6">Here is a list of employees in this department.</p>
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+    const filtered = employees.filter((employee) =>
+      employee.name.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+    setFilteredEmployees(filtered);
+  };
 
-      {/* Employee List Table */}
-      {employees.length > 0 ? (
-        <table className="min-w-full table-auto">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="px-4 py-2 text-left text-gray-600">Employee ID</th>
-              <th className="px-4 py-2 text-left text-gray-600">Employee Name</th>
-              <th className="px-4 py-2 text-left text-gray-600">Role</th>
-              <th className="px-4 py-2 text-left text-gray-600">Experience</th>
-              <th className="px-4 py-2 text-left text-gray-600">Salary</th>
-              <th className="px-4 py-2 text-left text-gray-600">Actions</th>
+  return (
+    <div className="p-6 bg-gradient-to-r from-blue-100 via-white to-blue-50 rounded-lg max-w-6xl mx-auto">
+      <h2 className="text-3xl font-semibold text-blue-700 mb-4">Interns in this Department</h2>
+      <p className="mb-6">Here is a list of interns in this department.</p>
+
+      {/* Search Box */}
+      <div className="mb-6 flex justify-between items-center">
+        <input
+          type="text"
+          placeholder="Search employees by name..."
+          value={searchQuery}
+          onChange={handleSearch}
+          className="p-3 w-full md:w-1/3 border border-blue-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"
+        />
+      </div>
+
+      {/* Employees Table */}
+      {filteredEmployees.length > 0 ? (
+        <table className="min-w-full table-auto mb-6 bg-white shadow-lg rounded-lg">
+          <thead className="bg-gradient-to-r from-blue-100 via-white to-blue-50 text-blue-700">
+            <tr>
+              <th className="px-4 py-2 text-left">Employee ID</th>
+              <th className="px-4 py-2 text-left">Employee Name</th>
+              <th className="px-4 py-2 text-left">Role</th>
+              <th className="px-4 py-2 text-left">Experience</th>
+              <th className="px-4 py-2 text-left">Salary</th>
+              <th className="px-4 py-2 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {employees.map((employee) => (
-              <tr key={employee.id} className="border-b">
+            {filteredEmployees.map((employee) => (
+              <tr key={employee.id} className="border-b hover:bg-indigo-50 transition-colors">
                 <td className="px-4 py-2 text-gray-800">{employee.id}</td>
                 <td className="px-4 py-2 text-gray-800">{employee.name}</td>
                 <td className="px-4 py-2 text-gray-800">{employee.role}</td>

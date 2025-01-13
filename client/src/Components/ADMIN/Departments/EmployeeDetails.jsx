@@ -29,39 +29,47 @@ const EmployeeDetails = () => {
       alert('No resume available for this employee');
     }
   };
-  
 
   if (!employee) {
-    return <p>Loading employee details...</p>;
+    return <p>Loading intern details...</p>;
   }
 
   return (
-    <div className="p-6 bg-white shadow-lg rounded-lg max-w-4xl mx-auto">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">Employee Details</h2>
+    <div className="p-8 bg-gradient-to-r from-blue-100 via-white to-blue-50 rounded-lg max-w-4xl mx-auto shadow-xl">
+      <h2 className="text-3xl font-bold text-blue-800 mb-6">Intern Details</h2>
 
-      <div className="mb-6">
-        <h3 className="text-xl font-semibold text-gray-800">{employee.name}</h3>
-        <p className="text-gray-600">Role: {employee.role}</p>
-        <p className="text-gray-600">Email: {employee.email}</p>
-        <p className="text-gray-600">Experience: {employee.experience} years</p>
-        <p className="text-gray-600">Salary: ${employee.salary}</p>
-        <p className="text-gray-600">Degree: {employee.degree}</p>
-        <p className="text-gray-600">University: {employee.university}</p>
-        <p className="text-gray-600">Graduation Year: {employee.graduation_year}</p>
-        <p className="text-gray-600">Skills: {employee.skills}</p>
-        <p className="text-gray-600">Certifications: {employee.certifications}</p>
-      </div>
+      <div className="bg-white shadow-lg rounded-lg p-6">
+        <h3 className="text-2xl font-semibold text-gray-800 mb-6">{employee.name}</h3>
 
-      {employee.resume && (
-        <div className="mt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+          <p className="text-gray-600"><strong>Role:</strong> {employee.role}</p>
+          <p className="text-gray-600"><strong>Email:</strong> {employee.email}</p>
+          <p className="text-gray-600"><strong>Experience:</strong> {employee.experience} years</p>
+          <p className="text-gray-600"><strong>Salary:</strong> ${employee.salary}</p>
+          <p className="text-gray-600"><strong>Degree:</strong> {employee.degree}</p>
+          <p className="text-gray-600"><strong>University:</strong> {employee.university}</p>
+          <p className="text-gray-600"><strong>Graduation Year:</strong> {employee.graduation_year}</p>
+          <p className="text-gray-600"><strong>Skills:</strong> {employee.skills}</p>
+          <p className="text-gray-600"><strong>Certifications:</strong> {employee.certifications}</p>
+        </div>
+
+        <div className="flex justify-between items-center">
+          {employee.resume && (
+            <button
+              onClick={handleResumeClick}
+              className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all"
+            >
+              View Resume
+            </button>
+          )}
           <button
-            onClick={handleResumeClick}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            onClick={() => window.history.back()}
+            className="px-6 py-3 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-all"
           >
-            View Resume
+            Back to List
           </button>
         </div>
-      )}
+      </div>
     </div>
   );
 };
