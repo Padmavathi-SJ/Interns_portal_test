@@ -719,10 +719,97 @@ router.delete("/delete_task/:taskId", (req, res) => {
   });
 });
 
+// Fetch team task by ID
+router.get("/get_team_task/:taskId", (req, res) => {
+  const { taskId } = req.params;
+  const sql = "SELECT * FROM team_work_allocation WHERE id = ?";
+  connection.query(sql, [taskId], (err, result) => {
+    if (err) {
+      console.error("Error fetching team task:", err);
+      return res
+        .status(500)
+        .json({ Status: false, Error: "Error fetching team task" });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ Status: false, Error: "Team task not found" });
+    }
+
+    return res.json(result[0]); // Return the team task details as JSON
+  });
+});
+
+// Update team task by ID
+router.put("/edit_team_task/:taskId", (req, res) => {
+  const { taskId } = req.params;
+  const { title, description, deadline, priority, status } = req.body;
+
+  if (!title || !description || !deadline || !priority || !status) {
+    return res
+      .status(400)
+      .json({ Status: false, Error: "Missing required fields" });
+  }
+
+  const sql = `
+    UPDATE team_work_allocation
+    SET title = ?, description = ?, deadline = ?, priority = ?, status = ?
+    WHERE id = ?
+  `;
+
+  const values = [title, description, deadline, priority, status, taskId];
+
+  connection.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("Query Error:", err);
+      return res.status(500).json({ Status: false, Error: "Query Error" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ Status: false, Error: "Team task not found" });
+    }
+
+    return res.json({ Status: true, Message: "Team task updated successfully" });
+  });
+});
+
+router.delete("/delete_team_task/:taskId", (req, res) => {
+  const { taskId } = req.params;
+
+  const sql = "DELETE FROM team_work_allocation WHERE id = ?";
+
+  connection.query(sql, [taskId], (err, result) => {
+    if (err) {
+      console.error("Query Error:", err);
+      return res.json({ Status: false, Error: "Query Error" });
+    }
+
+    if (result.affectedRows > 0) {
+      return res.json({ Status: true, Message: "Team task deleted successfully" });
+    } else {
+      return res.json({ Status: false, Error: "Team task not found" });
+    }
+  });
+});
+
+
 // Get all leave requests for admin
 
 router.get("/leave_requests", (req, res) => {
-  const sql = "SELECT * FROM leave_requests";
+  const sql = `
+    SELECT 
+      id, 
+      employee_id, 
+      leave_type, 
+      DATE_FORMAT(from_date, '%d %b %Y') AS from_date, 
+      DATE_FORMAT(to_date, '%d %b %Y') AS to_date, 
+      DATE_FORMAT(from_time, '%h:%i:%s %p') AS from_time, 
+      DATE_FORMAT(to_time, '%h:%i:%s %p') AS to_time, 
+      status, 
+      Reason,
+      created_at,
+      updated_at
+    FROM leave_requests
+  `;
 
   connection.query(sql, (err, result) => {
     if (err) {
@@ -736,6 +823,7 @@ router.get("/leave_requests", (req, res) => {
     return res.json({ Status: true, Result: result });
   });
 });
+
 
 router.get("/leave_request_reason/:id", (req, res) => {
   const leaveRequestId = req.params.id; // Fetch leave request id from the URL parameter
