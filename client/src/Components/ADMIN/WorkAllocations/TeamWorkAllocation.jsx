@@ -58,13 +58,15 @@ const TeamWorkAllocation = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h2 className="text-center text-2xl font-semibold mb-6">Team Work Allocation</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block mb-2">Select Team:</label>
+    <div className="p-6 bg-gradient-to-r from-blue-100 via-white to-blue-50 rounded-lg max-w-2xl mx-auto">
+      <h2 className="text-2xl font-semibold text-blue-700 mb-6">Team Work Allocation</h2>
+      {message && <p className="mb-4 text-red-600">{message}</p>}
+
+      <form onSubmit={handleSubmit}>
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Select Team</label>
           <select
-            className="border p-2 w-full"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             value={selectedTeam || ""}
             onChange={(e) => setSelectedTeam(e.target.value)}
           >
@@ -78,36 +80,40 @@ const TeamWorkAllocation = () => {
             ))}
           </select>
         </div>
-        <div>
-          <label className="block mb-2">Task Title:</label>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Task Title</label>
           <input
             type="text"
-            className="border p-2 w-full"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
-        <div>
-          <label className="block mb-2">Task Description:</label>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Task Description</label>
           <textarea
-            className="border p-2 w-full"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
-        <div>
-          <label className="block mb-2">Deadline:</label>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Deadline</label>
           <input
             type="date"
-            className="border p-2 w-full"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             value={deadline}
             onChange={(e) => setDeadline(e.target.value)}
           />
         </div>
-        <div>
-          <label className="block mb-2">Priority:</label>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Priority</label>
           <select
-            className="border p-2 w-full"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             value={priority}
             onChange={(e) => setPriority(e.target.value)}
           >
@@ -116,10 +122,11 @@ const TeamWorkAllocation = () => {
             <option value="High">High</option>
           </select>
         </div>
-        <div>
-          <label className="block mb-2">Status:</label>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Status</label>
           <select
-            className="border p-2 w-full"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
             value={status}
             onChange={(e) => setStatus(e.target.value)}
           >
@@ -128,13 +135,13 @@ const TeamWorkAllocation = () => {
             <option value="Completed">Completed</option>
           </select>
         </div>
+
         <button
           type="submit"
-          className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-blue-700 focus:ring-2 focus:ring-indigo-600"
         >
           Allocate Work
         </button>
-        {message && <p className="text-red-500 mt-4">{message}</p>}
       </form>
     </div>
   );

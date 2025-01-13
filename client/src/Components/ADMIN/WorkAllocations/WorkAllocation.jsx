@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaTasks, FaTrash, FaEdit, FaUsers } from "react-icons/fa"; // Added FaUsers for team work icon
+import { FaTasks, FaTrash, FaEdit, FaUsers } from "react-icons/fa";
 import axios from "axios";
 
 const WorkAllocation = () => {
   const navigate = useNavigate();
-  const [tasks, setTasks] = useState([]); // State to hold fetched tasks
+  const [tasks, setTasks] = useState([]);
+  const [teamTasks, setTeamTasks] = useState([]);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Function to fetch tasks from the API
   const fetchTasks = () => {
     axios.get("http://localhost:3000/auth/get_tasks")
       .then((response) => {
         if (response.data.Status) {
-          setTasks(response.data.Result); // Set tasks state if response is successful
+          setTasks(response.data.Result);
         } else {
           console.error("Error fetching tasks:", response.data.Error);
         }
@@ -22,14 +24,27 @@ const WorkAllocation = () => {
       });
   };
 
+  const fetchTeamTasks = () => {
+    axios.get("http://localhost:3000/auth/get_team_tasks")
+      .then((response) => {
+        if (response.data.Status) {
+          setTeamTasks(response.data.Result);
+        } else {
+          console.error("Error fetching team tasks:", response.data.Error);
+        }
+      })
+      .catch((error) => {
+        console.error("API Error:", error);
+      });
+  };
+
   useEffect(() => {
-    // Fetch tasks initially
     fetchTasks();
-
-    // Set up polling to fetch tasks every 5 seconds (you can adjust the interval)
-    const intervalId = setInterval(fetchTasks, 5000);
-
-    // Clean up the interval when the component is unmounted
+    fetchTeamTasks();
+    const intervalId = setInterval(() => {
+      fetchTasks();
+      fetchTeamTasks();
+    }, 5000);
     return () => clearInterval(intervalId);
   }, []);
 
@@ -59,70 +74,154 @@ const WorkAllocation = () => {
     navigate(`/admin-dashboard/edit_work/${taskId}`);
   };
 
+  const handleViewTask = (task) => {
+    setSelectedTask(task);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedTask(null);
+  };
+
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'short', day: '2-digit' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const getPriorityClass = (priority) => {
+    switch (priority.toLowerCase()) {
+      case 'high':
+        return 'bg-red-500 text-white';
+      case 'medium':
+        return 'bg-yellow-500 text-white';
+      case 'low':
+        return 'bg-green-500 text-white';
+      default:
+        return 'bg-gray-200 text-black';
+    }
+  };
+
+  const getStatusClass = (status) => {
+    switch (status.toLowerCase()) {
+      case 'completed':
+        return 'bg-green-500 text-white';
+      case 'in progress':
+        return 'bg-yellow-500 text-white';
+      case 'pending':
+        return 'bg-red-500 text-white';
+      default:
+        return 'bg-gray-200 text-black';
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      {/* Individual Work Allocation Container */}
-      <div
-        className="p-6 bg-white shadow-lg rounded-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 flex items-center space-x-4"
-        onClick={handleNavigation}
-      >
-        <div className="p-4 bg-indigo-100 rounded-full">
-          <FaTasks className="text-indigo-600 text-3xl" />
+    <div className="min-h-screen bg-gradient-to-r from-blue-50 to-blue-100 p-8">
+      <h2 className="text-3xl font-semibold text-blue-700 mb-6">Work Assignments</h2>
+
+      {/* Left Column: Individual Task Allocation */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="p-6 bg-white shadow-md rounded-lg cursor-pointer hover:shadow-lg transition-shadow duration-300 flex items-center space-x-4" onClick={handleNavigation}>
+          <div className="p-4 bg-blue-200 rounded-full">
+            <FaTasks className="text-3xl" />
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">Allocate Work</h2>
+            <p className="text-gray-600">Assign tasks to individual employees.</p>
+          </div>
         </div>
-        <div>
-          <h2 className="text-xl font-semibold text-gray-800">Allocate Work</h2>
-          <p className="text-gray-500">Click here to allocate tasks to employees.</p>
+
+        <div className="p-6 bg-white shadow-md rounded-lg cursor-pointer hover:shadow-lg transition-shadow duration-300 flex items-center space-x-4" onClick={handleTeamNavigation}>
+          <div className="p-4 bg-blue-300 rounded-full">
+            <FaUsers className="text-3xl" />
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">Allocate Team Work</h2>
+            <p className="text-gray-600">Assign tasks to a team.</p>
+          </div>
         </div>
       </div>
 
-      {/* Team Work Allocation Container */}
-      <div
-        className="p-6 bg-white shadow-lg rounded-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 flex items-center space-x-4 mt-6"
-        onClick={handleTeamNavigation}
-      >
-        <div className="p-4 bg-green-100 rounded-full">
-          <FaUsers className="text-green-600 text-3xl" />
+      <div className="flex space-x-6">
+        {/* Individual Tasks Table */}
+        <div className="bg-white shadow-md rounded-lg p-6 w-full">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Assigned Individual Tasks</h2>
+          <table className="min-w-full">
+            <thead>
+              <tr>
+                <th className="py-2 px-4">Task ID</th>
+                <th className="py-2 px-4">Employee</th>
+                <th className="py-2 px-4">Deadline</th>
+                <th className="py-2 px-4">Priority</th>
+                <th className="py-2 px-4">Status</th>
+                <th className="py-2 px-4">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tasks.map((task) => (
+                <tr key={task.taskId}>
+                  <td className="py-2 px-4">{task.taskId}</td>
+                  <td className="py-2 px-4">{task.employee_name}</td>
+                  <td className="py-2 px-4">{formatDate(task.deadline)}</td>
+                  <td className={`py-2 px-4 ${getPriorityClass(task.priority)}`}>{task.priority}</td>
+                  <td className={`py-2 px-4 ${getStatusClass(task.status)}`}>{task.status}</td>
+                  <td className="py-2 px-4">
+                    <button onClick={() => handleViewTask(task)} className="bg-blue-500 text-white rounded p-2">View</button>
+                    <button onClick={() => handleEdit(task.taskId)} className="bg-yellow-500 text-white rounded p-2 mx-1"><FaEdit /></button>
+                    <button onClick={() => handleDelete(task.taskId)} className="bg-red-500 text-white rounded p-2"><FaTrash /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-        <div>
-          <h2 className="text-xl font-semibold text-gray-800">Allocate Work for a Team</h2>
-          <p className="text-gray-500">Click here to allocate tasks for a team.</p>
+
+        {/* Team Tasks Table */}
+        <div className="bg-white shadow-md rounded-lg p-6 w-full">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Assigned Team Tasks</h2>
+          <table className="min-w-full">
+            <thead>
+              <tr>
+                <th className="py-2 px-4">Task ID</th>
+                <th className="py-2 px-4">Team Name</th>
+                <th className="py-2 px-4">Deadline</th>
+                <th className="py-2 px-4">Priority</th>
+                <th className="py-2 px-4">Status</th>
+                <th className="py-2 px-4">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {teamTasks.map((task) => (
+                <tr key={task.taskId}>
+                  <td className="py-2 px-4">{task.taskId}</td>
+                  <td className="py-2 px-4">{task.team_name}</td>
+                  <td className="py-2 px-4">{formatDate(task.deadline)}</td>
+                  <td className={`py-2 px-4 ${getPriorityClass(task.priority)}`}>{task.priority}</td>
+                  <td className={`py-2 px-4 ${getStatusClass(task.status)}`}>{task.status}</td>
+                  <td className="py-2 px-4">
+                    <button onClick={() => handleViewTask(task)} className="bg-blue-500 text-white rounded p-2">View</button>
+                    <button onClick={() => handleEdit(task.taskId)} className="bg-yellow-500 text-white rounded p-2 mx-1"><FaEdit /></button>
+                    <button onClick={() => handleDelete(task.taskId)} className="bg-red-500 text-white rounded p-2"><FaTrash /></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <div className="mt-8 w-full max-w-4xl mx-auto">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Assigned Tasks</h2>
-        <div className="space-y-4">
-          {tasks.map((task) => (
-            <div key={task.taskId} className="flex items-center justify-between bg-white p-4 shadow-md rounded-lg">
-              <div>
-                <h3 className="text-lg font-medium text-gray-800">{task.title}</h3>
-                <p className="text-sm text-gray-500">{task.description}</p>
-                <p className="text-sm text-gray-500">Deadline: {task.deadline}</p>
-                <p className="text-sm text-gray-500">Priority: {task.priority}</p>
-                <p className="text-sm text-gray-500">Assigned to: {task.employee_name}</p>
-                <p className="text-sm text-gray-500">Status: {task.status}</p>
-              </div>
-              <div className="flex space-x-4">
-                {/* Edit button */}
-                <button
-                  className="text-blue-600 hover:text-blue-800"
-                  onClick={() => handleEdit(task.taskId)}
-                >
-                  <FaEdit className="text-xl" />
-                </button>
-
-                {/* Delete button */}
-                <button
-                  className="text-red-600 hover:text-red-800"
-                  onClick={() => handleDelete(task.taskId)}
-                >
-                  <FaTrash className="text-xl" />
-                </button>
-              </div>
+      {/* Modal to View Task Details */}
+      {isModalOpen && selectedTask && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg w-96">
+            <h3 className="text-2xl font-semibold mb-4">{selectedTask.title}</h3>
+            <p className="mb-4">{selectedTask.description}</p>
+            <div className="mt-4 flex justify-end">
+              <button onClick={closeModal} className="bg-red-500 text-white p-2 rounded">Close</button>
             </div>
-          ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
