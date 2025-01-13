@@ -963,7 +963,17 @@ router.post("/create_team", (req, res) => {
 });
 
 router.get("/get_teams", (req, res) => {
-  const query = "SELECT * FROM teams";
+  const query = `
+    SELECT 
+      teams.team_id, 
+      teams.team_name, 
+      teams.team_members, 
+      DATE_FORMAT(teams.created_at, '%d %b %Y') AS created_at, 
+      teams.department_id,
+      department.name AS department_name
+    FROM teams
+    LEFT JOIN department ON teams.department_id = department.id
+  `;
 
   connection.query(query, (err, results) => {
     if (err) {
@@ -982,6 +992,8 @@ router.get("/get_teams", (req, res) => {
     res.json({ Status: true, Result: teams });
   });
 });
+
+
 
 router.get("/get_team/:team_id", (req, res) => {
   const { team_id } = req.params;
