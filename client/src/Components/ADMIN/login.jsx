@@ -44,7 +44,7 @@ const AdminLogin = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-blue-100 p-6">
+        <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
             {/* Combined Image and Form Container */}
             <div className="h-[80vh] flex w-full max-w-6xl bg-white rounded-lg shadow-lg overflow-hidden">
                 {/* Left Section - Image */}

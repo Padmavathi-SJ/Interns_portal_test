@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import profile from '../../../assets/profile.jpg';  // Import the default profile picture
+import profile from "../../../assets/profile.jpg"; // Import the default profile picture
 
 const Profile = () => {
   const { employeeId } = useParams(); // Retrieve employeeId from route
@@ -81,14 +81,14 @@ const Profile = () => {
     <div className="flex flex-col justify-start items-start p-6 w-full space-y-6">
       <div className="flex flex-col md:flex-row w-full max-w-4xl space-x-6">
         {/* Profile Picture - Square */}
-        <div 
-          className="w-52 h-40 bg-gray-300 overflow-hidden border-5 mb-4" 
+        <div
+          className="w-52 h-40 bg-gray-300 overflow-hidden border-5 mb-4"
           style={{
             backgroundImage: `url(${profile_img || profile})`, // Use employee profile pic or default
             backgroundSize: "cover",
             backgroundPosition: "center",
             borderRadius: "20%", // Apply border radius for circular shape
-          }} 
+          }}
         />
 
         {/* Employee Details */}
@@ -104,15 +104,14 @@ const Profile = () => {
 
       {/* Remaining Details */}
       <div className="bg-white dark:bg-gray-800 dark:border-gray-700 p-4 w-full -mt-4"> {/* Added negative margin */}
-  <div className="flex flex-col space-y-2">
-    <p><span>Degree: {degree}</span></p>
-    <p><span>University: {university}</span></p>
-    <p><span>Experience: {experience} years</span></p>
-    <p><span>Mobile no: {mobile_no}</span></p>
-    <p><span>High Skills: {skills.join(", ")}</span></p>
-  </div>
-</div>
-
+        <div className="flex flex-col space-y-2">
+          <p><span>Degree: {degree}</span></p>
+          <p><span>University: {university}</span></p>
+          <p><span>Experience: {experience} years</span></p>
+          <p><span>Mobile no: {mobile_no}</span></p>
+          <p><span>High Skills: {skills.join(", ")}</span></p>
+        </div>
+      </div>
     </div>
   );
 };

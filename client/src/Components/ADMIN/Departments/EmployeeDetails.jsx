@@ -23,22 +23,30 @@ const EmployeeDetails = () => {
 
   const handleResumeClick = () => {
     if (employee.resume) {
-      // Assuming employee.resume contains the path to the resume file
-      window.open(`http://localhost:3000/uploads/resumes/${employee.resume}`, '_blank');
+      // Remove any leading slash from employee.resume if present
+      const resumePath = employee.resume.startsWith('/') ? employee.resume.slice(1) : employee.resume;
+      window.open(`http://localhost:3000/${resumePath}`, '_blank');
     } else {
       alert('No resume available for this employee');
     }
   };
-
+  
   if (!employee) {
-    return <p>Loading intern details...</p>;
+    return <p>Loading employee details...</p>;
   }
 
   return (
     <div className="p-8 bg-gradient-to-r from-blue-100 via-white to-blue-50 rounded-lg max-w-4xl mx-auto shadow-xl">
-      <h2 className="text-3xl font-bold text-blue-800 mb-6">Intern Details</h2>
+      <h2 className="text-3xl font-bold text-blue-800 mb-6">Employee Details</h2>
 
       <div className="bg-white shadow-lg rounded-lg p-6">
+        {employee.profile_img && (
+          <img
+            src={`http://localhost:3000/${employee.profile_img}`}
+            alt="Profile"
+            className="w-32 h-32 rounded-full mx-auto mb-6"
+          />
+        )}
         <h3 className="text-2xl font-semibold text-gray-800 mb-6">{employee.name}</h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
@@ -75,3 +83,4 @@ const EmployeeDetails = () => {
 };
 
 export default EmployeeDetails;
+

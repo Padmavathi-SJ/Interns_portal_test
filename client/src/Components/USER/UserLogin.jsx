@@ -72,7 +72,7 @@ const UserLogin = () => {
                         </div>
 
                         {/* Heading */}
-                        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
+                        <h1 className="text-3xl font-bold text-center mb-6 text-blue-900">
                             Bannari Amman Institute Of Technology
                         </h1>
 
@@ -84,7 +84,7 @@ const UserLogin = () => {
                                     value={credentials.employee_id}
                                     onChange={handleChange}
                                     placeholder="Employee ID"
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200 text-sm font-roboto"
+                                    className="w-full p-3 border border-blue-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200 text-sm font-roboto"
                                     required
                                 />
                                 <input
@@ -93,7 +93,7 @@ const UserLogin = () => {
                                     value={credentials.email}
                                     onChange={handleChange}
                                     placeholder="Email"
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200 text-sm font-roboto"
+                                    className="w-full p-3 border border-blue-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200 text-sm font-roboto"
                                     required
                                 />
                                 <input
@@ -102,13 +102,13 @@ const UserLogin = () => {
                                     value={credentials.password}
                                     onChange={handleChange}
                                     placeholder="Password"
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200 text-sm font-roboto"
+                                    className="w-full p-3 border border-blue-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-200 text-sm font-roboto"
                                     required
                                 />
                                 {error && <p className="text-red-500 text-sm">{error}</p>}
                                 <button
                                     type="submit"
-                                    className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition text-sm font-roboto"
+                                    className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition text-sm font-roboto"
                                 >
                                     Login
                                 </button>

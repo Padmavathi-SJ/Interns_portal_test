@@ -7,6 +7,8 @@ const Leave = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedReason, setSelectedReason] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const leaveRequestsPerPage = 8;
 
   useEffect(() => {
     const fetchLeaveRequests = async () => {
@@ -65,6 +67,7 @@ const Leave = () => {
       request.employee_id.toString().includes(e.target.value) || request.leave_type.toLowerCase().includes(e.target.value.toLowerCase())
     );
     setFilteredLeaveRequests(filtered);
+    setCurrentPage(1);
   };
 
   const handleCloseModal = () => {
@@ -72,24 +75,33 @@ const Leave = () => {
     setSelectedReason(null);
   };
 
+  const totalPages = Math.ceil(filteredLeaveRequests.length / leaveRequestsPerPage);
+
+  const handlePageChange = (page) => {
+    if (page > 0 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const currentLeaveRequests = filteredLeaveRequests.slice(
+    (currentPage - 1) * leaveRequestsPerPage,
+    currentPage * leaveRequestsPerPage
+  );
+
   return (
     <div className="p-6 bg-gradient-to-r from-blue-100 via-white to-blue-50 rounded-lg max-w-6xl mx-auto">
-      <h2 className="text-3xl font-semibold text-blue-700 mb-4">Leave Management</h2>
-      <p className="mb-6">Manage and review leave requests for employees.</p>
-
-      {/* Search Box */}
-      <div className="mb-6 flex justify-between items-center">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-semibold text-blue-700">Leave Management</h2>
         <input
           type="text"
           placeholder="Search leave requests..."
           value={searchQuery}
           onChange={handleSearch}
-          className="p-3 w-full md:w-1/3 border border-blue-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"
+          className="p-3 border border-blue-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"
         />
       </div>
 
-      {/* Leave Requests Table */}
-      {filteredLeaveRequests.length > 0 ? (
+      {currentLeaveRequests.length > 0 ? (
         <table className="min-w-full table-auto mb-6 bg-white shadow-lg rounded-lg">
           <thead className="bg-gradient-to-r from-blue-100 via-white to-blue-50 text-blue-700">
             <tr>
@@ -104,7 +116,7 @@ const Leave = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredLeaveRequests.map((request) => (
+            {currentLeaveRequests.map((request) => (
               <tr key={request.id} className="border-b hover:bg-indigo-50 transition-colors">
                 <td className="px-4 py-2 text-gray-800">{request.employee_id}</td>
                 <td className="px-4 py-2 text-gray-800">{request.leave_type}</td>
@@ -147,7 +159,28 @@ const Leave = () => {
         <p>No leave requests available.</p>
       )}
 
-      {/* Modal to display the reason */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-md mr-2 disabled:bg-gray-400"
+          >
+            Previous
+          </button>
+          <span className="px-4 py-2 text-gray-700">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-blue-700 text-white rounded-md ml-2 disabled:bg-gray-400"
+          >
+            Next
+          </button>
+        </div>
+      )}
+
       {isModalOpen && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg max-w-md w-full">

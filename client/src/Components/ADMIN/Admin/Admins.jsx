@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 
 const Admins = () => {
   const [admins, setAdmins] = useState([]);
+  const [filteredAdmins, setFilteredAdmins] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -12,6 +14,7 @@ const Admins = () => {
         const response = await axios.get('http://localhost:3000/auth/admins');
         if (response.data.Status) {
           setAdmins(response.data.Admins);
+          setFilteredAdmins(response.data.Admins);
         } else {
           console.error('Failed to fetch admins');
         }
@@ -27,32 +30,50 @@ const Admins = () => {
     navigate('/admin-dashboard/add_admin'); // Navigate to the AddAdmin component
   };
 
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+    const filtered = admins.filter((admin) =>
+      admin.email.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+    setFilteredAdmins(filtered);
+  };
+
   return (
-    <div className="max-w-4xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-lg">
-      <h1 className="text-3xl font-bold mb-4">Admins</h1>
+    <div className="p-6 bg-gradient-to-r from-blue-100 via-white to-blue-50 rounded-lg max-w-6xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-semibold text-blue-700">Admins</h2>
+        <input
+          type="text"
+          placeholder="Search admins..."
+          value={searchQuery}
+          onChange={handleSearch}
+          className="p-3 border border-blue-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"
+        />
+      </div>
+
       <button 
         onClick={handleAddAdmin} 
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 mb-4"
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 mb-6"
       >
         Add Admin
       </button>
 
-      <table className="min-w-full table-auto border-collapse">
-        <thead>
-          <tr className="bg-gray-100 text-gray-700">
-            <th className="py-2 px-4 border-b">ID</th>
-            <th className="py-2 px-4 border-b">Email</th>
-          </tr>
-        </thead>
-        <tbody>
-          {admins.map((admin) => (
-            <tr key={admin.id} className="hover:bg-gray-50">
-              <td className="py-2 px-4 border-b">{admin.id}</td>
-              <td className="py-2 px-4 border-b">{admin.email}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredAdmins.map((admin) => (
+          <div key={admin.id} className="bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+            <div className="text-lg font-semibold text-blue-700 mb-2">Admin ID: {admin.id}</div>
+            <div className="text-gray-800 text-sm mb-4">Email: {admin.email}</div>
+            <div className="flex justify-end">
+              <button
+                onClick={() => {/* Add any actions here for each admin */}}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300"
+              >
+                View Details
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

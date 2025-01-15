@@ -6,28 +6,22 @@ import Performance from "./Performance"; // Import Performance
 
 const EmployeeHome = () => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-6 justify-center">
+    <div className="flex flex-wrap justify-between p-4 gap-5">
       {/* Profile */}
-      <div className="bg-white dark:bg-gray-800 shadow-lg border border-gray-300 dark:border-gray-700 rounded-lg p-2 w-auto h-fit sm:col-span-1">
+      <div className="bg-white dark:bg-gray-800 shadow-lg border border-gray-300 dark:border-gray-700 rounded-lg p-4 flex-1 max-w-lg h-full">
         <Profile />
       </div>
 
-      {/* Leave Dashboard */}
-      <div className="bg-white dark:bg-gray-800 shadow-lg border border-gray-300 dark:border-gray-700 rounded-lg p-2 w-auto h-fit sm:col-span-1">
+      {/* Leave Dashboard and Team Dashboard */}
+      <div className="bg-white dark:bg-gray-800 shadow-md border border-gray-300 dark:border-gray-700 rounded-lg p-4 flex-1 max-w-lg h-full flex flex-col justify-between">
         <LeaveDashboard />
+        <TeamDashboard />
       </div>
 
       {/* Performance */}
-      <div className="bg-white dark:bg-gray-800 shadow-lg border border-gray-300 dark:border-gray-700 rounded-lg p-2 w-full h-fit col-span-full">
+      <div className="bg-white dark:bg-gray-800 shadow-lg border border-gray-300 dark:border-gray-700 rounded-lg p-4 flex-1 max-w-lg h-full">
         <Performance />
       </div>
-
-      {/* Uncomment below if you want to add TeamDashboard */}
-      {/* 
-      <div className="bg-white dark:bg-gray-800 shadow-lg border border-gray-300 dark:border-gray-700 rounded-lg p-4 w-full min-h-fit">
-        <TeamDashboard />
-      </div>
-      */}
     </div>
   );
 };

@@ -94,7 +94,6 @@ const Performance = () => {
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-6 text-center">Employee Performance</h2>
 
       {/* Month Range Selector */}
       <div className="flex justify-center mb-4">
@@ -107,6 +106,14 @@ const Performance = () => {
           <option value="Feb-Mar">Feb to Mar</option>
           <option value="Mar-Apr">Mar to Apr</option>
           <option value="Apr-May">Apr to May</option>
+          <option value="May-Jun">May to Jun</option>
+          <option value="Jun-Jul">Jun to Jul</option>
+          <option value="Jul-Aug">Jul to Aug</option>
+          <option value="Aug-Sep">Aug to Sep</option>
+          <option value="Sep-Oct">Sep to Oct</option>
+          <option value="Oct-Nov">Oct to Nov</option>
+          <option value="Nov-Dec">Nov to Dec</option>
+          <option value="Dec-Jan">Dec to Jan</option>
           {/* Add more ranges as needed */}
         </select>
       </div>

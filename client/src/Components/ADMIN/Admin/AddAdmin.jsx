@@ -8,7 +8,6 @@ const AddAdmin = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  
   const navigate = useNavigate(); // Hook to navigate to another route
 
   const handleSubmit = async (e) => {
@@ -38,40 +37,42 @@ const AddAdmin = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto mt-8 p-6 bg-white rounded-lg shadow-lg">
-      <h1 className="text-3xl font-bold mb-4">Add Admin</h1>
-      
+    <div className="p-8 bg-gradient-to-r from-blue-100 via-white to-blue-50 rounded-lg max-w-md mx-auto">
+      <h2 className="text-3xl font-semibold text-blue-700 mb-6">Add New Admin</h2>
+
       {error && <p className="text-red-600 mb-4">{error}</p>}
       {success && <p className="text-green-600 mb-4">{success}</p>}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
+        <div className="mb-4">
           <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
           <input
             id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter admin's email"
             required
           />
         </div>
 
-        <div>
+        <div className="mb-4">
           <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
           <input
             id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 mt-1 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter admin's password"
             required
           />
         </div>
 
         <button
           type="submit"
-          className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
+          className="w-full px-4 py-2 font-semibold text-white bg-blue-700 rounded-md hover:bg-blue-800 transition duration-300 ease-in-out"
         >
           Add Admin
         </button>
