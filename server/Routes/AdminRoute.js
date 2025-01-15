@@ -156,19 +156,17 @@ router.get("/get_employee_details/:employeeId", (req, res) => {
   connection.query(sql, [employeeId], (err, result) => {
     if (err) {
       console.error("Database Query Error:", err);
-      return res
-        .status(500)
-        .json({ Status: false, Error: "Database Query Error" });
+      return res.status(500).json({ Status: false, Error: "Database Query Error" });
     }
 
     if (result.length > 0) {
       const employeeDetails = result[0];
 
-      // Check if the employee has a resume (file) and return the URL or file path
       if (employeeDetails.resume) {
-        employeeDetails.resume = `/uploads/resumes/${employeeDetails.resume}`; // Assuming resumes are stored in 'uploads/resumes' folder
+        // Ensure the resume path doesn't get prepended incorrectly
+        employeeDetails.resume = `/uploads/resumes/${employeeDetails.resume.replace(/\\/g, '/')}`;
       } else {
-        employeeDetails.resume = null; // No resume uploaded
+        employeeDetails.resume = null;
       }
 
       res.json({ Status: true, Result: employeeDetails });
@@ -177,6 +175,8 @@ router.get("/get_employee_details/:employeeId", (req, res) => {
     }
   });
 });
+
+
 
 router.post("/add_department", (req, res) => {
   const checkSql = "SELECT * FROM department WHERE name = ?";
@@ -336,36 +336,21 @@ router.post(
       address,
     } = req.body;
 
-    if (
-      !name ||
-      !email ||
-      !password ||
-      !role ||
-      !department_id ||
-      !salary ||
-      !degree ||
-      !university ||
-      !graduation_year ||
-      !mobile_no ||
-      !address
-    ) {
-      return res
-        .status(400)
-        .json({ Status: false, Error: "Missing required fields" });
+    if (!name || !email || !password || !role || !department_id || !salary || !degree || !university || !graduation_year || !mobile_no || !address) {
+      return res.status(400).json({ Status: false, Error: "Missing required fields" });
     }
 
-    const resume = req.files?.resume?.[0]?.path || null;
-    const profileImg = req.files?.profile_img?.[0]?.path || null;
+    const resume = req.files?.resume?.[0]?.path.replace(/^.*uploads\//, 'uploads/resumes/') || null;
+    const profileImg = req.files?.profile_img?.[0]?.path.replace(/^.*uploads\//, 'uploads/profile_images/') || null;
+    
 
     const sql = `INSERT INTO employees (name, email, password, role, experience, department_id, salary, degree, university, graduation_year, skills, certifications, mobile_no, address, resume, profile_img) 
-               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
 
     bcrypt.hash(password, 10, (err, hash) => {
       if (err) {
         console.error("Password Hashing Error:", err);
-        return res
-          .status(500)
-          .json({ Status: false, Error: "Password Hashing Error" });
+        return res.status(500).json({ Status: false, Error: "Password Hashing Error" });
       }
 
       const values = [
@@ -390,9 +375,7 @@ router.post(
       connection.query(sql, values, (err, result) => {
         if (err) {
           console.error("Database Query Error:", err);
-          return res
-            .status(500)
-            .json({ Status: false, Error: "Database Query Error" });
+          return res.status(500).json({ Status: false, Error: "Database Query Error" });
         }
         return res.json({ Status: true, Result: result });
       });

@@ -81,14 +81,13 @@ const verifyToken = (req, res, next) => {
 router.get("/get_employee", verifyToken, (req, res) => {
   const { id: employeeId } = req.user; // Extract employeeId from the verified token
 
-  // SQL query to fetch employee details with additional fields
+  // SQL query to fetch employee details with the profile_img field
   const query = `
-  SELECT e.id, e.name, d.name AS department, e.role, e.degree, e.experience, e.mobile_no, e.skills, e.university
-  FROM employees e
-  JOIN department d ON e.department_id = d.id
-  WHERE e.id = ?;
-`;
-
+    SELECT e.id, e.name, d.name AS department, e.role, e.degree, e.experience, e.mobile_no, e.skills, e.university, e.profile_img
+    FROM employees e
+    JOIN department d ON e.department_id = d.id
+    WHERE e.id = ?;
+  `;
 
   connection.query(query, [employeeId], (err, results) => {
     if (err) {
@@ -100,16 +99,24 @@ router.get("/get_employee", verifyToken, (req, res) => {
       return res.status(404).json({ Status: false, Message: "Employee not found." });
     }
 
-    // Return the employee details along with the new fields
+    // Format the profile_img path if it exists
+    const employee = results[0];
+    const profileImgUrl = employee.profile_img
+      ? `/uploads/profile_images/${employee.profile_img.replace(/\\/g, '/')}`
+      : null;
+
+    // Return the employee details along with the formatted profile image URL
     res.json({
       Status: true,
       Data: {
-        ...results[0], // All the fetched employee data
-        skills: results[0].skills ? results[0].skills.split(",") : [], // Assuming skills are stored as a comma-separated string
+        ...employee,
+        profile_img: profileImgUrl, // Provide formatted profile image URL
+        skills: employee.skills ? employee.skills.split(",") : [], // Convert skills to an array
       },
     });
   });
 });
+
 
 
 // Get tasks assigned to the logged-in employee
@@ -584,8 +591,6 @@ router.get("/employee-performance", verifyToken, (req, res) => {
     });
   });
 });
-
-
 
 
 
