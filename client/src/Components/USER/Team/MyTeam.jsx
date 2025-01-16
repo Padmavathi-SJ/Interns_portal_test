@@ -42,37 +42,40 @@ const MyTeam = () => {
   };
 
   return (
-    <div className="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-200 px-4 py-4">
+    <div className="min-h-screen bg-gradient-to-r from-blue-100 via-white to-blue-100 dark:bg-gradient-to-r dark:from-blue-900 dark:via-gray-800 dark:to-blue-900 py-8 px-6">
       {message && <p className="text-red-500 text-center">{message}</p>}
-      {teams.length > 0 ? (
-        <ul className="space-y-2">
-          {teams.map((team) => (
-            <li
-              key={team.team_id}
-              className="flex justify-between items-center bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm hover:shadow-md transition-all"
-            >
-              <span className="font-semibold text-lg text-gray-900 dark:text-gray-200">
-                {team.team_name}
-              </span>
-              <button
-                className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition"
-                onClick={() => handleViewTasks(team.team_id)}
+      
+      <div className="max-w-4xl mx-auto">
+        {teams.length > 0 ? (
+          <ul className="space-y-4">
+            {teams.map((team) => (
+              <li
+                key={team.team_id}
+                className="flex justify-between items-center bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg hover:shadow-2xl transition-all transform hover:scale-105"
               >
-                View Tasks
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        !message && <p className="text-center text-gray-500">You are not part of any teams yet.</p>
-      )}
+                <span className="font-semibold text-xl text-gray-900 dark:text-gray-200">
+                  {team.team_name}
+                </span>
+                <button
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out"
+                  onClick={() => handleViewTasks(team.team_id)}
+                >
+                  View Tasks
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          !message && <p className="text-center text-gray-500">You are not part of any teams yet.</p>
+        )}
+      </div>
 
       {/* Task View Modal */}
       {showTasks && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-20">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 w-full max-w-md">
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 w-full max-w-md transform transition-all scale-95 hover:scale-100">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-2xl font-semibold text-gray-900 dark:text-gray-200">
                 Team Tasks
               </h3>
               <button onClick={handleCloseTasks} className="text-gray-400 hover:text-gray-600">
@@ -80,12 +83,12 @@ const MyTeam = () => {
               </button>
             </div>
             {/* Add your content for tasks here */}
-            <p className="text-center text-gray-700 dark:text-gray-300">
+            <p className="text-center text-gray-700 dark:text-gray-300 mb-4">
               View tasks for team with ID: {selectedTeamId}
             </p>
-            <div className="text-center mt-4">
+            <div className="text-center">
               <button
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300"
                 onClick={() => navigate(`/employee-dashboard/team_tasks/${selectedTeamId}`)}
               >
                 Go to Tasks
