@@ -232,6 +232,7 @@ router.put("/update_task_status/:taskId", (req, res) => {
   });
 });
 
+
 // Employee applying for leave
 router.post("/apply_leave", (req, res) => {
   // Destructure required fields from the request body
