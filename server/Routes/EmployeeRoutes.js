@@ -79,17 +79,18 @@ const verifyToken = (req, res, next) => {
 
 // Get employee details based on logged-in employee's ID from the token
 router.get("/get_employee", verifyToken, (req, res) => {
-  const { id: employeeId } = req.user; // Extract employeeId from the verified token
+  const { id: employeeId } = req.user;
 
-  // SQL query to fetch employee details with the profile_img field
-  const query = `
-    SELECT e.id, e.name, d.name AS department, e.role, e.degree, e.experience, e.mobile_no, e.skills, e.university, e.profile_img
+  const sql = `
+    SELECT e.id, e.name, e.email, e.role, e.experience, d.name AS department, 
+           e.salary, e.degree, e.university, e.graduation_year, e.skills, 
+           e.certifications, e.mobile_no, e.profile_img
     FROM employees e
     JOIN department d ON e.department_id = d.id
     WHERE e.id = ?;
   `;
 
-  connection.query(query, [employeeId], (err, results) => {
+  connection.query(sql, [employeeId], (err, results) => {
     if (err) {
       console.error("Error fetching employee details:", err);
       return res.status(500).json({ Status: false, Error: "Internal server error." });
@@ -99,24 +100,18 @@ router.get("/get_employee", verifyToken, (req, res) => {
       return res.status(404).json({ Status: false, Message: "Employee not found." });
     }
 
-    // Format the profile_img path if it exists
     const employee = results[0];
-    const profileImgUrl = employee.profile_img
-      ? `/uploads/profile_images/${employee.profile_img.replace(/\\/g, '/')}`
-      : null;
+   
 
-    // Return the employee details along with the formatted profile image URL
     res.json({
       Status: true,
       Data: {
-        ...employee,
-        profile_img: profileImgUrl, // Provide formatted profile image URL
-        skills: employee.skills ? employee.skills.split(",") : [], // Convert skills to an array
+        ...employee, // Return the full URL for profile image
+        skills: employee.skills ? employee.skills.split(",") : [],
       },
     });
   });
 });
-
 
 
 // Get tasks assigned to the logged-in employee
@@ -344,7 +339,7 @@ router.get("/about_employee", verifyToken, (req, res) => {
   
   const query = `
     SELECT e.id, e.name, d.name AS department, e.role, e.experience, e.mobile_no, e.email, e.salary, e.degree, 
-           e.university, e.graduation_year, e.skills, e.certifications
+           e.university, e.graduation_year, e.skills, e.certifications, e.profile_img
     FROM employees e
     JOIN department d ON e.department_id = d.id
     WHERE e.id = ?;
@@ -519,69 +514,60 @@ router.get("/leave_dashboard", verifyToken, (req, res) => {
 // Employee performance route with the token verification middleware
 router.get("/employee-performance", verifyToken, (req, res) => {
   const { id: employeeId } = req.user;
-  const { monthRange } = req.query;  // Get the selected month range
+  const { month, year } = req.query; // include year for filtering
 
-  // Mapping months to numbers
   const monthMap = {
     'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
     'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12
   };
 
-  // Extract start and end months from the selected range
-  const [startMonth, endMonth] = monthRange.split('-').map((month) => monthMap[month]);
+  const selectedMonth = monthMap[month];
 
-  // Modified queries to filter data based on the selected month range
   const leaveCountQuery = `
-    SELECT MONTH(created_at) AS month, COUNT(*) AS leave_count 
+    SELECT COUNT(*) AS leave_count 
     FROM leave_requests 
-    WHERE employee_id = ? AND MONTH(created_at) BETWEEN ? AND ? 
-    GROUP BY MONTH(created_at)`;
+    WHERE employee_id = ? 
+    AND status = 'Approved'
+    AND ((MONTH(from_date) = ? AND YEAR(from_date) = ?) 
+         OR (MONTH(to_date) = ? AND YEAR(to_date) = ?));
+  `;
+
+  const feedbackCountQuery = `
+    SELECT COUNT(*) AS feedback_count 
+    FROM feedback 
+    WHERE employee_id = ? AND MONTH(created_at) = ?`;
 
   const teamContributionQuery = `
     SELECT COUNT(*) AS team_contribution 
     FROM teams 
     WHERE JSON_CONTAINS(team_members, JSON_ARRAY(?), '$')`;
 
-  const feedbackCountQuery = `
-    SELECT MONTH(created_at) AS month, COUNT(*) AS feedback_count 
-    FROM feedback 
-    WHERE employee_id = ? AND MONTH(created_at) BETWEEN ? AND ? 
-    GROUP BY MONTH(created_at)`;
-
   const workCompletionQuery = `
     SELECT COUNT(*) AS completed_tasks 
     FROM work_allocation 
-    WHERE employee_id = ? AND status = 'Completed' AND MONTH(deadline) BETWEEN ? AND ?`;
+    WHERE employee_id = ? AND status = 'Completed' AND MONTH(deadline) = ?`;
 
-  connection.query(leaveCountQuery, [employeeId, startMonth, endMonth], (err, leaveCountResults) => {
-    if (err) {
-      console.error("Error fetching leave count:", err);
-      return res.status(500).json({ Status: false, Error: "Error fetching leave count" });
-    }
+    // Use current year if not provided
+  const currentYear = new Date().getFullYear();
+  const selectedYear = year || currentYear;
 
-    connection.query(teamContributionQuery, [employeeId], (err, teamContributionResults) => {
-      if (err) {
-        console.error("Error fetching team contribution:", err);
-        return res.status(500).json({ Status: false, Error: "Error fetching team contribution" });
-      }
 
-      connection.query(feedbackCountQuery, [employeeId, startMonth, endMonth], (err, feedbackCountResults) => {
-        if (err) {
-          console.error("Error fetching feedback count:", err);
-          return res.status(500).json({ Status: false, Error: "Error fetching feedback count" });
-        }
+  connection.query(leaveCountQuery, [employeeId, selectedMonth, selectedYear, selectedMonth, selectedYear], (err, leaveCountResults) => {
+    if (err) return res.status(500).json({ Status: false, Error: "Error fetching leave count" });
 
-        connection.query(workCompletionQuery, [employeeId, startMonth, endMonth], (err, workCompletionResults) => {
-          if (err) {
-            console.error("Error fetching work completion:", err);
-            return res.status(500).json({ Status: false, Error: "Error fetching work completion" });
-          }
+    connection.query(feedbackCountQuery, [employeeId, selectedMonth], (err, feedbackCountResults) => {
+      if (err) return res.status(500).json({ Status: false, Error: "Error fetching feedback count" });
 
-          // Compile the results and send the response
+      connection.query(teamContributionQuery, [employeeId], (err, teamContributionResults) => {
+        if (err) return res.status(500).json({ Status: false, Error: "Error fetching team contribution" });
+
+        connection.query(workCompletionQuery, [employeeId, selectedMonth], (err, workCompletionResults) => {
+          if (err) return res.status(500).json({ Status: false, Error: "Error fetching work completion" });
+
           const responseData = {
-            leaveCount: leaveCountResults,
+            leaveCount: leaveCountResults[0]?.leave_count || 0,
+            feedbackCount: feedbackCountResults[0]?.feedback_count || 0,
             teamContribution: teamContributionResults[0]?.team_contribution || 0,
-            feedbackCount: feedbackCountResults,
             workCompletion: workCompletionResults[0]?.completed_tasks || 0,
           };
 
