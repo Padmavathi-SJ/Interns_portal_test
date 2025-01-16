@@ -580,14 +580,15 @@ router.get("/employee-performance", verifyToken, (req, res) => {
 });
 
 
-
 router.get("/get_announcements", verifyToken, (req, res) => {
   const { id: employeeId } = req.user;
 
+  // SQL query to get announcements that target the logged-in employee
   const query = `
-    SELECT a.id, a.title, a.description, a.extra_info, a.priority, a.created_at
-    FROM announcements a
-    WHERE JSON_CONTAINS(a.target_ids, JSON_QUOTE(?), '$');
+    SELECT id, title, description, extra_info, priority, created_at
+    FROM announcements
+    WHERE JSON_CONTAINS(target_ids, JSON_QUOTE(?), '$')
+      AND category IN ('individual', 'all') -- Ensure we get individual or global announcements
   `;
 
   connection.query(query, [employeeId], (err, results) => {
