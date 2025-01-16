@@ -60,17 +60,12 @@ const AddFeedback = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-lg">
+    <div className="container mx-auto p-6 bg-gradient-to-r from-blue-100 via-white to-blue-100 dark:bg-gradient-to-r dark:from-blue-900 dark:via-gray-800 dark:to-blue-900 rounded-lg shadow-lg dark:shadow-none max-w-lg">
       <h2 className="text-center text-3xl font-semibold mb-6 text-blue-600 dark:text-blue-400">Submit Feedback</h2>
 
       {error && <div className="text-red-500 mb-4">{error}</div>}
       {successMessage && <div className="text-green-500 mb-4">{successMessage}</div>}
 
-      {status && (
-        <div className="text-lg mt-4 font-medium text-gray-700 dark:text-gray-300">
-          <strong>Status:</strong> {status}
-        </div>
-      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>

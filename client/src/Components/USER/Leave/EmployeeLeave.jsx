@@ -1,103 +1,193 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 
 const EmployeeLeave = () => {
   const [leaveRequests, setLeaveRequests] = useState([]);
-  const [message, setMessage] = useState(""); // State to display no leaves message
-  const [error, setError] = useState("");
+  const [filteredLeaveRequests, setFilteredLeaveRequests] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedReason, setSelectedReason] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const leaveRequestsPerPage = 8;
   const navigate = useNavigate();
 
-  // Function to fetch leave requests for the logged-in employee
   useEffect(() => {
     const fetchLeaveRequests = async () => {
       try {
-        const token = localStorage.getItem("userToken"); // Get the JWT token
-        if (!token) {
-          setError("No token found, please log in.");
-          return;
-        }
-
-        const response = await axios.get("http://localhost:3000/auth/leave_request", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (response.data.Status) {
-          setLeaveRequests(response.data.Result); // Set the leave requests in state
+        const response = await axios.get('http://localhost:3000/auth/leave_requests');
+        if (Array.isArray(response.data.Result)) {
+          setLeaveRequests(response.data.Result);
+          setFilteredLeaveRequests(response.data.Result);
         } else {
-          setMessage(response.data.Message || "You have not applied for any leaves yet.");
+          console.error('Expected an array but received:', response.data);
         }
-      } catch (err) {
-        setError("An error occurred while fetching leave requests");
-        console.error("Error:", err.response ? err.response.data : err);
+      } catch (error) {
+        console.error('Error fetching leave requests:', error);
       }
     };
 
     fetchLeaveRequests();
-  }, []); // Empty dependency array to run once when component mounts
+  }, []);
 
-  if (error) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900">
-        <div className="bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 p-4 rounded-md shadow-md max-w-lg">
-          {error}
-        </div>
-      </div>
-    );
-  }
+  const handleAction = async (id, action) => {
+    try {
+      const response = await axios.put(`http://localhost:3000/auth/leave_requests/${id}`, { status: action });
+
+      if (response.data.Status) {
+        setLeaveRequests((prevRequests) =>
+          prevRequests.map((request) =>
+            request.id === id ? { ...request, status: action } : request
+          )
+        );
+      } else {
+        console.error('Failed to update status:', response.data.Error);
+      }
+    } catch (error) {
+      console.error('Error updating leave request:', error);
+    }
+  };
+
+  const fetchReason = async (id) => {
+    try {
+      const response = await axios.get(`http://localhost:3000/auth/leave_request_reason/${id}`);
+  
+      if (response.data.Status && response.data.Reason) {
+        setSelectedReason(response.data.Reason);
+        setIsModalOpen(true);
+      } else {
+        console.error('No reason found or error:', response.data.Error);
+      }
+    } catch (error) {
+      console.error('Error fetching reason:', error);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedReason(null);
+  };
+
+  const totalPages = Math.ceil(filteredLeaveRequests.length / leaveRequestsPerPage);
+
+  const handlePageChange = (page) => {
+    if (page > 0 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const currentLeaveRequests = filteredLeaveRequests.slice(
+    (currentPage - 1) * leaveRequestsPerPage,
+    currentPage * leaveRequestsPerPage
+  );
 
   return (
-    <div className="container mx-auto p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md">
-      <h2 className="text-center text-2xl font-semibold mb-6 text-blue-500 dark:text-blue-300">
-        Employee Leave Requests
-      </h2>
+    <div className="p-6 bg-gradient-to-r from-blue-100 via-white to-blue-50 dark:bg-gradient-to-r dark:from-gray-800 dark:via-gray-900 dark:to-gray-700 rounded-lg max-w-6xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-semibold text-blue-700 dark:text-white">Leave Requests</h2>
+        <div className="text-center mb-6">
+          <button
+            onClick={() => navigate("/employee-dashboard/apply_leave")}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition"
+          >
+            Apply Leave
+          </button>
+        </div>
+      </div>
 
-      {/* Message for no leave requests */}
-      {message && (
-        <div className="text-center text-gray-600 dark:text-gray-300 mb-6">{message}</div>
-      )}
-
-      {/* Table to display leave requests */}
-      {leaveRequests.length === 0 ? (
-        <div className="text-center text-gray-600 dark:text-gray-300">No leave requests found.</div>
-      ) : (
-        <table className="min-w-full table-auto border-collapse bg-white dark:bg-gray-700 shadow-lg rounded-lg">
-          <thead>
-            <tr className="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-300">
+      {currentLeaveRequests.length > 0 ? (
+        <table className="min-w-full table-auto mb-6 bg-white shadow-lg rounded-lg dark:bg-gray-800 dark:text-white">
+          <thead className="bg-gradient-to-r from-blue-100 via-white to-blue-50 dark:bg-gray-300 text-blue-700 dark:text-blue">
+            <tr>
+              <th className="px-4 py-2 text-left">Employee ID</th>
               <th className="px-4 py-2 text-left">Leave Type</th>
               <th className="px-4 py-2 text-left">From Date</th>
               <th className="px-4 py-2 text-left">From Time</th>
               <th className="px-4 py-2 text-left">To Date</th>
               <th className="px-4 py-2 text-left">To Time</th>
-              <th className="px-4 py-2 text-left">Reason</th>
-              <th className="px-4 py-2 text-left">Status</th>
+              <th className="px-4 py-2 text-left">Action</th>
+              <th className="px-4 py-2 text-left">View Reason</th>
             </tr>
           </thead>
           <tbody>
-            {leaveRequests.map((request) => (
-              <tr key={request.id} className="border-t hover:bg-gray-50 dark:hover:bg-gray-600">
-                <td className="px-4 py-2">{request.leave_type}</td>
-                <td className="px-4 py-2">{request.from_date}</td>
-                <td className="px-4 py-2">{request.from_time}</td>
-                <td className="px-4 py-2">{request.to_date}</td>
-                <td className="px-4 py-2">{request.to_time}</td>
-                <td className="px-4 py-2">{request.Reason}</td>
-                <td className="px-4 py-2">{request.status}</td>
+            {currentLeaveRequests.map((request) => (
+              <tr key={request.id} className="border-b hover:bg-indigo-50 dark:hover:bg-indigo-700 dark:border-gray-600 transition-colors">
+                <td className="px-4 py-2 text-gray-800 dark:text-gray-300">{request.employee_id}</td>
+                <td className="px-4 py-2 text-gray-800 dark:text-gray-300">{request.leave_type}</td>
+                <td className="px-4 py-2 text-gray-800 dark:text-gray-300">{request.from_date}</td>
+                <td className="px-4 py-2 text-gray-800 dark:text-gray-300">{request.from_time}</td>
+                <td className="px-4 py-2 text-gray-800 dark:text-gray-300">{request.to_date}</td>
+                <td className="px-4 py-2 text-gray-800 dark:text-gray-300">{request.to_time}</td>
+                <td className="px-4 py-2">
+                  {request.status && request.status.toLowerCase() === 'pending' && (
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleAction(request.id, 'approved')}
+                        className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300 dark:bg-green-600 dark:hover:bg-green-700"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => handleAction(request.id, 'rejected')}
+                        className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300 dark:bg-red-600 dark:hover:bg-red-700"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  )}
+                  {request.status && request.status.toLowerCase() !== 'pending' && <span>{request.status}</span>}
+                </td>
+                <td className="px-4 py-2">
+                  <button
+                    onClick={() => fetchReason(request.id)}
+                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300 dark:bg-blue-600 dark:hover:bg-blue-700"
+                  >
+                    View Reason
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
+      ) : (
+        <p className="text-gray-700 dark:text-gray-300">No leave requests available.</p>
       )}
 
-      {/* Apply Leave Button */}
-      <div className="text-center mt-6">
-        <button
-          onClick={() => navigate("/employee-dashboard/apply_leave")}
-          className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 ease-in-out"
-        >
-          Apply Leave
-        </button>
-      </div>
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-md mr-2 disabled:bg-gray-400 dark:bg-indigo-700 dark:disabled:bg-gray-500"
+          >
+            Previous
+          </button>
+          <span className="px-4 py-2 text-gray-700 dark:text-gray-300">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-blue-700 text-white rounded-md ml-2 disabled:bg-gray-400 dark:bg-blue-800 dark:disabled:bg-gray-500"
+          >
+            Next
+          </button>
+        </div>
+      )}
+
+      {isModalOpen && (
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg max-w-md w-full dark:bg-gray-800 dark:text-white">
+            <h3 className="text-xl font-semibold mb-4">Leave Reason</h3>
+            <p>{selectedReason}</p>
+            <button
+              onClick={handleCloseModal}
+              className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300 dark:bg-red-600 dark:hover:bg-red-700"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

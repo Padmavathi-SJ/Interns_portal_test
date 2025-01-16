@@ -9,7 +9,6 @@ const EmployeeTask = () => {
   const [selectedTask, setSelectedTask] = useState(null); // Store the selected task for viewing description
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility state
 
-  // Helper to extract employee ID
   const getLoggedInEmployeeId = () => {
     const token = localStorage.getItem("userToken");
     if (!token) return null;
@@ -27,34 +26,31 @@ const EmployeeTask = () => {
       }
 
       try {
-        // Fetch today's tasks
         const todayResponse = await axios.get(
-          "http://localhost:3000/auth/get_today_tasks", // Route for today's tasks
+          "http://localhost:3000/auth/get_today_tasks", 
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
 
         if (todayResponse.data.Status) {
-          setTodayTasks(todayResponse.data.Result); // Store today's tasks
+          setTodayTasks(todayResponse.data.Result);
         } else {
           setError(todayResponse.data.Message || "No tasks found for today.");
         }
 
-        // Fetch all tasks excluding today's tasks
         const allResponse = await axios.get(
-          "http://localhost:3000/auth/get_all_tasks", // Route for past tasks (excluding today's)
+          "http://localhost:3000/auth/get_all_tasks",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
 
         if (allResponse.data.Status) {
-          // Filter out today's tasks from all tasks
           const allTasksExcludingToday = allResponse.data.Result.filter(
             (task) => !todayTasks.some((todayTask) => todayTask.taskId === task.taskId)
           );
-          setTasks(allTasksExcludingToday); // Store all tasks excluding today
+          setTasks(allTasksExcludingToday);
         } else {
           setError(allResponse.data.Message || "No tasks found.");
         }
@@ -65,22 +61,19 @@ const EmployeeTask = () => {
     };
 
     fetchTasks();
-  }, [todayTasks]); // Adding `todayTasks` to dependency to ensure filtering works correctly
+  }, [todayTasks]);
 
-  // Function to handle opening the view task modal
   const handleViewTask = (task) => {
-    setSelectedTask(task); // Store selected task to show its description
-    setIsModalOpen(true); // Open the modal
+    setSelectedTask(task);
+    setIsModalOpen(true);
   };
 
-  // Function to close the modal
   const handleCloseModal = () => {
-    setIsModalOpen(false); // Close the modal
-    setSelectedTask(null); // Clear selected task
+    setIsModalOpen(false);
+    setSelectedTask(null);
   };
 
-  // Function to handle status change to "Completed"
-  const handleStatusChange = async (taskId) => {
+  const handleStatusChange = async (taskId, newStatus) => {
     const token = localStorage.getItem("userToken");
     if (!token) {
       setError("Unable to retrieve user token. Please log in.");
@@ -90,25 +83,24 @@ const EmployeeTask = () => {
     try {
       const response = await axios.put(
         `http://localhost:3000/auth/update_task_status/${taskId}`,
-        { status: "Completed" },
+        { status: newStatus },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       if (response.data.Status) {
-        // Update the status in local state to reflect the change immediately
         setTasks((prevTasks) =>
           prevTasks.map((task) =>
-            task.taskId === taskId ? { ...task, status: "Completed" } : task
+            task.taskId === taskId ? { ...task, status: newStatus } : task
           )
         );
         setTodayTasks((prevTasks) =>
           prevTasks.map((task) =>
-            task.taskId === taskId ? { ...task, status: "Completed" } : task
+            task.taskId === taskId ? { ...task, status: newStatus } : task
           )
         );
-        setError(""); // Clear error if the update was successful
+        setError(""); 
       } else {
         setError("Failed to update task status.");
       }
@@ -118,74 +110,75 @@ const EmployeeTask = () => {
     }
   };
 
-  // Helper to determine button color based on priority
-  const getPriorityButtonStyle = (priority) => {
+  const getPriorityStyle = (priority) => {
     switch (priority.toLowerCase()) {
       case "high":
-        return "bg-red-500 text-white";
+        return "text-red-500 font-semibold";
       case "medium":
-        return "bg-yellow-500 text-white";
+        return "text-yellow-500 font-semibold";
       case "low":
-        return "bg-green-500 text-white";
+        return "text-green-500 font-semibold";
       default:
-        return "bg-gray-500 text-white";
+        return "text-gray-500";
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "In Progress":
+        return "text-blue-500";
+      case "Completed":
+        return "text-green-500";
+      case "Pending":
+        return "text-yellow-500";
+      default:
+        return "text-gray-500";
     }
   };
 
   return (
-    <div className="p-6">
-      {error && <div className="text-red-500">{error}</div>}
+    <div>
+      {error && <div className="text-red-500 text-center">{error}</div>}
 
       {/* Today's Task Section */}
       <div className="mb-6">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-bold text-blue-600 dark:text-blue-300">Today's Tasks</h3>
+          <h3 className="text-2xl font-bold text-blue-700 dark:text-blue-300">Today's Tasks</h3>
           
-          {/* "View All" Button */}
           <button
             onClick={() => setShowAllTasks(!showAllTasks)}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
-            {showAllTasks ? "View Today's Tasks" : "View All Tasks"}
+            {showAllTasks ? "Hide All Tasks" : "View All Tasks"}
           </button>
         </div>
 
-        {/* Task Cards for Today's Tasks */}
+        {/* Today's Task Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {todayTasks.map((task) => {
             return (
               <div
                 key={task.taskId}
-                className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg border-2 dark:border-gray-600 border-gray-300 flex flex-col"
+                className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg border-2 border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all transform hover:scale-105"
               >
-                <h4 className="text-xl font-semibold text-gray-800 dark:text-gray-200">{task.title}</h4>
-                <div className="mt-2 flex flex-col space-y-2">
-                  <p className="text-gray-600 dark:text-gray-400">Task ID: {task.taskId}</p>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Priority: 
-                    <button
-                      className={`px-4 py-2 rounded-full text-sm font-semibold mt-2 ${getPriorityButtonStyle(task.priority)}`}
-                    >
-                      {task.priority}
-                    </button>
-                  </p>
-                  <p className="text-gray-600 dark:text-gray-400">Status: {task.status}</p>
+                <div className="flex justify-between items-center mb-3">
+                  <p className="text-gray-800 dark:text-gray-200">Task ID: {task.taskId}</p>
+                  <p className={`text-lg ${getPriorityStyle(task.priority)}`}>{task.priority}</p>
                 </div>
-                <div className="mt-4 flex justify-between">
+                <div className="space-y-3">
+                  <p className="text-gray-800 dark:text-gray-300">Status: 
+                    <span className={`inline-block px-4 py-2 rounded-lg ${getStatusColor(task.status)}`}>
+                      {task.status}
+                    </span>
+                  </p>
+                </div>
+                <div className="mt-4 flex justify-between gap-4">
                   <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                    onClick={() => handleViewTask(task)} // Open modal with task description
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                    onClick={() => handleViewTask(task)}
                   >
                     View Task
                   </button>
-                  {task.status !== "Completed" && (
-                    <button
-                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                      onClick={() => handleStatusChange(task.taskId)} // Mark as completed
-                    >
-                      Mark as Completed
-                    </button>
-                  )}
                 </div>
               </div>
             );
@@ -193,45 +186,35 @@ const EmployeeTask = () => {
         </div>
       </div>
 
-      {/* Show All Tasks if "View All" is toggled */}
+      {/* Show All Tasks */}
       {showAllTasks && (
         <div>
-          <h3 className="text-lg font-bold mb-2 text-blue-600 dark:text-blue-300">All Tasks</h3>
+          <h3 className="text-2xl font-bold mb-4 text-blue-700 dark:text-blue-300">All Tasks</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {tasks.map((task) => {
               return (
                 <div
                   key={task.taskId}
-                  className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg border-2 dark:border-gray-600 border-gray-300 flex flex-col"
+                  className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg border-2 border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all transform hover:scale-105"
                 >
-                  <h4 className="text-xl font-semibold text-gray-800 dark:text-gray-200">{task.title}</h4>
-                  <div className="mt-2 flex flex-col space-y-2">
-                    <p className="text-gray-600 dark:text-gray-400">Task ID: {task.taskId}</p>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      Priority: 
-                      <button
-                        className={`px-4 py-2 rounded-full text-sm font-semibold mt-2 ${getPriorityButtonStyle(task.priority)}`}
-                      >
-                        {task.priority}
-                      </button>
-                    </p>
-                    <p className="text-gray-600 dark:text-gray-400">Status: {task.status}</p>
+                  <div className="flex justify-between items-center mb-3">
+                    <p className="text-gray-800 dark:text-gray-200">Task ID: {task.taskId}</p>
+                    <p className={`text-lg ${getPriorityStyle(task.priority)}`}>{task.priority}</p>
                   </div>
-                  <div className="mt-4 flex justify-between">
+                  <div className="space-y-3">
+                    <p className="text-gray-800 dark:text-gray-300">Status: 
+                      <span className={`inline-block px-4 py-2 rounded-lg ${getStatusColor(task.status)}`}>
+                        {task.status}
+                      </span>
+                    </p>
+                  </div>
+                  <div className="mt-4 flex justify-between gap-4">
                     <button
-                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                      onClick={() => handleViewTask(task)} // Open modal with task description
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                      onClick={() => handleViewTask(task)}
                     >
                       View Task
                     </button>
-                    {task.status !== "Completed" && (
-                      <button
-                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                        onClick={() => handleStatusChange(task.taskId)} // Mark as completed
-                      >
-                        Mark as Completed
-                      </button>
-                    )}
                   </div>
                 </div>
               );
@@ -240,20 +223,20 @@ const EmployeeTask = () => {
         </div>
       )}
 
-      {/* Modal for Viewing Task Description */}
+      {/* Modal */}
       {isModalOpen && selectedTask && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-96 border-2 dark:border-gray-600 border-gray-300">
-            <div className="flex justify-between items-center">
-              <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">Task Description</h3>
+        <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg max-w-lg w-full border-2 border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all transform hover:scale-105">
+            <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">{selectedTask.title}</h3>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">{selectedTask.description}</p>
+            <div className="mt-6 text-right">
               <button
-                className="text-red-500"
-                onClick={handleCloseModal} // Close the modal
+                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
+                onClick={handleCloseModal}
               >
                 Close
               </button>
             </div>
-            <p className="mt-4 text-gray-600 dark:text-gray-400">{selectedTask.description}</p>
           </div>
         </div>
       )}

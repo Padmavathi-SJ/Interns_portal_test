@@ -74,7 +74,8 @@ const ApplyLeave = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-lg">
+    <div className="container mx-auto p-6 bg-gradient-to-r from-blue-100 via-white to-blue-100 dark:bg-gradient-to-r dark:from-blue-900 dark:via-gray-800 dark:to-blue-900 rounded-lg shadow-lg dark:shadow-none max-w-lg">
+
       <h2 className="text-center text-3xl font-semibold mb-6 text-blue-600 dark:text-blue-400">Apply for Leave</h2>
       
       {error && <div className="text-red-500 mb-4">{error}</div>}
@@ -94,7 +95,7 @@ const ApplyLeave = () => {
             id="leaveType"
             value={leaveType}
             onChange={(e) => setLeaveType(e.target.value)}
-            className="w-full p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border rounded-lg shadow-md dark:shadow-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           >
             <option value="">Select Leave Type</option>
@@ -111,7 +112,7 @@ const ApplyLeave = () => {
             id="startDate"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="w-full p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border rounded-lg shadow-md dark:shadow-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
@@ -123,7 +124,7 @@ const ApplyLeave = () => {
             id="fromTime"
             value={fromTime}
             onChange={(e) => setFromTime(e.target.value)}
-            className="w-full p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border rounded-lg shadow-md dark:shadow-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
@@ -135,7 +136,7 @@ const ApplyLeave = () => {
             id="endDate"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="w-full p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border rounded-lg shadow-md dark:shadow-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
@@ -147,7 +148,7 @@ const ApplyLeave = () => {
             id="toTime"
             value={toTime}
             onChange={(e) => setToTime(e.target.value)}
-            className="w-full p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border rounded-lg shadow-md dark:shadow-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
@@ -158,7 +159,7 @@ const ApplyLeave = () => {
             id="reason"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            className="w-full p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border rounded-lg shadow-md dark:shadow-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
