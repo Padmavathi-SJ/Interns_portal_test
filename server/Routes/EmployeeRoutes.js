@@ -605,6 +605,37 @@ router.get("/get_announcements", verifyToken, (req, res) => {
 });
 
 
+router.put("/update_team_task_status/:teamId/:taskId", (req, res) => {
+  const { teamId, taskId } = req.params; // Get team ID and task ID from the URL params
+  const { status } = req.body; // Get status from the request body
+
+  // Ensure status is provided and is valid
+  if (!status || !['Pending', 'In Progress', 'Completed'].includes(status)) {
+    return res.status(400).json({ Status: false, Error: "Invalid or missing status" });
+  }
+
+  const sql = `
+    UPDATE team_work_allocation
+    SET status = ?
+    WHERE team_id = ? AND id = ?
+  `;
+
+  // Execute the query to update the task status within the team
+  connection.query(sql, [status, teamId, taskId], (err, result) => {
+    if (err) {
+      console.error("Query Error:", err);
+      return res.status(500).json({ Status: false, Error: "Query Error" });
+    }
+
+    // Check if any rows were updated
+    if (result.affectedRows > 0) {
+      return res.json({ Status: true, Message: "Team task status updated successfully." });
+    } else {
+      return res.status(404).json({ Status: false, Message: "Task not found in the team." });
+    }
+  });
+});
+
 
 
 
