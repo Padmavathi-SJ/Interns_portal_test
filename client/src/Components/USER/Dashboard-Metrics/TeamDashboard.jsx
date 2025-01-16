@@ -49,15 +49,14 @@ const TeamDashboard = () => {
         <p className="text-lg mb-2">I am Contributing to {teamCount} Teams</p>
         <p className="text-lg mb-2">I am Contributing to {teamCount} Teams</p>
 
-
-<div className="w-full bg-gray-200 rounded-full">
-  <div
-    className="bg-green-500 text-center text-white rounded-full"
-    style={{ width: `${(teamCount / 10) * 100}%`, height: "55px" }} // Increase height here
-  >
-    <span className="text-sm font-medium">{teamCount} / 10 Teams</span> 
-  </div>
-</div>
+        <div className="w-full bg-gray-200 rounded-full">
+          <div
+            className="bg-green-500 text-center text-white rounded-full flex justify-center items-center"
+            style={{ width: `${(teamCount / 10) * 100}%`, height: "55px" }} // Increase height here
+          >
+            <span className="text-sm font-medium">{teamCount} / 10 Teams</span>
+          </div>
+        </div>
 
       </div>
     </div>

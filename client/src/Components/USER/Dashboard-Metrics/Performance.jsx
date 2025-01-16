@@ -6,133 +6,95 @@ const Performance = () => {
   const [performanceData, setPerformanceData] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  const [monthRange, setMonthRange] = useState("Jan-Feb");
+  const [month, setMonth] = useState("Jan");
 
-  const isTokenExpired = (token) => {
-    try {
-      const payload = token.split('.')[1];
-      const decoded = JSON.parse(atob(payload));
-      const currentTime = Date.now() / 1000;
-      return decoded.exp < currentTime;
-    } catch (e) {
-      console.error("Error decoding token:", e);
-      return true;
-    }
-  };
-
-  const handleMonthRangeChange = (e) => {
-    setMonthRange(e.target.value);
+  const handleMonthChange = (e) => {
+    setMonth(e.target.value);
   };
 
   useEffect(() => {
     const fetchPerformanceData = async () => {
       try {
         const token = localStorage.getItem("userToken");
-        if (!token) {
-          setError("No token found, please log in.");
-          setLoading(false);
-          return;
-        }
 
-        if (isTokenExpired(token)) {
-          setError("Token expired, please log in again.");
-          setLoading(false);
-          return;
-        }
-
-        // Fetch data for the selected month range
         const response = await axios.get("http://localhost:3000/auth/employee-performance", {
           headers: { Authorization: `Bearer ${token}` },
-          params: { monthRange }
+          params: { month, year: new Date().getFullYear() },
         });
 
-        if (response.status === 200 && response.data) {
+        if (response.status === 200 && response.data.Status) {
           const data = response.data.Data;
-          const leaveCount = Array.isArray(data.leaveCount) ? data.leaveCount : [];
-          const feedbackCount = Array.isArray(data.feedbackCount) ? data.feedbackCount : [];
 
-          const chartData = leaveCount.map((item, index) => ({
-            month: item.month,
-            leaveCount: item.leave_count,
-            feedbackCount: feedbackCount[index]?.feedback_count || 0,
-            teamContribution: index === 0 ? data.teamContribution : 0,
-            workCompletion: leaveCount.length ? data.workCompletion / leaveCount.length : 0,
-          }));
+          console.log("Fetched performance data:", data);
 
+          const chartData = [{
+            month: month,
+            leaveCount: data.leaveCount || 0,
+            feedbackCount: data.feedbackCount || 0,
+            teamContribution: data.teamContribution || 0,
+            workCompletion: data.workCompletion || 0,
+          }];
           setPerformanceData(chartData);
         } else {
           setError("Unable to fetch performance data.");
         }
       } catch (err) {
         setError("An error occurred while fetching performance data.");
-        console.error("Error:", err.response ? err.response.data : err);
+        console.error("Error:", err);
       } finally {
         setLoading(false);
       }
     };
 
     fetchPerformanceData();
-  }, [monthRange]);
+  }, [month]);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
-        <div className="text-gray-600 font-semibold">Loading performance data...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
-        <div className="bg-red-100 text-red-600 p-4 rounded-md shadow-md max-w-lg">
-          {error}
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <div>Loading performance data...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div>
+      <select
+        value={month}
+        onChange={handleMonthChange}
+        style={{
+          backgroundColor: "#282c34",
+          color: "#ffffff",
+          border: "1px solid #ffffff",
+          padding: "10px",
+          borderRadius: "5px",
+          fontSize: "16px",
+          outline: "none",
+          cursor: "pointer",
+        }}
+      >
+        <option value="Jan">January</option>
+        <option value="Feb">February</option>
+        <option value="Mar">March</option>
+        <option value="Apr">April</option>
+        <option value="May">May</option>
+        <option value="Jun">June</option>
+        <option value="Jul">July</option>
+        <option value="Aug">August</option>
+        <option value="Sep">September</option>
+        <option value="Oct">October</option>
+        <option value="Nov">November</option>
+        <option value="Dec">December</option>
+      </select>
 
-      {/* Month Range Selector */}
-      <div className="flex justify-center mb-4">
-        <select
-          value={monthRange}
-          onChange={handleMonthRangeChange}
-          className="p-2 border border-gray-300 rounded-md"
-        >
-          <option value="Jan-Feb">Jan to Feb</option>
-          <option value="Feb-Mar">Feb to Mar</option>
-          <option value="Mar-Apr">Mar to Apr</option>
-          <option value="Apr-May">Apr to May</option>
-          <option value="May-Jun">May to Jun</option>
-          <option value="Jun-Jul">Jun to Jul</option>
-          <option value="Jul-Aug">Jul to Aug</option>
-          <option value="Aug-Sep">Aug to Sep</option>
-          <option value="Sep-Oct">Sep to Oct</option>
-          <option value="Oct-Nov">Oct to Nov</option>
-          <option value="Nov-Dec">Nov to Dec</option>
-          <option value="Dec-Jan">Dec to Jan</option>
-          {/* Add more ranges as needed */}
-        </select>
-      </div>
-
-      <div className="flex justify-center">
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={performanceData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="leaveCount" fill="#8884d8" barSize={25} />
-            <Bar dataKey="feedbackCount" fill="#82ca9d" barSize={25} />
-            <Bar dataKey="teamContribution" fill="#ffc658" barSize={25} />
-            <Bar dataKey="workCompletion" fill="#ff7300" barSize={25} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      <ResponsiveContainer width="100%" height={400}>
+        <BarChart data={performanceData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="month" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="leaveCount" fill="#8884d8" />
+          <Bar dataKey="feedbackCount" fill="#82ca9d" />
+          <Bar dataKey="teamContribution" fill="#ffc658" />
+          <Bar dataKey="workCompletion" fill="#ff7300" />
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   );
 };

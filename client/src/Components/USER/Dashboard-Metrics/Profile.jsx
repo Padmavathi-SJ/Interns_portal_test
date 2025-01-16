@@ -1,20 +1,11 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useParams } from "react-router-dom";
-import profile from "../../../assets/profile.jpg"; // Import the default profile picture
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
 const Profile = () => {
   const { employeeId } = useParams(); // Retrieve employeeId from route
   const [employeeDetails, setEmployeeDetails] = useState(null);
   const [error, setError] = useState("");
-
-  // Function to decode JWT and check expiration
-  const isTokenExpired = (token) => {
-    const payload = token.split('.')[1]; // Get the payload part of the JWT
-    const decoded = JSON.parse(atob(payload)); // Decode base64 URL encoded string
-    const currentTime = Date.now() / 1000; // Get current time in seconds
-    return decoded.exp < currentTime; // Check if token is expired
-  };
 
   useEffect(() => {
     const fetchEmployeeDetails = async () => {
@@ -22,12 +13,6 @@ const Profile = () => {
         const token = localStorage.getItem("userToken"); // Retrieve token from localStorage
         if (!token) {
           setError("No token found, please log in.");
-          return;
-        }
-
-        // Check if token is expired
-        if (isTokenExpired(token)) {
-          setError("Token expired, please log in again.");
           return;
         }
 
@@ -48,7 +33,7 @@ const Profile = () => {
     };
 
     fetchEmployeeDetails();
-  }, []); // Empty dependency array means this runs once when the component mounts
+  }, []);
 
   if (error) {
     return (
@@ -74,22 +59,22 @@ const Profile = () => {
     mobile_no,
     skills,
     university,
-    profile_img, // Ensure correct field name for profile image
   } = employeeDetails;
 
   return (
-    <div className="flex flex-col justify-start items-start p-6 w-full space-y-6">
+    <div className="flex flex-col justify-start items-start p-4 w-full ">
       <div className="flex flex-col md:flex-row w-full max-w-4xl space-x-6">
-        {/* Profile Picture - Square */}
-        <div
-          className="w-52 h-40 bg-gray-300 overflow-hidden border-5 mb-4"
-          style={{
-            backgroundImage: `url(${profile_img || profile})`, // Use employee profile pic or default
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            borderRadius: "20%", // Apply border radius for circular shape
-          }}
-        />
+       {/* Profile Picture */}
+<div className="w-72 h-48 bg-gray-300 overflow-hidden border-5 mb-4" style={{ borderRadius: "20%", backgroundSize: "cover", backgroundPosition: "center" }}>
+  {employeeDetails.profile_img && (
+    <img
+      src={`http://localhost:3000/${employeeDetails.profile_img}`}
+      alt="Profile"
+      className="w-full h-full object-cover "
+    />
+  )}
+</div>
+
 
         {/* Employee Details */}
         <div className="flex flex-col w-full text-gray-600 dark:text-gray-200">
@@ -98,12 +83,14 @@ const Profile = () => {
             <p><span>{name}</span></p>
             <p><span>{department}</span></p>
             <p><span>{role}</span></p>
+            <p><span>{role}</span></p>
+            <p><span>{role}</span></p>
           </div>
         </div>
       </div>
 
       {/* Remaining Details */}
-      <div className="bg-white dark:bg-gray-800 dark:border-gray-700 p-4 w-full -mt-4"> {/* Added negative margin */}
+      <div className="bg-white dark:bg-gray-800 dark:border-gray-700 p-4 w-full -mt-4">
         <div className="flex flex-col space-y-2">
           <p><span>Degree: {degree}</span></p>
           <p><span>University: {university}</span></p>

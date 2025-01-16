@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import profile from '../../../assets/profile.jpg'; // Import default profile picture
+
 
 const EmployeeProfile = () => {
   const [employee, setEmployee] = useState(null);
@@ -52,16 +52,17 @@ const EmployeeProfile = () => {
           {/* Left Column: Profile Image and First Half of Details */}
           <div className="space-y-6">
             {/* Profile Image */}
-            <div className="flex justify-center items-center">
-              <div
-                className="w-40 h-40 rounded-full bg-gray-300 overflow-hidden"
-                style={{
-                  backgroundImage: `url(${employee.profile || profile})`, // Use employee profile pic or default
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-              />
-            </div>
+            <div className="w-40 h-40 bg-gray-300 overflow-hidden rounded-full">
+            {employee.profile_img && (
+    <img
+      src={`http://localhost:3000/${employee.profile_img}`}
+      alt="Profile"
+      className="w-full h-full object-cover "
+    />
+  )}
+</div>
+
+
 
             {/* Employee Details for Left Column */}
             <div className="space-y-6">

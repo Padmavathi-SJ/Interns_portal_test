@@ -11,6 +11,10 @@ const EmployeeDetails = () => {
       .then((response) => {
         if (response.data.Status) {
           setEmployee(response.data.Result); // Populate employee details
+          // Log the profile image URL
+          if (response.data.Result.profile_img) {
+            console.log('Profile Image URL:', `http://localhost:3000/${response.data.Result.profile_img}`);
+          }
         } else {
           alert('Failed to fetch employee details');
         }
@@ -83,4 +87,3 @@ const EmployeeDetails = () => {
 };
 
 export default EmployeeDetails;
-
