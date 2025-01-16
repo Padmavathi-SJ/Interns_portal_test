@@ -16,7 +16,7 @@ const MyTeam = () => {
         const response = await axios.get("http://localhost:3000/auth/get_my_team", {
           headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
         });
-
+        
         if (response.data.Status) {
           setTeams(response.data.Result);
         } else {

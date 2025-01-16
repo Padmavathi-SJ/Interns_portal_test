@@ -66,7 +66,7 @@ const Department = () => {
         {departments.map((department) => (
           <div
             key={department.id}
-            className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl cursor-pointer transition duration-300 ease-in-out transform hover:scale-105 border border-blue-300 relative"
+            className="bg-white p-4 rounded-lg shadow-lg hover:shadow-2xl cursor-pointer transition duration-300 ease-in-out transform hover:scale-105 border border-blue-300 relative"
             onClick={() => handleViewEmployees(department.id)}
           >
             <h3 className="text-xl font-semibold text-blue-700">{department.name}</h3>

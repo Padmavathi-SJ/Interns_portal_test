@@ -52,15 +52,19 @@ const Performance = () => {
   if (loading) return <div>Loading performance data...</div>;
   if (error) return <div>{error}</div>;
 
+  // Determine current theme (this can be set dynamically in your app, e.g., from context or a global state)
+  const isDarkTheme = false; // Change this based on your app's theme context
+
   return (
     <div>
+      {/* Select Dropdown Style Update for Light and Dark Theme */}
       <select
         value={month}
         onChange={handleMonthChange}
         style={{
-          backgroundColor: "#282c34",
-          color: "#ffffff",
-          border: "1px solid #ffffff",
+          backgroundColor: isDarkTheme ? "#282c34" : "#f8f8f8", // Dark for dark theme, light for light theme
+          color: isDarkTheme ? "#ffffff" : "#333333", // Light text for dark theme, dark text for light theme
+          border: isDarkTheme ? "1px solid #ffffff" : "1px solid #cccccc", // Light border for light theme, dark border for dark theme
           padding: "10px",
           borderRadius: "5px",
           fontSize: "16px",

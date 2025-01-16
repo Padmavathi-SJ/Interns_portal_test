@@ -3,6 +3,7 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import axios from "axios";
 import { SunIcon, MoonIcon, UserIcon, LogoutIcon } from "@heroicons/react/solid";
 import EmployeeProfile from './EmployeeProfile';
+import logo from '../../../assets/bit.png';
 
 
 const EmployeeDashboard = () => {
@@ -75,7 +76,13 @@ const EmployeeDashboard = () => {
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-200 flex flex-col">
       <div className="bg-white dark:bg-gray-800 px-6 py-4 border-b border-gray-300 dark:border-gray-700 shadow-lg rounded-b-3xl">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-semibold text-blue-500 dark:text-blue-300 transition-all hover:text-blue-400">BIP</h1>
+          {/* Logo */}
+          <img
+              src={logo}
+              alt="Logo"
+              className="h-12 w-auto cursor-pointer"
+
+            />
 
           <div className="flex-1 flex justify-center items-center space-x-6">
             {navLinks.map((link) => (

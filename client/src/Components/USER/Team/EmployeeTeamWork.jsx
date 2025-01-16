@@ -113,101 +113,82 @@ const EmployeeTeamWork = () => {
           {tasks.map((task) => (
             <div
               key={task.id}
-              className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg border-2 border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all transform hover:scale-105"
+              className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg border-2 border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all transform hover:scale-105"
             >
-              <div className="flex justify-between items-center mb-3">
+              <div className="flex justify-between items-center mb-2">
                 <p className="text-gray-800 dark:text-gray-200">Task ID: {task.id}</p>
                 <p className={`text-lg ${getPriorityStyle(task.priority)}`}>{task.priority}</p>
               </div>
-              <div className="space-y-3">
-                <p className="text-gray-800 dark:text-gray-300">Status: 
-                  <span className={`inline-block px-4 py-2 rounded-lg ${getStatusColor(task.status)}`}>
-                    {task.status}
-                  </span>
-                </p>
-                <p className="text-gray-800 dark:text-gray-300">Deadline: {new Date(task.deadline).toLocaleDateString()}</p>
-              </div>
+              <p className="text-gray-800 dark:text-gray-300 mb-1">Status: 
+                <span className={`inline-block px-3 py-1 rounded-lg ${getStatusColor(task.status)}`}>
+                  {task.status}
+                </span>
+              </p>
+              <p className="text-gray-800 dark:text-gray-300 mb-1">Deadline: {new Date(task.deadline).toLocaleDateString()}</p>
 
-              <div className="mt-4 flex justify-between gap-4">
+              <div className="mt-3 flex gap-2">
                 {/* View Task Button */}
                 <button
-                  className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="w-1/2 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
                   onClick={() => handleViewTask(task)}
                 >
                   View Task
                 </button>
 
                 {/* Dropdown for updating status */}
-                <div className="relative inline-block text-left">
-                  <div>
-                    <button
-                      onClick={() => setStatusDropdownOpen(!statusDropdownOpen)}
-                      className="inline-flex justify-center w-full rounded-md border border-gray-300 bg-white dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
-                      Update Status
-                      <svg
-                        className="-mr-1 ml-2 h-5 w-5"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                  </div>
+                <div className="relative w-1/2">
+                  <button
+                    onClick={() => setStatusDropdownOpen(!statusDropdownOpen)}
+                    className="w-full py-2 bg-white dark:bg-gray-800 text-gray-700 text-sm rounded-lg border border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
+                  >
+                    Update Status
+                  </button>
 
                   {statusDropdownOpen && (
                     <div
-                      className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none"
+                      className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none"
                       role="menu"
                       aria-orientation="vertical"
-                      aria-labelledby="menu-button"
                     >
-                      <div className="py-1" role="none">
-                        <button
-                          onClick={() => {
-                            setStatusToUpdate("Completed");
-                            setStatusDropdownOpen(false);
-                          }}
-                          className="text-gray-700 block px-4 py-2 text-sm"
-                          role="menuitem"
-                        >
-                          Completed
-                        </button>
-                        <button
-                          onClick={() => {
-                            setStatusToUpdate("In Progress");
-                            setStatusDropdownOpen(false);
-                          }}
-                          className="text-gray-700 block px-4 py-2 text-sm"
-                          role="menuitem"
-                        >
-                          In Progress
-                        </button>
-                        <button
-                          onClick={() => {
-                            setStatusToUpdate("Pending");
-                            setStatusDropdownOpen(false);
-                          }}
-                          className="text-gray-700 block px-4 py-2 text-sm"
-                          role="menuitem"
-                        >
-                          Pending
-                        </button>
-                      </div>
+                      <button
+                        onClick={() => {
+                          setStatusToUpdate("Completed");
+                          setStatusDropdownOpen(false);
+                        }}
+                        className="block px-4 py-2 text-sm text-green-500 hover:bg-green-100"
+                        role="menuitem"
+                      >
+                        Completed
+                      </button>
+                      <button
+                        onClick={() => {
+                          setStatusToUpdate("In Progress");
+                          setStatusDropdownOpen(false);
+                        }}
+                        className="block px-4 py-2 text-sm text-blue-500 hover:bg-blue-100"
+                        role="menuitem"
+                      >
+                        In Progress
+                      </button>
+                      <button
+                        onClick={() => {
+                          setStatusToUpdate("Pending");
+                          setStatusDropdownOpen(false);
+                        }}
+                        className="block px-4 py-2 text-sm text-yellow-500 hover:bg-yellow-100"
+                        role="menuitem"
+                      >
+                        Pending
+                      </button>
                     </div>
                   )}
+
                 </div>
 
                 {/* Button to update the task status */}
                 {statusToUpdate && (
                   <button
-                    className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
                     onClick={() => handleStatusUpdate(task.id)}
                   >
                     Mark as {statusToUpdate}
@@ -224,13 +205,9 @@ const EmployeeTeamWork = () => {
       {/* Modal to View Task */}
       {isModalOpen && selectedTask && (
         <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg max-w-lg w-full border-2 border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all transform hover:scale-105">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-lg w-full border-2 border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all transform hover:scale-105">
             <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">{selectedTask.title}</h3>
             <p className="mt-4 text-gray-600 dark:text-gray-400">{selectedTask.description}</p>
-            <p className="mt-4 text-gray-600 dark:text-gray-400">Assigned To: {selectedTask.assignedTo}</p>
-            <p className="mt-4 text-gray-600 dark:text-gray-400">Status: {selectedTask.status}</p>
-            <p className="mt-4 text-gray-600 dark:text-gray-400">Priority: {selectedTask.priority}</p>
-            <p className="mt-4 text-gray-600 dark:text-gray-400">Deadline: {new Date(selectedTask.deadline).toLocaleDateString()}</p>
             <div className="mt-6 flex justify-end">
               <button
                 className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
