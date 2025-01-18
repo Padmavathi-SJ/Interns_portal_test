@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { 
+  faUsers, 
+  faClipboardList, 
+  faBuilding, 
+  faTasks, 
+  faComments, 
+  faUserShield, 
+  faLayerGroup 
+} from "@fortawesome/free-solid-svg-icons";
 
 const Home = ({ isSidebarOpen }) => {
   const [metrics, setMetrics] = useState({
@@ -48,6 +58,16 @@ const Home = ({ isSidebarOpen }) => {
     fetchMetrics();
   }, []);
 
+  const metricIcons = {
+    totalEmployees: <FontAwesomeIcon icon={faUsers} className="text-blue-500 text-5xl" />,
+    pendingLeaves: <FontAwesomeIcon icon={faClipboardList} className="text-yellow-500 text-5xl" />,
+    departments: <FontAwesomeIcon icon={faBuilding} className="text-purple-500 text-5xl" />,
+    tasksAllocated: <FontAwesomeIcon icon={faTasks} className="text-green-500 text-5xl" />,
+    pendingFeedbacks: <FontAwesomeIcon icon={faComments} className="text-red-500 text-5xl" />,
+    totalTeams: <FontAwesomeIcon icon={faLayerGroup} className="text-indigo-500 text-5xl" />,
+    totalAdmins: <FontAwesomeIcon icon={faUserShield} className="text-teal-500 text-5xl" />,
+  };
+
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -61,24 +81,29 @@ const Home = ({ isSidebarOpen }) => {
   return (
     <div className={`container mx-auto p-6 transition-all duration-300 max-w-7xl ${isSidebarOpen ? 'ml-64' : 'ml-16'}`}>
       <h2 className="text-3xl font-bold text-center mb-8 text-blue-700">
-        Admin Dashboard Overview
+        Dashboard Overview
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {/* Metric Cards */}
         {Object.entries(metrics).map(([key, value]) => (
           <div
             key={key}
-            className="bg-gradient-to-r from-blue-100 via-white to-blue-50 p-6 rounded-lg shadow-xl flex flex-col items-center transform transition duration-500 hover:scale-105 hover:shadow-2xl"
+            className="bg-gradient-to-r p-7 from-blue-100 via-white to-blue-50 rounded-lg shadow-2xl flex flex-col justify-between transform transition duration-500 hover:scale-105 hover:shadow-4xl relative"
+            style={{ boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)' }} // Darker shadow
           >
-            <div className="flex items-center justify-between w-full">
-              <h3 className="text-xl font-semibold text-gray-700 mb-4 capitalize">
-                {key.replace(/([A-Z])/g, ' $1')}
-              </h3>
-              <span className="text-sm bg-blue-200 text-blue-800 px-2 py-1 rounded-full">
-                {key.includes("pending") ? "Pending" : "Active"}
-              </span>
+            <span className="absolute top-2 right-2 text-sm bg-blue-200 text-blue-800 px-2 py-1 rounded-full">
+              {key.includes("pending") ? "Pending" : "Active"}
+            </span>
+            <div className="flex items-center">
+              <div className="mr-5">
+                {metricIcons[key]}
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-700 capitalize mb-2">
+                  {key.replace(/([A-Z])/g, ' $1')}
+                </h3>
+                <p className="text-4xl font-bold text-center text-blue-600">{value}</p>
+              </div>
             </div>
-            <p className="text-4xl font-bold text-blue-600">{value}</p>
           </div>
         ))}
       </div>

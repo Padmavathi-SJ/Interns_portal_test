@@ -56,7 +56,7 @@ const Dashboard = () => {
               }
             >
               <FaUsers size={24} />
-              {isSidebarOpen && <span>Manage Employees</span>}
+              {isSidebarOpen && <span>Manage Interns</span>}
             </NavLink>
           </li>
           <li className="mb-4">
