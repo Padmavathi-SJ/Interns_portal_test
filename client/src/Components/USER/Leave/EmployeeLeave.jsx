@@ -29,24 +29,6 @@ const EmployeeLeave = () => {
     fetchLeaveRequests();
   }, []);
 
-  const handleAction = async (id, action) => {
-    try {
-      const response = await axios.put(`http://localhost:3000/auth/leave_requests/${id}`, { status: action });
-
-      if (response.data.Status) {
-        setLeaveRequests((prevRequests) =>
-          prevRequests.map((request) =>
-            request.id === id ? { ...request, status: action } : request
-          )
-        );
-      } else {
-        console.error('Failed to update status:', response.data.Error);
-      }
-    } catch (error) {
-      console.error('Error updating leave request:', error);
-    }
-  };
-
   const fetchReason = async (id) => {
     try {
       const response = await axios.get(`http://localhost:3000/auth/leave_request_reason/${id}`);
@@ -104,7 +86,7 @@ const EmployeeLeave = () => {
               <th className="px-4 py-2 text-left">From Time</th>
               <th className="px-4 py-2 text-left">To Date</th>
               <th className="px-4 py-2 text-left">To Time</th>
-              <th className="px-4 py-2 text-left">Action</th>
+              <th className="px-4 py-2 text-left">Status</th>
               <th className="px-4 py-2 text-left">View Reason</th>
             </tr>
           </thead>
@@ -117,25 +99,7 @@ const EmployeeLeave = () => {
                 <td className="px-4 py-2 text-gray-800 dark:text-gray-300">{request.from_time}</td>
                 <td className="px-4 py-2 text-gray-800 dark:text-gray-300">{request.to_date}</td>
                 <td className="px-4 py-2 text-gray-800 dark:text-gray-300">{request.to_time}</td>
-                <td className="px-4 py-2">
-                  {request.status && request.status.toLowerCase() === 'pending' && (
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleAction(request.id, 'approved')}
-                        className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300 dark:bg-green-600 dark:hover:bg-green-700"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => handleAction(request.id, 'rejected')}
-                        className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300 dark:bg-red-600 dark:hover:bg-red-700"
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  )}
-                  {request.status && request.status.toLowerCase() !== 'pending' && <span>{request.status}</span>}
-                </td>
+                <td className="px-4 py-2 text-gray-800 dark:text-gray-300">{request.status}</td>
                 <td className="px-4 py-2">
                   <button
                     onClick={() => fetchReason(request.id)}

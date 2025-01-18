@@ -171,7 +171,20 @@ const EmployeeTask = () => {
                       {task.status}
                     </span>
                   </p>
-                </div>
+                  <div className="mt-4 relative">
+                  {/* Status Dropdown */}
+  <div className="absolute bottom-0 right-0  mr-4">
+    <select
+      className="p-2 border rounded-md"
+      value={task.status}
+      onChange={(e) => handleStatusChange(task.taskId, e.target.value)}
+    >
+      <option value="Pending">Pending</option>
+      <option value="In Progress">In Progress</option>
+      <option value="Completed">Completed</option>
+    </select>
+  </div>
+                 {/* View Task Button */}
                 <div className="mt-4 flex justify-between gap-4">
                   <button
                     className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
@@ -180,6 +193,8 @@ const EmployeeTask = () => {
                     View Task
                   </button>
                 </div>
+              </div>
+              </div>
               </div>
             );
           })}
@@ -207,15 +222,33 @@ const EmployeeTask = () => {
                         {task.status}
                       </span>
                     </p>
-                  </div>
-                  <div className="mt-4 flex justify-between gap-4">
-                    <button
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-                      onClick={() => handleViewTask(task)}
-                    >
-                      View Task
-                    </button>
-                  </div>
+                    <div className="mt-4 relative">
+ 
+
+  {/* Status Dropdown */}
+  <div className="absolute bottom-0 right-0 mr-4">
+    <select
+      className="p-2 border rounded-md"
+      value={task.status}
+      onChange={(e) => handleStatusChange(task.taskId, e.target.value)}
+    >
+      <option value="Pending">Pending</option>
+      <option value="In Progress">In Progress</option>
+      <option value="Completed">Completed</option>
+    </select>
+  </div>
+
+  {/* View Task Button */}
+  <div className="mt-4 flex justify-between gap-4">
+    <button
+      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+      onClick={() => handleViewTask(task)}
+    >
+      View Task
+    </button>
+  </div>
+</div>
+</div>
                 </div>
               );
             })}

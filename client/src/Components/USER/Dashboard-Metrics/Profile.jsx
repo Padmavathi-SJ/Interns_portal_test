@@ -83,8 +83,7 @@ const Profile = () => {
             <p><span>{name}</span></p>
             <p><span>{department}</span></p>
             <p><span>{role}</span></p>
-            <p><span>{role}</span></p>
-            <p><span>{role}</span></p>
+
           </div>
         </div>
       </div>

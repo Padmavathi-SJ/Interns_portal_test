@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-
 const EmployeeProfile = () => {
   const [employee, setEmployee] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -46,7 +45,7 @@ const EmployeeProfile = () => {
 
   return (
     <div>
-      <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg max-w-3xl w-full p-6">
+      <div>
         {/* Grid Layout with two columns */}
         <div className="grid grid-cols-1 md:grid-cols-2">
           {/* Left Column: Profile Image and First Half of Details */}

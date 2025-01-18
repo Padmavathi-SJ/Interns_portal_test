@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { PencilIcon, TrashIcon } from '@heroicons/react/outline'; // Import Heroicons
+import { PencilIcon, TrashIcon } from '@heroicons/react/outline';
 
 const Department = () => {
   const [departments, setDepartments] = useState([]);
@@ -11,7 +11,7 @@ const Department = () => {
     axios.get('http://localhost:3000/auth/get_departments')
       .then((response) => {
         if (response.data.Status) {
-          setDepartments(response.data.Result); // Ensure departments is an array
+          setDepartments(response.data.Result);
         } else {
           alert('Failed to fetch departments');
         }
@@ -49,17 +49,17 @@ const Department = () => {
   };
 
   return (
-    <div className="p-8 bg-gradient-to-r from-blue-100 via-white to-blue-50 rounded-lg max-w-6xl mx-auto">
-      <h2 className="text-3xl font-semibold text-blue-700 mb-6">Departments</h2>
+    <div className="p-5 bg-gradient-to-r from-blue-100 via-white to-blue-50 rounded-lg max-w-8xl mx-auto">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-3xl font-semibold text-blue-700">Departments</h2>
+        <Link
+          to="/admin-dashboard/department/add_department"
+          className="px-8 py-3 font-semibold text-white bg-blue-700 rounded-lg hover:bg-blue-800 transition duration-300 ease-in-out"
+        >
+          Add New Department
+        </Link>
+      </div>
       <p className="text-lg mb-6 text-gray-700">Click on a department to view its employees.</p>
-
-      {/* Link to Add New Department */}
-      <Link
-        to="/admin-dashboard/department/add_department"
-        className="inline-block px-8 py-3 mb-6 font-semibold text-white bg-blue-700 rounded-lg hover:bg-blue-800 transition duration-300 ease-in-out"
-      >
-        Add New Department
-      </Link>
 
       {/* Grid of Departments */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">

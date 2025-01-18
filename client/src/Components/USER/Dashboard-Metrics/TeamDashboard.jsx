@@ -47,7 +47,9 @@ const TeamDashboard = () => {
       <h2 className="text-2xl font-semibold mb-4 text-blue-600">My Teams</h2>
       <div className="flex justify-center flex-col items-center">
         <p className="text-lg mb-2">I am Contributing to {teamCount} Teams</p>
-        <p className="text-lg mb-2">I am Contributing to {teamCount} Teams</p>
+        <p className="text-lg text-gray-600 mb-2">
+  Track your active team contributions here.
+</p>
 
         <div className="w-full bg-gray-200 rounded-full">
           <div
