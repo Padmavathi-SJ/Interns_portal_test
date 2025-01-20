@@ -1,12 +1,3 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-
-const Announcements = () => {
-  const [announcements, setAnnouncements] = useState([]);
-  const [message, setMessage] = useState("");
-
-  // State to track the modal open state and the selected announcement
-  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
