@@ -64,7 +64,7 @@ const verifyToken = (req, res, next) => {
       return res.status(401).json({ message: 'Token not provided, Unauthorized' });
     }
   
-   // console.log("Received Token:", token);
+  
   
     jwt.verify(token, JWT_SECRET, (err, decoded) => {
       if (err) {
