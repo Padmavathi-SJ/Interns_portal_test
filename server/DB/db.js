@@ -13,12 +13,6 @@ const pool = mysql.createPool({
     queueLimit: 0,
 });
 
-console.log("ENV VALUES:", {
-    host: process.env.host,
-    user: process.env.user,
-    password: process.env.password,
-    database: process.env.database,
-  });
 
   
 pool.getConnection((err, connection) => {

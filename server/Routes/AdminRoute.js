@@ -63,7 +63,7 @@ router.post("/adminLogin", (req, res) => {
   });
 });
 
-// Fetch all admin details
+/*
 router.get("/admins", (req, res) => {
   const sql = "SELECT * FROM admin";
   connection.query(sql, (err, results) => {
@@ -108,6 +108,7 @@ router.post("/add_admin", (req, res) => {
     });
   });
 });
+*/
 
 router.get("/get_departments", (req, res) => {
   const sql = "SELECT * FROM department";

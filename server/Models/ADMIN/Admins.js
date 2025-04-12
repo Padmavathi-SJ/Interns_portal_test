@@ -10,3 +10,14 @@ export const getAllAdmins = async() => {
     });
 };
 
+
+export const addAdmin = async(email, hashedPassword) => {
+    const sql = "insert into admin (email, password) values (?, ?)";
+    return new Promise((resolve, reject) => {
+        db.query(sql, [email, hashedPassword], (err, result) => {
+            if(err) return reject(err);
+            resolve(result);
+        });
+    });
+};
+
