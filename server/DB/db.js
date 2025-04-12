@@ -1,22 +1,34 @@
-import mysql from 'mysql';
+import mysql from 'mysql2';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const connection = mysql.createConnection({
+const pool = mysql.createPool({
     host: process.env.host,
     user: process.env.user,
     password: process.env.password,
-    database: process.env.database
-})
+    database: process.env.database,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+});
 
-connection.connect(function(err) {
+console.log("ENV VALUES:", {
+    host: process.env.host,
+    user: process.env.user,
+    password: process.env.password,
+    database: process.env.database,
+  });
+
+  
+pool.getConnection((err, connection) => {
     if(err){
-        console.log("database connection error");
+        console.log("database connection error", err.message);
     }
     else {
         console.log("database connected successfully");
+        connection.release();
     }
 })
 
-export default connection;
+export default pool;

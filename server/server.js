@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { adminRouter } from './Routes/AdminRoute.js';  // Import the route for file uploads
 import { employeeRouter } from './Routes/EmployeeRoutes.js';  // Import other routes if needed
+import AdminRouter from './AdminRouter.js';
 
 const app = express();
 
@@ -19,7 +20,7 @@ app.use(express.json());
 app.use('/uploads', express.static('uploads'));  // Make sure 'uploads' folder is accessible
 
 // Define the routes
-app.use('/auth', adminRouter);  // Admin routes for handling file uploads
+app.use('/', AdminRouter);  // Admin routes for handling file uploads
 app.use('/auth', employeeRouter);  // Employee routes for other functionalities
 
 // Start the server
