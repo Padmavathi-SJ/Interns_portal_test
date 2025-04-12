@@ -18,7 +18,7 @@ const AddAdmin = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3000/auth/add_admin', { email, password });
+      const response = await axios.post('http://localhost:3000/admin/add-admin', { email, password });
       if (response.data.Status) {
         setSuccess('Admin added successfully');
         setEmail('');
