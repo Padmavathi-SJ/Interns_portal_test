@@ -11,10 +11,11 @@ const Admins = () => {
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/auth/admins');
-        if (response.data.Status) {
+        const response = await axios.get('http://localhost:3000/admin/get-admins');
+        console.log("Fetched admins:", response.data); // Log response data
+        if (response.data.status) {
           setAdmins(response.data.Admins);
-          setFilteredAdmins(response.data.Admins);
+          setFilteredAdmins(response.data.Admins);  // Update filteredAdmins with all admins initially
         } else {
           console.error('Failed to fetch admins');
         }
@@ -22,9 +23,10 @@ const Admins = () => {
         console.error('Error fetching admins:', error);
       }
     };
-
+  
     fetchAdmins();
   }, []);
+  
 
   const handleAddAdmin = () => {
     navigate('/admin-dashboard/add_admin'); // Navigate to the AddAdmin component
@@ -59,21 +61,26 @@ const Admins = () => {
       </button>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredAdmins.map((admin) => (
-          <div key={admin.id} className="bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-            <div className="text-lg font-semibold text-blue-700 mb-2">Admin ID: {admin.id}</div>
-            <div className="text-gray-800 text-sm mb-4">Email: {admin.email}</div>
-            <div className="flex justify-end">
-              <button
-                onClick={() => {/* Add any actions here for each admin */}}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300"
-              >
-                View Details
-              </button>
-            </div>
-          </div>
-        ))}
+  {filteredAdmins.length > 0 ? (
+    filteredAdmins.map((admin) => (
+      <div key={admin.id} className="bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+        <div className="text-lg font-semibold text-blue-700 mb-2">Admin ID: {admin.id}</div>
+        <div className="text-gray-800 text-sm mb-4">Email: {admin.email}</div>
+        <div className="flex justify-end">
+          <button
+            onClick={() => {/* Add any actions here for each admin */}}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300"
+          >
+            View Details
+          </button>
+        </div>
       </div>
+    ))
+  ) : (
+    <p>No admins found</p> // Display a fallback message if no admins are available
+  )}
+</div>
+
     </div>
   );
 };
