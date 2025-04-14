@@ -13,10 +13,10 @@ const Leave = () => {
   useEffect(() => {
     const fetchLeaveRequests = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/auth/leave_requests');
-        if (Array.isArray(response.data.Result)) {
-          setLeaveRequests(response.data.Result);
-          setFilteredLeaveRequests(response.data.Result);
+        const response = await axios.get('http://localhost:3000/admin/get_leave_requests');
+        if (Array.isArray(response.data.LeaveRequests)) {
+          setLeaveRequests(response.data.LeaveRequests);
+          setFilteredLeaveRequests(response.data.LeaveRequests);
         } else {
           console.error('Expected an array but received:', response.data);
         }
@@ -48,10 +48,10 @@ const Leave = () => {
 
   const fetchReason = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:3000/auth/leave_request_reason/${id}`);
+      const response = await axios.get(`http://localhost:3000/admin/get_leave_reason/${id}`);
   
-      if (response.data.Status && response.data.Reason) {
-        setSelectedReason(response.data.Reason);
+      if (response.data.status && response.data.LeaveReason) {
+        setSelectedReason(response.data.LeaveReason); 
         setIsModalOpen(true);
       } else {
         console.error('No reason found or error:', response.data.Error);
