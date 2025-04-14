@@ -15,9 +15,9 @@ const AddDepartment = () => {
       return;
     }
 
-    axios.post('http://localhost:3000/auth/add_department', { department })
+    axios.post('http://localhost:3000/admin/add-department', { department })
       .then(result => {
-        if (result.data.Status) {
+        if (result.data.status) {
           navigate('/admin-dashboard/department');
         } else {
           alert(result.data.Error || "Something went wrong.");

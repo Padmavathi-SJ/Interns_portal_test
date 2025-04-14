@@ -8,10 +8,10 @@ const Department = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('http://localhost:3000/auth/get_departments')
+    axios.get('http://localhost:3000/admin/get-departments')
       .then((response) => {
-        if (response.data.Status) {
-          setDepartments(response.data.Result);
+        if (response.data.status) {
+          setDepartments(response.data.Departments);
         } else {
           alert('Failed to fetch departments');
         }

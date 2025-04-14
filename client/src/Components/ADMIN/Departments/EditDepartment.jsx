@@ -8,11 +8,11 @@ const EditDepartment = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`http://localhost:3000/auth/get_department_by_id/${departmentId}`)
+    axios.get(`http://localhost:3000/admin/get-department/${departmentId}`)
       .then(response => {
         console.log(response.data); // Add a log to see the actual structure of the response
-        if (response.data.Status) {
-          setDepartmentName(response.data.Result.name);  // Check if 'Result' contains 'name'
+        if (response.data.status) {
+          setDepartmentName(response.data.Department.name);  // Check if 'Result' contains 'name'
         } else {
           alert('Failed to fetch department');
         }
@@ -32,9 +32,9 @@ const EditDepartment = () => {
       return;
     }
 
-    axios.put(`http://localhost:3000/auth/edit_department/${departmentId}`, { name: departmentName })
+    axios.put(`http://localhost:3000/admin/edit-department/${departmentId}`, { name: departmentName })
       .then(result => {
-        if (result.data.Status) {
+        if (result.data.status) {
           navigate('/admin-dashboard/department');
         } else {
           alert('Failed to update department');
