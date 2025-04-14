@@ -109,7 +109,7 @@ router.post("/add_admin", (req, res) => {
     });
   });
 });
-*/
+
 
 router.get("/get_departments", (req, res) => {
   const sql = "SELECT * FROM department";
@@ -118,6 +118,8 @@ router.get("/get_departments", (req, res) => {
     return res.json({ Status: true, Result: result });
   });
 });
+*/
+
 
 // Route to get employees by department_id
 router.get("/get_employees_by_department/:departmentId", (req, res) => {
@@ -313,6 +315,7 @@ router.delete("/delete_department/:departmentId", (req, res) => {
   });
 });
 
+/*
 // Route to add an employee
 router.post(
   "/add_employee",
@@ -385,6 +388,7 @@ router.post(
   }
 );
 
+
 router.get("/get_employees", (req, res) => {
   const sql = `
     SELECT 
@@ -403,6 +407,7 @@ router.get("/get_employees", (req, res) => {
     return res.json({ Status: true, Result: result });
   });
 });
+*/
 
 router.delete("/delete_employee/:employeeId", (req, res) => {
   const { employeeId } = req.params;

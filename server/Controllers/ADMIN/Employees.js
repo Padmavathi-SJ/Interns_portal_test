@@ -1,4 +1,4 @@
-import { addEmployee } from "../../Models/ADMIN/Employees.js";
+import { addEmployee, getEmployees } from "../../Models/ADMIN/Employees.js";
 import bcrypt from 'bcrypt';
 
 export const AddEmployee = async(req, res) => {
@@ -24,26 +24,7 @@ export const AddEmployee = async(req, res) => {
             return res.status(400).json({ status: false, Error: "Missing required feilds" });
         }
 
-       const hashedPassword= bcrypt.hash(password, 10);
-
-            /*
-            const values = [
-                name,
-                email,
-                hash,
-                role,
-                experience || 0,
-                department_id,
-                salary,
-                degree,
-                university,
-                graduation_year,
-                skills || "",
-                certifications || "",
-                mobile_no,
-                address
-            ];
-            */
+       const hashedPassword = await bcrypt.hash(password, 10);
 
             try{
             const added = await addEmployee(name, 
@@ -66,4 +47,14 @@ export const AddEmployee = async(req, res) => {
             console.log("Error Adding employee: ", err);
             return res.status(500).json({ Status: false, Error: "Database query error "});
         }
+}
+
+
+export const fetchAllEmployees = async(req, res) => {
+    try {
+        const employees = await getEmployees();
+        return res.json({ status: true, Employees: employees});
+    } catch (error) {
+        return res.status(500).json({status: false, Error: "Database Query Error"});
+    }
 }
