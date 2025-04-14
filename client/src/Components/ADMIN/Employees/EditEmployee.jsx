@@ -27,10 +27,10 @@ const EditEmployee = () => {
   // Fetch departments on component mount
   useEffect(() => {
     axios
-      .get("http://localhost:3000/auth/get_departments")
+      .get("http://localhost:3000/admin/get-departments")
       .then((response) => {
-        if (response.data.Status) {
-          setDepartments(response.data.Result); // Populate departments
+        if (response.data.status) {
+          setDepartments(response.data.Departments); // Populate departments
         } else {
           alert("Failed to fetch departments");
         }
@@ -44,10 +44,10 @@ const EditEmployee = () => {
   // Fetch employee details based on employeeId
   useEffect(() => {
     axios
-      .get(`http://localhost:3000/auth/get_employee_by_id/${employeeId}`)
+      .get(`http://localhost:3000/admin/get-employee/${employeeId}`)
       .then((response) => {
-        if (response.data.Status) {
-          setEmployee(response.data.Result[0]); // Set employee data
+        if (response.data.status) {
+          setEmployee(response.data.Employee[0]); // Set employee data
         } else {
           alert("Failed to fetch employee data");
         }
@@ -70,7 +70,7 @@ const EditEmployee = () => {
     }
 
     axios
-      .put(`http://localhost:3000/auth/edit_employee/${employeeId}`, employee)
+      .put(`http://localhost:3000/admin/update-employee/${employeeId}`, employee)
       .then((response) => {
         if (response.data.Status) {
           alert("Employee updated successfully");
