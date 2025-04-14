@@ -407,7 +407,6 @@ router.get("/get_employees", (req, res) => {
     return res.json({ Status: true, Result: result });
   });
 });
-*/
 
 router.delete("/delete_employee/:employeeId", (req, res) => {
   const { employeeId } = req.params;
@@ -469,7 +468,6 @@ router.delete("/delete_employee/:employeeId", (req, res) => {
   });
 });
 
-/*
 
 router.put("/edit_employee/:employeeId", (req, res) => {
   const { employeeId } = req.params;
