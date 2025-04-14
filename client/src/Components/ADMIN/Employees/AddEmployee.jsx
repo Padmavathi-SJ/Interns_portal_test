@@ -49,7 +49,7 @@ const AddEmployee = () => {
       formData.append(key, employee[key]);
     });
   
-    axios.post('http://localhost:3000/auth/add_employee', formData, {
+    axios.post('http://localhost:3000/admin/add-employee', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -247,28 +247,6 @@ const AddEmployee = () => {
           ></textarea>
         </div>
 
-        {/* File Upload */}
-        <div className="mb-4">
-          <label htmlFor="resume" className="block text-sm font-medium text-gray-700">Resume</label>
-          <input
-            type="file"
-            name="resume"
-            accept=".pdf,.doc,.docx"
-            onChange={(e) => setEmployee({ ...employee, resume: e.target.files[0] })}
-            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label htmlFor="profile_img" className="block text-sm font-medium text-gray-700">Profile Image</label>
-          <input
-            type="file"
-            name="profile_img"
-            accept="image/*"
-            onChange={(e) => setEmployee({ ...employee, profile_img: e.target.files[0] })}
-            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
-          />
-        </div>
 
         {/* Submit Button */}
         <button

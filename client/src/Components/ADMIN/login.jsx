@@ -26,7 +26,7 @@ const AdminLogin = () => {
 
         try {
             const response = await axios.post(
-                "http://localhost:3000/auth/adminLogin",
+                "http://localhost:3000/admin/adminLogin",
                 credentials,
                 { withCredentials: true } // Set credentials for this request
             );
