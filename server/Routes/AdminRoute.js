@@ -181,7 +181,7 @@ router.get("/get_employee_details/:employeeId", (req, res) => {
 });
 
 
-
+/*
 router.post("/add_department", (req, res) => {
   const checkSql = "SELECT * FROM department WHERE name = ?";
   connection.query(checkSql, [req.body.department], (err, result) => {
@@ -199,6 +199,7 @@ router.post("/add_department", (req, res) => {
     });
   });
 });
+
 
 router.delete("/delete_department/:departmentId", (req, res) => {
   const { departmentId } = req.params;
@@ -315,7 +316,7 @@ router.delete("/delete_department/:departmentId", (req, res) => {
   });
 });
 
-/*
+
 // Route to add an employee
 router.post(
   "/add_employee",
@@ -1390,6 +1391,7 @@ router.delete("/delete_announcement/:id", (req, res) => {
   });
 });
 
+/*
 // Fetch a department by ID
 router.get("/get_department_by_id/:departmentId", (req, res) => {
   const { departmentId } = req.params;
@@ -1407,7 +1409,6 @@ router.get("/get_department_by_id/:departmentId", (req, res) => {
     return res.json({ Status: true, Result: result[0] });
   });
 });
-
 
 // Update department details
 router.put("/edit_department/:departmentId", (req, res) => {
@@ -1448,6 +1449,6 @@ router.delete("/delete_department/:departmentId", (req, res) => {
   });
 });
 
-
+*/
 
 export { router as adminRouter };

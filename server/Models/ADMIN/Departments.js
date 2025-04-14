@@ -3,9 +3,9 @@ import db from '../../DB/db.js';
 import { rejects } from 'assert';
 
 export const getDepartments = async() => {
-    const sql = "select * from department";
+    const query = "select * from department";
     return new Promise((resolve, reject) => {
-        db.query(sql, (err, result) => {
+        db.query(query, (err, result) => {
             if(err) return reject(err);
             resolve(result);
         });
@@ -13,9 +13,9 @@ export const getDepartments = async() => {
 };
 
 export const getDepartmentById = async(departmentId) => {
-    const sql = "select * from department where id = ?";
+    const query = "select * from department where id = ?";
     return new Promise((resolve, reject) => {
-        db.query(sql, [departmentId], (err, result) => {
+        db.query(query, [departmentId], (err, result) => {
             if(err) return reject(err);
             return resolve(result);
         })
@@ -23,9 +23,9 @@ export const getDepartmentById = async(departmentId) => {
 }
 
 export const editDepartment = async (name, departmentId) => {
-    const sql = `update department set name = ? where id= ? `;
+    const query = `update department set name = ? where id= ? `;
     return new Promise((resolve, reject) => {
-        db.query(sql, [name, departmentId], (err, result) => {
+        db.query(query, [name, departmentId], (err, result) => {
             if(err) return reject(err);
             return resolve(result);
         })
@@ -33,9 +33,29 @@ export const editDepartment = async (name, departmentId) => {
 }
 
 export const addDepartment = async(department) => {
-    const sql = `insert into department (name) values (?)`;
+    const  query = `insert into department (name) values (?)`;
     return new Promise((resolve, reject) => {
-        db.query(sql, [department], (err, result) => {
+        db.query(query, [department], (err, result) => {
+            if(err) return reject(err);
+            return resolve(result);
+        })
+    })
+}
+
+export const deleteDepartment = async(departmentId) => {
+    const query = `delete from department where id = ? `;
+    return new Promise((resolve, reject) => {
+        db.query(query, [departmentId], (err, result) => {
+            if(err) return reject(err);
+            return resolve(result);
+        })
+    })
+}
+
+export const getEmployeesByDeptId = async(departmentId) => {
+    const query = `select * from employees where department_id = ?`;
+    return new Promise((resolve, reject) => {
+        db.query(query, [departmentId], (err, result) => {
             if(err) return reject(err);
             return resolve(result);
         })
