@@ -14,16 +14,16 @@ const Employee = ({ isSidebarOpen }) => {
     // Fetch employees from the server once
     const fetchEmployees = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/auth/get_employees", {
+        const response = await axios.get("http://localhost:3000/admin/get-employees", {
           params: {
             limit: 1000, // Fetch a large enough number to handle search client-side
           },
         });
 
-        if (response.data.Status) {
-          setEmployees(response.data.Result);
-          setTotalEmployees(response.data.Result.length); // Total number of employees
-          setFilteredEmployees(response.data.Result); // Initially, all employees are displayed
+        if (response.data.status) {
+          setEmployees(response.data.Employees);
+          setTotalEmployees(response.data.Employees.length); // Total number of employees
+          setFilteredEmployees(response.data.Employees); // Initially, all employees are displayed
         } else {
           alert("Failed to fetch employees");
         }

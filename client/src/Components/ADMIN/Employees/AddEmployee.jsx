@@ -25,11 +25,11 @@ const AddEmployee = () => {
 
   // Fetch departments on component mount
   useEffect(() => {
-    axios.get('http://localhost:3000/auth/get_departments')
+    axios.get('http://localhost:3000/admin/get-departments')
       .then((response) => {
-        console.log('Departments fetched:', response.data);
-        if (response.data.Status) {
-          setDepartments(response.data.Result); // Populate departments
+    //    console.log('Departments fetched:', response.data);
+        if (response.data.status) {
+          setDepartments(response.data.Departments); // Populate departments
         } else {
           alert('Failed to fetch departments');
         }
@@ -44,16 +44,9 @@ const AddEmployee = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
   
-    const formData = new FormData();
-    Object.keys(employee).forEach((key) => {
-      formData.append(key, employee[key]);
-    });
+    
   
-    axios.post('http://localhost:3000/admin/add-employee', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
+    axios.post('http://localhost:3000/admin/add-employee', employee)
       .then((response) => {
         console.log('Employee added successfully:', response.data);
         if (response.data.Status) {
