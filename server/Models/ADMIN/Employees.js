@@ -92,6 +92,13 @@ export const editEmployee = async (
     })
 };
 
-export const deleteEmployee = async() => {
-    
+export const deleteEmployee = async(employeeId) => {
+    const sql = `delete from employees where id = ?`;
+    return new Promise((resolve, reject) => {
+        db.query(sql, [employeeId], (err, result) => {
+          if(err) return reject(err);
+          return resolve(result);
+        })
+    })
+
 }

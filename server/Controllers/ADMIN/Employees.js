@@ -1,4 +1,4 @@
-import { addEmployee, getEmployees, getEmployeeById, editEmployee } from "../../Models/ADMIN/Employees.js";
+import { addEmployee, getEmployees, getEmployeeById, editEmployee, deleteEmployee } from "../../Models/ADMIN/Employees.js";
 import bcrypt from 'bcrypt';
 
 export const AddEmployee = async(req, res) => {
@@ -100,5 +100,15 @@ export const UpdateEmployee = async (req, res) => {
     } catch(error){
         console.log("Error Adding employee: ", error);
         return res.status(500).json({ Status: false, Error: "Database query error "});
+    }
+}
+
+export const RemoveEmployee = async (req, res) => {
+    const {employeeId} = req.params;
+    try {
+        const deleted = await deleteEmployee(employeeId);
+        return res.json({ status: true, Employee: deleted});
+    } catch(error){
+        return res.status(500).json({status: false, Error: "Database Query Error"});
     }
 }

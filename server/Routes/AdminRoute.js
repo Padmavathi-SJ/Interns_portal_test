@@ -469,6 +469,8 @@ router.delete("/delete_employee/:employeeId", (req, res) => {
   });
 });
 
+/*
+
 router.put("/edit_employee/:employeeId", (req, res) => {
   const { employeeId } = req.params;
   const {
@@ -564,6 +566,8 @@ router.get("/get_employee_by_id/:employeeId", (req, res) => {
     return res.json({ Status: true, Result: result });
   });
 });
+
+*/
 
 router.post("/allocate_work", (req, res) => {
   const { employee_id, title, description, deadline, priority } = req.body;
