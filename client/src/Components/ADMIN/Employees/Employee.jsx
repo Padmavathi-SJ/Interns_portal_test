@@ -39,9 +39,9 @@ const Employee = ({ isSidebarOpen }) => {
   const handleDelete = (employeeId) => {
     if (window.confirm("Are you sure you want to delete this employee?")) {
       axios
-        .delete(`http://localhost:3000/auth/delete_employee/${employeeId}`)
+        .delete(`http://localhost:3000/admin/delete-employee/${employeeId}`)
         .then((response) => {
-          if (response.data.Status) {
+          if (response.data.status) {
             alert("Employee deleted successfully");
             setEmployees((prev) => prev.filter((employee) => employee.employeeId !== employeeId));
             setFilteredEmployees((prev) => prev.filter((employee) => employee.employeeId !== employeeId));
