@@ -27,6 +27,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+/*
 router.post("/adminLogin", (req, res) => {
   const sql = "SELECT * FROM admin WHERE email = ?";
   connection.query(sql, [req.body.email], async (err, result) => {
@@ -63,7 +64,7 @@ router.post("/adminLogin", (req, res) => {
   });
 });
 
-/*
+
 router.get("/admins", (req, res) => {
   const sql = "SELECT * FROM admin";
   connection.query(sql, (err, results) => {

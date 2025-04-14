@@ -1,7 +1,7 @@
 import { AdminLogin } from "../../Models/ADMIN/Login.js";
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
-import jwt from 'jwt';
+import jwt from 'jsonwebtoken';
 
 dotenv.config();
 
