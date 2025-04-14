@@ -15,11 +15,11 @@ const TeamManagement = () => {
   useEffect(() => {
     const fetchTeams = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/auth/get_teams");
-        if (Array.isArray(response.data.Result)) {
-          setTeamList(response.data.Result);
-          setTotalTeams(response.data.Result.length);
-          setFilteredTeams(response.data.Result);
+        const response = await axios.get("http://localhost:3000/admin/get-teams");
+        if (Array.isArray(response.data.Teams)) {
+          setTeamList(response.data.Teams);
+          setTotalTeams(response.data.Teams.length);
+          setFilteredTeams(response.data.Teams);
         } else {
           console.error("Expected an array but received:", response.data);
           setError("No teams found.");
@@ -45,8 +45,8 @@ const TeamManagement = () => {
     const confirmDelete = window.confirm("Are you sure you want to delete this team?");
     if (confirmDelete) {
       try {
-        const response = await axios.delete(`http://localhost:3000/auth/delete_team/${teamId}`);
-        if (response.data.Status) {
+        const response = await axios.delete(`http://localhost:3000/admin/remove_team/${teamId}`);
+        if (response.data.status) {
           setTeamList(teamList.filter(team => team.team_id !== teamId));
           setFilteredTeams(filteredTeams.filter(team => team.team_id !== teamId));
           alert("Team deleted successfully!");
@@ -111,7 +111,6 @@ const TeamManagement = () => {
             <tr>
               <th className="px-4 py-2 text-left">Team ID</th>
               <th className="px-4 py-2 text-left">Team Name</th>
-              <th className="px-4 py-2 text-left">Department</th>
               <th className="px-4 py-2 text-left">Team Members</th>
               <th className="px-4 py-2 text-left">Created At</th>
               <th className="px-4 py-2 text-left">Actions</th>
@@ -123,7 +122,6 @@ const TeamManagement = () => {
                 <tr key={team.team_id} className="border-b hover:bg-blue-50 transition-colors">
                   <td className="px-4 py-2 text-gray-800">{team.team_id}</td>
                   <td className="px-4 py-2 text-gray-800">{team.team_name}</td>
-                  <td className="px-4 py-2 text-gray-800">{team.department_name || "N/A"}</td>
                   <td className="px-4 py-2 text-gray-800">
                     {team.team_members && Array.isArray(team.team_members)
                       ? team.team_members.join(", ")

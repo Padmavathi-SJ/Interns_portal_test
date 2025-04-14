@@ -7,14 +7,11 @@ const EmployeeDetails = () => {
   const [employee, setEmployee] = useState(null);
 
   useEffect(() => {
-    axios.get(`http://localhost:3000/auth/get_employee_details/${employeeId}`)
+    axios.get(`http://localhost:3000/admin/get-emp-details/${employeeId}`)
       .then((response) => {
-        if (response.data.Status) {
-          setEmployee(response.data.Result); // Populate employee details
-          // Log the profile image URL
-          if (response.data.Result.profile_img) {
-            console.log('Profile Image URL:', `http://localhost:3000/${response.data.Result.profile_img}`);
-          }
+        if (response.data.status) {
+        //  console.log("Response: ", response.data);
+          setEmployee(response.data.Employee); // Populate employee details
         } else {
           alert('Failed to fetch employee details');
         }
@@ -25,15 +22,7 @@ const EmployeeDetails = () => {
       });
   }, [employeeId]);
 
-  const handleResumeClick = () => {
-    if (employee.resume) {
-      // Remove any leading slash from employee.resume if present
-      const resumePath = employee.resume.startsWith('/') ? employee.resume.slice(1) : employee.resume;
-      window.open(`http://localhost:3000/${resumePath}`, '_blank');
-    } else {
-      alert('No resume available for this employee');
-    }
-  };
+
   
   if (!employee) {
     return <p>Loading employee details...</p>;
@@ -44,13 +33,6 @@ const EmployeeDetails = () => {
       <h2 className="text-3xl font-bold text-blue-800 mb-6">Employee Details</h2>
 
       <div className="bg-white shadow-lg rounded-lg p-6">
-        {employee.profile_img && (
-          <img
-            src={`http://localhost:3000/${employee.profile_img}`}
-            alt="Profile"
-            className="w-32 h-32 rounded-full mx-auto mb-6"
-          />
-        )}
         <h3 className="text-2xl font-semibold text-gray-800 mb-6">{employee.name}</h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
@@ -66,14 +48,6 @@ const EmployeeDetails = () => {
         </div>
 
         <div className="flex justify-between items-center">
-          {employee.resume && (
-            <button
-              onClick={handleResumeClick}
-              className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all"
-            >
-              View Resume
-            </button>
-          )}
           <button
             onClick={() => window.history.back()}
             className="px-6 py-3 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-all"

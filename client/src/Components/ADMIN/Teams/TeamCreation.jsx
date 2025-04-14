@@ -4,19 +4,17 @@ import { useNavigate } from "react-router-dom";
 
 const TeamCreation = () => {
   const [departments, setDepartments] = useState([]);
-  const [employees, setEmployees] = useState([]);
-  const [selectedEmployees, setSelectedEmployees] = useState(new Set());
+  const [currentEmployees, setCurrentEmployees] = useState([]);
+  const [selectedEmployees, setSelectedEmployees] = useState(new Map()); // id -> employee object
   const [teamName, setTeamName] = useState("");
-  const [selectedDepartment, setSelectedDepartment] = useState(null);
-  const [noEmployeesMessage, setNoEmployeesMessage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/auth/get_departments");
-        if (response.data.Status && Array.isArray(response.data.Result)) {
-          setDepartments(response.data.Result);
+        const response = await axios.get("http://localhost:3000/admin/get-departments");
+        if (response.data.status && Array.isArray(response.data.Departments)) {
+          setDepartments(response.data.Departments);
         } else {
           console.error("Error fetching departments:", response.data);
         }
@@ -29,54 +27,44 @@ const TeamCreation = () => {
   }, []);
 
   const handleDepartmentSelect = async (departmentId) => {
-    setSelectedDepartment(departmentId);
-    setNoEmployeesMessage("");
-
+    if (!departmentId) return;
     try {
-      const response = await axios.get(
-        `http://localhost:3000/auth/get_employees_by_department/${departmentId}`
-      );
-      if (response.data.Status && Array.isArray(response.data.Result)) {
-        setEmployees(response.data.Result);
-        if (response.data.Result.length === 0) {
-          setNoEmployeesMessage("No employees found in this department.");
-        }
-      } else {
-        setNoEmployeesMessage("No employees found in this department.");
+      const response = await axios.get(`http://localhost:3000/admin/get-employees/${departmentId}`);
+      if (response.data.status && Array.isArray(response.data.Employees)) {
+        setCurrentEmployees(response.data.Employees); // Replace with new employees
       }
     } catch (error) {
       console.error("Error fetching employees:", error);
     }
   };
 
-  const handleEmployeeSelect = (employeeId) => {
+  const handleEmployeeSelect = (employee) => {
     setSelectedEmployees((prev) => {
-      const newSelected = new Set(prev);
-      if (newSelected.has(employeeId)) {
-        newSelected.delete(employeeId);
+      const newMap = new Map(prev);
+      if (newMap.has(employee.id)) {
+        newMap.delete(employee.id);
       } else {
-        newSelected.add(employeeId);
+        newMap.set(employee.id, employee);
       }
-      return newSelected;
+      return newMap;
     });
   };
 
   const handleCreateTeam = async () => {
-    if (!teamName || selectedEmployees.size === 0 || !selectedDepartment) {
-      alert("Please provide a team name, select a department, and select employees.");
+    if (!teamName || selectedEmployees.size === 0) {
+      alert("Please provide a team name and select at least one employee.");
       return;
     }
 
-    const selectedEmployeesArray = Array.from(selectedEmployees);
+    const selectedEmployeesArray = Array.from(selectedEmployees.values()).map(emp => emp.id);
 
     try {
-      const response = await axios.post("http://localhost:3000/auth/create_team", {
+      const response = await axios.post("http://localhost:3000/admin/create-team", {
         team_name: teamName,
         team_members: selectedEmployeesArray,
-        department_id: selectedDepartment,
       });
 
-      if (response.data.Status) {
+      if (response.data.status) {
         alert("Team created successfully!");
         navigate("/admin-dashboard/teams");
       } else {
@@ -92,13 +80,12 @@ const TeamCreation = () => {
       <h2 className="text-3xl font-semibold text-blue-700 mb-6 text-center">Create a New Team</h2>
 
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Select Department:</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Select Department to Load Employees:</label>
         <select
           className="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
-          value={selectedDepartment || ""}
           onChange={(e) => handleDepartmentSelect(e.target.value)}
         >
-          <option value="" disabled>Select a Department</option>
+          <option value="">Select a Department</option>
           {departments.map((department) => (
             <option key={department.id} value={department.id}>
               {department.name}
@@ -117,26 +104,22 @@ const TeamCreation = () => {
         />
       </div>
 
-      {selectedDepartment && (
+      {currentEmployees.length > 0 && (
         <div className="mb-6">
-          <h3 className="text-xl text-blue-700 mb-2">Select Employees:</h3>
-          {noEmployeesMessage ? (
-            <p className="text-red-500">{noEmployeesMessage}</p>
-          ) : (
-            <ul>
-              {employees.map((employee) => (
-                <li key={employee.id} className="flex items-center">
-                  <input
-                    type="checkbox"
-                    onChange={() => handleEmployeeSelect(employee.id)}
-                    checked={selectedEmployees.has(employee.id)}
-                    className="mr-2"
-                  />
-                  {employee.name} ({employee.department})
-                </li>
-              ))}
-            </ul>
-          )}
+          <h3 className="text-xl text-blue-700 mb-2">Select Employees (Only From Selected Dept):</h3>
+          <ul className="max-h-60 overflow-y-auto border p-2 rounded-md">
+            {currentEmployees.map((employee) => (
+              <li key={employee.id} className="flex items-center mb-1">
+                <input
+                  type="checkbox"
+                  onChange={() => handleEmployeeSelect(employee)}
+                  checked={selectedEmployees.has(employee.id)}
+                  className="mr-2"
+                />
+                {employee.name} ({employee.department})
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
@@ -144,24 +127,18 @@ const TeamCreation = () => {
         <div className="mb-6">
           <h3 className="text-lg text-blue-700 mb-2">Selected Employees:</h3>
           <ul>
-            {Array.from(selectedEmployees).map((employeeId) => {
-              const employee = employees.find((emp) => emp.id === employeeId);
-              if (!employee) {
-                return <li key={employeeId} className="text-red-500">Employee not found</li>;
-              }
-              return (
-                <li key={employeeId}>
-                  {employee.name} ({employee.department})
-                </li>
-              );
-            })}
+            {Array.from(selectedEmployees.values()).map((emp) => (
+              <li key={emp.id}>
+                {emp.name} ({emp.department})
+              </li>
+            ))}
           </ul>
         </div>
       )}
 
       <button
         onClick={handleCreateTeam}
-        className="w-full px-4 py-2 font-semibold text-white bg-blue-700 rounded-md hover:bg-blue-800 transition duration-300 ease-in-out"
+        className="w-full px-4 py-2 font-semibold text-white bg-blue-700 rounded-md hover:bg-blue-800 transition duration-300"
       >
         Create Team
       </button>

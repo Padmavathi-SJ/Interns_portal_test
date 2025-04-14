@@ -1,174 +1,172 @@
-import React, { useEffect, useState } from "react";
+import React, {useState, useEffect} from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
 const EditTeam = () => {
-  const [teamDetails, setTeamDetails] = useState({
-    team_name: "",
-    team_members: new Set(),
-    department_id: null,
-  });
-  const [employees, setEmployees] = useState([]);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
-  const { team_id } = useParams();
+  const [departments, setDepartments] = useState([]);
+  const [currentEmployees, setCurrentEmployees] = useState([]);
+  const [selectedEmployees, setSelectedEmployees] = useState(new Map());
+  const [teamName, setTeamName] = useState("");
   const navigate = useNavigate();
+  const {teamId} = useParams();
 
-  const fetchData = async (url, onSuccess, onFailure) => {
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/admin/get-departments");
+        if (response.data.status && Array.isArray(response.data.Departments)) {
+          setDepartments(response.data.Departments);
+        } else {
+          console.error("Error fetching departments:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching departments:", error);
+      }
+    };
+
+    fetchDepartments();
+  }, []);
+
+  useEffect(() => {
+    const fetchTeamDetails = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/admin/get_team_details/${teamId}`);
+        if (response.data.status) {
+          setTeamName(response.data.Team.name);
+          const selectedMap = new Map();
+          response.data.Team.members.forEach(emp => selectedMap.set(emp.id, emp));
+          setSelectedEmployees(selectedMap);
+        }
+      } catch (error) {
+        console.error("Error fetching team details:", error);
+      }
+    };
+  
+    if (teamId) {
+      fetchTeamDetails();
+    }
+  }, []);
+  
+
+  const handleDepartmentSelect = async (departmentId) => {
+    if (!departmentId) return;
     try {
-      const response = await axios.get(url);
-      if (response.data.Status) {
-        onSuccess(response.data.Result);
-      } else {
-        onFailure(response.data.Message || "Data not found.");
+      const response = await axios.get(`http://localhost:3000/admin/get-employees/${departmentId}`);
+      if (response.data.status && Array.isArray(response.data.Employees)) {
+        setCurrentEmployees(response.data.Employees); // Replace with new employees
       }
     } catch (error) {
-      console.error(`Error fetching ${url}:`, error);
-      onFailure(error.message || "Error loading data.");
+      console.error("Error fetching employees:", error);
     }
   };
 
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      setLoading(true);
-      try {
-        await fetchData(
-          `http://localhost:3000/auth/get_team/${team_id}`,
-          async (result) => {
-            const { team_name, team_members, department_id } = result;
 
-            if (!department_id) {
-              setError("Department ID is missing for this team.");
-              return;
-            }
-
-            setTeamDetails({
-              team_name,
-              team_members: new Set(JSON.parse(team_members)),
-              department_id,
-            });
-
-            await fetchData(
-              `http://localhost:3000/auth/get_employees_by_department/${department_id}`,
-              (employees) => setEmployees(employees),
-              (message) => setError(`Error fetching employees: ${message}`)
-            );
-          },
-          (message) => setError(`Error fetching team: ${message}`)
-        );
-      } catch (error) {
-        setError("Initialization failed. Please try again later.");
-      }
-      setLoading(false);
-    };
-
-    fetchInitialData();
-  }, [team_id]);
-
-  const handleEmployeeSelect = (employeeId) => {
-    setTeamDetails((prev) => {
-      const newTeamMembers = new Set(prev.team_members);
-      if (newTeamMembers.has(employeeId)) {
-        newTeamMembers.delete(employeeId);
+  const handleEmployeeSelect = (employee) => {
+    setSelectedEmployees((prev) => {
+      const newMap = new Map(prev);
+      if (newMap.has(employee.id)) {
+        newMap.delete(employee.id);
       } else {
-        newTeamMembers.add(employeeId);
+        newMap.set(employee.id, employee);
       }
-      return { ...prev, team_members: newTeamMembers };
+      return newMap;
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!teamDetails.team_name || !teamDetails.team_members.size) {
-      alert("Please fill out all fields and select at least one team member.");
+  const handleUpdateTeam = async () => {
+    if (!teamName || selectedEmployees.size === 0) {
+      alert("Please provide a team name and select at least one employee.");
       return;
     }
 
-    try {
-      const response = await axios.put(
-        `http://localhost:3000/auth/edit_team/${team_id}`,
-        {
-          team_name: teamDetails.team_name,
-          team_members: Array.from(teamDetails.team_members),
-          department_id: teamDetails.department_id,
-        }
-      );
+    const selectedEmployeesArray = Array.from(selectedEmployees.values()).map(emp => emp.id);
 
-      if (response.data.Status) {
+    try {
+      const response = await axios.put("http://localhost:3000/admin/edit-team", {
+        team_name: teamName,
+        team_members: selectedEmployeesArray,
+      });
+
+      if (response.data.status) {
         alert("Team updated successfully!");
         navigate("/admin-dashboard/teams");
       } else {
-        alert("Failed to update team.");
+        alert("Failed to create team.");
       }
     } catch (error) {
-      alert("Error updating team.");
+      console.error("Error creating team:", error);
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-
   return (
-    <div className="p-6 bg-gradient-to-r from-blue-100 via-white to-blue-50 rounded-lg max-w-2xl mx-auto">
-      <h2 className="text-2xl font-semibold text-blue-700 mb-6">Edit Team</h2>
-      {error && <p className="text-red-500">{error}</p>}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="team_name" className="block text-sm font-medium text-gray-700">
-            Team Name
-          </label>
-          <input
-            type="text"
-            id="team_name"
-            value={teamDetails.team_name}
-            onChange={(e) => setTeamDetails({ ...teamDetails, team_name: e.target.value })}
-            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
-            required
-          />
-        </div>
+    <div className="p-8 bg-gradient-to-r from-blue-100 via-white to-blue-50 rounded-lg max-w-2xl mx-auto">
+      <h2 className="text-3xl font-semibold text-blue-700 mb-6 text-center">Update Team</h2>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Department</label>
-          <input
-            type="text"
-            value={teamDetails.department_id || ""}
-            readOnly
-            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm bg-gray-100 cursor-not-allowed"
-          />
-        </div>
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Select Department to Load Employees:</label>
+        <select
+          className="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+          onChange={(e) => handleDepartmentSelect(e.target.value)}
+        >
+          <option value="">Select a Department</option>
+          {departments.map((department) => (
+            <option key={department.id} value={department.id}>
+              {department.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
-        <div>
-          <h3 className="text-xl mb-2 text-blue-700">Select Employees:</h3>
-          {employees.length > 0 ? (
-            <ul>
-              {employees.map((employee) => (
-                <li key={employee.id} className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={teamDetails.team_members.has(employee.id)}
-                    onChange={() => handleEmployeeSelect(employee.id)}
-                    className="mr-2"
-                  />
-                  {employee.name} ({employee.department})
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No employees available in this department.</p>
-          )}
-        </div>
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Team Name:</label>
+        <input
+          type="text"
+          className="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+          value={teamName}
+          onChange={(e) => setTeamName(e.target.value)}
+        />
+      </div>
 
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-700 focus:ring-2 focus:ring-indigo-600"
-            disabled={!teamDetails.team_name || teamDetails.team_members.size === 0}
-          >
-            Update Team
-          </button>
+      {currentEmployees.length > 0 && (
+        <div className="mb-6">
+          <h3 className="text-xl text-blue-700 mb-2">Select Employees (Only From Selected Dept):</h3>
+          <ul className="max-h-60 overflow-y-auto border p-2 rounded-md">
+            {currentEmployees.map((employee) => (
+              <li key={employee.id} className="flex items-center mb-1">
+                <input
+                  type="checkbox"
+                  onChange={() => handleEmployeeSelect(employee)}
+                  checked={selectedEmployees.has(employee.id)}
+                  className="mr-2"
+                />
+                {employee.name} ({employee.department})
+              </li>
+            ))}
+          </ul>
         </div>
-      </form>
+      )}
+
+      {selectedEmployees.size > 0 && (
+        <div className="mb-6">
+          <h3 className="text-lg text-blue-700 mb-2">Selected Employees:</h3>
+          <ul>
+            {Array.from(selectedEmployees.values()).map((emp) => (
+              <li key={emp.id}>
+                {emp.name} ({emp.department})
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <button
+        onClick={handleUpdateTeam}
+        className="w-full px-4 py-2 font-semibold text-white bg-blue-700 rounded-md hover:bg-blue-800 transition duration-300"
+      >
+        Update Team 
+      </button>
     </div>
   );
-};
+}
 
 export default EditTeam;
