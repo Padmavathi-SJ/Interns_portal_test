@@ -118,7 +118,6 @@ router.get("/get_departments", (req, res) => {
     return res.json({ Status: true, Result: result });
   });
 });
-*/
 
 
 // Route to get employees by department_id
@@ -181,7 +180,6 @@ router.get("/get_employee_details/:employeeId", (req, res) => {
 });
 
 
-/*
 router.post("/add_department", (req, res) => {
   const checkSql = "SELECT * FROM department WHERE name = ?";
   connection.query(checkSql, [req.body.department], (err, result) => {
@@ -1024,6 +1022,7 @@ router.put("/feedback/:id/solution", (req, res) => {
   });
 });
 
+/*
 router.post("/create_team", (req, res) => {
   const { team_name, team_members, department_id } = req.body;
 
@@ -1096,6 +1095,7 @@ router.get("/get_teams", (req, res) => {
     res.json({ Status: true, Result: teams });
   });
 });
+*/
 
 
 router.get("/get_team/:team_id", (req, res) => {

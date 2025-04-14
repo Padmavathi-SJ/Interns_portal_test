@@ -61,3 +61,15 @@ export const getEmployeesByDeptId = async(departmentId) => {
         })
     })
 }
+
+export const getEmployeeDetails = async(employeeId) => {
+    const query = `select * from employees where id = ?`;
+    return new Promise((resolve, reject) => {
+        db.query(query, [employeeId], (err, result) => {
+            if(err) return reject(err);
+           // console.log("DB result: ", result);
+            return resolve(result[0]);
+        })
+    })
+}
+

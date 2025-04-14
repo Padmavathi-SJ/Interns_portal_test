@@ -5,6 +5,7 @@ import {
   editDepartment,
   deleteDepartment,
   getEmployeesByDeptId,
+  getEmployeeDetails
 } from "../../Models/ADMIN/Departments.js";
 
 export const fetchDepartments = async (req, res) => {
@@ -85,3 +86,16 @@ export const fetchEmployeesByDeptId = async (req, res) => {
       .json({ status: false, Error: "Database Query Error" });
   }
 };
+
+export const fetchEmployeeDetails = async(req, res) => {
+    const {employeeId} = req.params;
+    try {
+        const fetchEmployee = await getEmployeeDetails(employeeId);
+        return res.json({ status: true, Employee: fetchEmployee });
+  } catch (error) {
+    console.log("Error Fetching Employee details: ", error);
+    return res
+      .status(500)
+      .json({ status: false, Error: "Database Query Error" });
+  }
+}

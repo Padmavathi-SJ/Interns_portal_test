@@ -6,6 +6,7 @@ import {
   UpdateDepartment,
   RemoveDepartment,
   fetchEmployeesByDeptId,
+  fetchEmployeeDetails
 } from "../../Controllers/ADMIN/Departments.js";
 
 const router = express.Router();
@@ -16,5 +17,6 @@ router.post("/add-department", AddDepartment);
 router.put("/edit-department/:departmentId", UpdateDepartment);
 router.delete("/delete-department/:departmentId", RemoveDepartment);
 router.get("/get-employees/:departmentId", fetchEmployeesByDeptId);
+router.get("/get-emp-details/:employeeId", fetchEmployeeDetails);
 
 export default router;
