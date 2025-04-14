@@ -784,7 +784,7 @@ router.delete("/delete_team_task/:taskId", (req, res) => {
 
 
 // Get all leave requests for admin
-
+/*
 router.get("/leave_requests", (req, res) => {
   const sql = `
     SELECT 
@@ -815,7 +815,7 @@ router.get("/leave_requests", (req, res) => {
   });
 });
 
-
+*/
 router.get("/leave_request_reason/:id", (req, res) => {
   const leaveRequestId = req.params.id; // Fetch leave request id from the URL parameter
   const sql = "SELECT Reason FROM leave_requests WHERE id = ?"; // Modify query to use leave request ID
@@ -1152,6 +1152,7 @@ router.put("/edit_team/:team_id", (req, res) => {
   });
 });
 
+/*
 router.delete("/delete_team/:team_id", (req, res) => {
   const { team_id } = req.params;
 
@@ -1181,6 +1182,7 @@ router.delete("/delete_team/:team_id", (req, res) => {
     return res.json({ Status: true, Message: "Team deleted successfully" });
   });
 });
+*/
 
 router.post("/allocate_team_work", (req, res) => {
   const { team_id, title, description, deadline, priority, status } = req.body;
