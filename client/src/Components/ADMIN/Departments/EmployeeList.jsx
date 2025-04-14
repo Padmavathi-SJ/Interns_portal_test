@@ -11,11 +11,11 @@ const EmployeeList = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`http://localhost:3000/auth/get_employees_by_department/${departmentId}`)
+    axios.get(`http://localhost:3000/admin/get-employees/${departmentId}`)
       .then((response) => {
-        if (response.data.Status) {
-          setEmployees(response.data.Result); // Populate employees
-          setFilteredEmployees(response.data.Result); // Initially, all employees are displayed
+        if (response.data.status) {
+          setEmployees(response.data.Employees); // Populate employees
+          setFilteredEmployees(response.data.Employees); // Initially, all employees are displayed
         } else {
           alert('Failed to fetch employees');
         }

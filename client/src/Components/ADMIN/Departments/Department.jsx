@@ -32,9 +32,9 @@ const Department = () => {
 
   const handleDeleteDepartment = (departmentId) => {
     if (window.confirm('Are you sure you want to delete this department?')) {
-      axios.delete(`http://localhost:3000/auth/delete_department/${departmentId}`)
+      axios.delete(`http://localhost:3000/admin/delete-department/${departmentId}`)
         .then(response => {
-          if (response.data.Status) {
+          if (response.data.status) {
             setDepartments(departments.filter(department => department.id !== departmentId));
             alert('Department deleted successfully');
           } else {
