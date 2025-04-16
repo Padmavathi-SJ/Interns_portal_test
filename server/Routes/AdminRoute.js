@@ -944,7 +944,7 @@ router.get("/dashboard_metrics", async (req, res) => {
   }
 });
 
-
+/*
 // Fetch all feedback
 router.get("/feedback", (req, res) => {
   const sql = "SELECT * FROM feedback";
@@ -958,6 +958,8 @@ router.get("/feedback", (req, res) => {
     return res.json({ Status: true, Result: result });
   });
 });
+
+*/
 
 // Approve or Reject feedback
 // Update feedback status (approved or rejected)
