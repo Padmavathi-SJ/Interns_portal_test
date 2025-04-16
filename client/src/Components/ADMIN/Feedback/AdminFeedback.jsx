@@ -14,9 +14,9 @@ const AdminFeedback = () => {
   useEffect(() => {
     const fetchFeedbackList = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/auth/feedback");
-        if (Array.isArray(response.data.Result)) {
-          setFeedbackList(response.data.Result);
+        const response = await axios.get("http://localhost:3000/admin/get_feedbacks");
+        if (Array.isArray(response.data.Feedbacks)) {
+          setFeedbackList(response.data.Feedbacks);
         } else {
           console.error("Expected an array but received:", response.data);
         }
@@ -31,11 +31,11 @@ const AdminFeedback = () => {
 
   const handleStatusUpdate = async (id, status) => {
     try {
-      const response = await axios.put(`http://localhost:3000/auth/feedback/${id}`, { status });
-      if (response.data.Status) {
-        setFeedbackList((prevFeedback) =>
-          prevFeedback.map((feedback) =>
-            feedback.id === id ? { ...feedback, status } : feedback
+      const response = await axios.put(`http://localhost:3000/admin/update_status/${id}`, { status });
+      if (response.data.status) {
+        setFeedbackList((prevfeedbackStatus) =>
+          prevfeedbackStatus.map((feedbackStatus) =>
+            feedbackStatus.id === id ? { ...feedbackStatus, status } : feedbackStatus
           )
         );
       } else {

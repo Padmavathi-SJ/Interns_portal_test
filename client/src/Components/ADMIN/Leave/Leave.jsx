@@ -32,7 +32,7 @@ const Leave = () => {
     try {
       const response = await axios.put(`http://localhost:3000/auth/leave_requests/${id}`, { status: action });
 
-      if (response.data.Status) {
+      if (response.data.status) {
         setLeaveRequests((prevRequests) =>
           prevRequests.map((request) =>
             request.id === id ? { ...request, status: action } : request
@@ -51,6 +51,7 @@ const Leave = () => {
       const response = await axios.get(`http://localhost:3000/admin/get_leave_reason/${id}`);
   
       if (response.data.status && response.data.LeaveReason) {
+        console.log("fetched reason: ", response.data);
         setSelectedReason(response.data.LeaveReason); 
         setIsModalOpen(true);
       } else {
