@@ -49,10 +49,10 @@ const AdminFeedback = () => {
   const handleSolutionSubmit = async (id) => {
     try {
       const response = await axios.put(
-        `http://localhost:3000/auth/feedback/${id}/solution`,
+        `http://localhost:3000/admin/update_solution/${id}`,
         { solution: solutionText }
       );
-      if (response.data.Status) {
+      if (response.data.status) {
         setFeedbackList((prevFeedback) =>
           prevFeedback.map((feedback) =>
             feedback.id === id ? { ...feedback, solution: solutionText } : feedback
