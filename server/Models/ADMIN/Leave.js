@@ -34,3 +34,13 @@ export const get_leave_reason = async(leaveRequestId) => {
         })
     })
 }
+
+export const update_leave = async(status, id) => {
+    const query = `update leave_requests set status = ? where id = ?`;
+    return new Promise((resolve, reject) => {
+        db.query(query, [status, id], (err, result) => {
+            if(err) return reject(err);
+            return resolve(result);
+        })
+    })
+}
