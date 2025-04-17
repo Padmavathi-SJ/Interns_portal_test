@@ -30,7 +30,7 @@ const Leave = () => {
 
   const handleAction = async (id, action) => {
     try {
-      const response = await axios.put(`http://localhost:3000/auth/leave_requests/${id}`, { status: action });
+      const response = await axios.put(`http://localhost:3000/admin/update_leave_reason/${id}`, { status: action });
 
       if (response.data.status) {
         setLeaveRequests((prevRequests) =>
@@ -49,10 +49,8 @@ const Leave = () => {
   const fetchReason = async (id) => {
     try {
       const response = await axios.get(`http://localhost:3000/admin/get_leave_reason/${id}`);
-  
-      if (response.data.status && response.data.LeaveReason) {
-        console.log("fetched reason: ", response.data);
-        setSelectedReason(response.data.LeaveReason); 
+      if (response.data.status && response.data.LeaveReason && response.data.LeaveReason.length > 0) {
+        setSelectedReason(response.data.LeaveReason[0]);  // ✅ Corrected here
         setIsModalOpen(true);
       } else {
         console.error('No reason found or error:', response.data.Error);
@@ -61,7 +59,7 @@ const Leave = () => {
       console.error('Error fetching reason:', error);
     }
   };
-
+  
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
     const filtered = leaveRequests.filter((request) =>
@@ -186,7 +184,7 @@ const Leave = () => {
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg max-w-md w-full">
             <h3 className="text-xl font-semibold mb-4">Leave Reason</h3>
-            <p>{selectedReason}</p>
+            <p>{selectedReason?.Reason}</p>
             <button
               onClick={handleCloseModal}
               className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300"
