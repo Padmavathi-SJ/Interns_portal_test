@@ -815,7 +815,7 @@ router.get("/leave_requests", (req, res) => {
   });
 });
 
-*/
+
 router.get("/leave_request_reason/:id", (req, res) => {
   const leaveRequestId = req.params.id; // Fetch leave request id from the URL parameter
   const sql = "SELECT Reason FROM leave_requests WHERE id = ?"; // Modify query to use leave request ID
@@ -833,6 +833,7 @@ router.get("/leave_request_reason/:id", (req, res) => {
     }
   });
 });
+
 
 // Approve or Reject a leave request
 router.put("/leave_requests/:id", (req, res) => {
@@ -864,7 +865,7 @@ router.put("/leave_requests/:id", (req, res) => {
     }
   });
 });
-
+*/
 router.get("/dashboard_metrics", async (req, res) => {
   try {
     // Queries for the metrics
@@ -959,7 +960,6 @@ router.get("/feedback", (req, res) => {
   });
 });
 
-*/
 
 // Approve or Reject feedback
 // Update feedback status (approved or rejected)
@@ -991,6 +991,7 @@ router.put("/feedback/:id", (req, res) => {
     }
   });
 });
+*/
 
 // Update feedback solution
 router.put("/feedback/:id/solution", (req, res) => {

@@ -20,3 +20,13 @@ export const change_status = async(status, id) => {
         })
     }) 
 }
+
+export const write_solution = async(solution, id) => {
+    const query = `update feedback set solution = ? where id = ? `;
+    return new Promise((resolve, reject) => {
+        db.query(query, [solution, id], (err, result) => {
+            if(err) return reject(err);
+            return resolve(result);
+        })
+    })
+}
