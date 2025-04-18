@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { adminRouter } from './Routes/AdminRoute.js';  // Import the route for file uploads
 import { employeeRouter } from './Routes/EmployeeRoutes.js';  // Import other routes if needed
 import AdminRouter from './AdminRouter.js';
@@ -15,8 +16,8 @@ app.use(cors({
 
 // Middleware to handle JSON requests
 app.use(express.json());
+app.use(cookieParser());
 
-// Serve static files from 'uploads' directory
 app.use('/uploads', express.static('uploads'));  // Make sure 'uploads' folder is accessible
 
 // Define the routes

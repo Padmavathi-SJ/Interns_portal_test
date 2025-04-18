@@ -9,6 +9,8 @@ import Feedbacks from './Routes/ADMIN/Feedback.js';
 import WorkAllocation from './Routes/ADMIN/WorkAllocations.js'
 import TeamWorkAllocation from './Routes/ADMIN/TeamWorkAllocation.js';
 import Dashboard from './Routes/ADMIN/Dashboard.js';
+import AdminProfile from './Routes/ADMIN/AdminProfile.js';
+import Performance from './Routes/ADMIN/Performance.js';
 
 const AdminRouter = express.Router();
 
@@ -22,5 +24,7 @@ AdminRouter.use("/admin", Feedbacks);
 AdminRouter.use("/admin", WorkAllocation);
 AdminRouter.use("/admin", TeamWorkAllocation);
 AdminRouter.use("/admin", Dashboard);
+AdminRouter.use("/admin", AdminProfile);
+AdminRouter.use("/admin", Performance);
 
 export default AdminRouter;
