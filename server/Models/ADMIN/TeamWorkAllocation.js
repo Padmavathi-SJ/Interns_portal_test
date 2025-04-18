@@ -59,3 +59,32 @@ export const getPendingAllocationByTeam = async (team_id) => {
     });
   });
 };
+
+// controller/adminTaskController.js
+
+// controller/adminTaskController.js
+
+export const getTeamTasks = async () => {
+  const query = `
+    SELECT 
+      twa.team_id,
+      twa.date AS assigned_date,
+      twa.from_time,
+      twa.to_time,
+      twa.deadline,
+      twa.venue,
+      twa.priority,
+      twa.status,
+      JSON_LENGTH(t.team_members) as team_strength
+    FROM team_work_allocation AS twa
+    JOIN teams AS t ON twa.team_id = t.team_id
+    ORDER BY twa.id DESC
+  `;
+
+  return new Promise((resolve, reject) => {
+    db.query(query, (err, result) => {
+      if (err) return reject(err);
+      return resolve(result);
+    });
+  });
+};

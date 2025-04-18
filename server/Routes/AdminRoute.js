@@ -865,7 +865,7 @@ router.put("/leave_requests/:id", (req, res) => {
     }
   });
 });
-*/
+
 router.get("/dashboard_metrics", async (req, res) => {
   try {
     // Queries for the metrics
@@ -1186,7 +1186,7 @@ router.delete("/delete_team/:team_id", (req, res) => {
     return res.json({ Status: true, Message: "Team deleted successfully" });
   });
 });
-*/
+
 
 router.post("/allocate_team_work", (req, res) => {
   const { team_id, title, description, deadline, priority, status } = req.body;
@@ -1215,6 +1215,7 @@ router.post("/allocate_team_work", (req, res) => {
   );
 });
 
+*/
 
 router.post("/add_announcement", async (req, res) => {
   const { category, target, title, description, extraInfo, priority } =

@@ -1,4 +1,4 @@
-import { Allocate_Team_Work, getPendingAllocationByTeam } from "../../Models/ADMIN/TeamWorkAllocation.js";
+import { Allocate_Team_Work, getPendingAllocationByTeam, getTeamTasks } from "../../Models/ADMIN/TeamWorkAllocation.js";
 
 export const allocate_work = async(req, res) => {
     const { 
@@ -55,3 +55,13 @@ export const fetchPendingAllocations = async (req, res) => {
     }
   };
   
+
+  export const fetchTeamTasks = async(req, res) => {
+   try{
+       const fetchedTasks = await getTeamTasks();
+       return res.json({status: true, TeamTasks: fetchedTasks});
+     } catch(error){
+         console.log("Error fetching work", error);
+         return res.status(500).json({status: false, Error: "Database Query Error"});
+     }
+  }

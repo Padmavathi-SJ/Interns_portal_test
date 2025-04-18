@@ -73,3 +73,20 @@ export const getPendingAllocationByEmployee = async (employee_id) => {
         })
     })
 }
+
+export const getTasks = async () => {
+    const query = `
+        SELECT wa.*, 
+               e.name AS employee_name 
+        FROM work_allocation wa
+        INNER JOIN employees e ON e.id = wa.employee_id
+        ORDER BY wa.id DESC;  -- Sort by date and priority
+    `;
+    
+    return new Promise((resolve, reject) => {
+        db.query(query, (err, result) => {
+            if (err) return reject(err);
+            return resolve(result);  // Return the result to the frontend
+        });
+    });
+}

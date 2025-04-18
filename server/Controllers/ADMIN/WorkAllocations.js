@@ -1,4 +1,4 @@
-import { AllocateWork, getPendingAllocationByEmployee } from "../../Models/ADMIN/WorkAllocations.js";
+import { AllocateWork, getPendingAllocationByEmployee, getTasks } from "../../Models/ADMIN/WorkAllocations.js";
 
 export const allocate_work = async (req, res) => {
   const {
@@ -54,4 +54,14 @@ export const fetchPendingAllocations = async(req, res) => {
         console.log("Error fetching pending work ", error);
         return res.status(500).json({status: false, Error: "Database Query Error"});
     }
+}
+
+export const fetchAllTasks = async(req, res) => {
+  try{
+    const fetchedTasks = await getTasks();
+    return res.json({status: true, Tasks: fetchedTasks});
+  } catch(error){
+      console.log("Error fetching work", error);
+      return res.status(500).json({status: false, Error: "Database Query Error"});
+  }
 }
