@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 
 const TeamWorkAllocation = () => {
   const [teams, setTeams] = useState([]);
+  const [pendingTasks, setPendingTasks] = useState([]);
   const [message, setMessage] = useState("");
-
   const [formData, setFormData] = useState({
     team_id: "",
     title: "",
@@ -35,10 +35,22 @@ const TeamWorkAllocation = () => {
   }, []);
 
   const handleChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if(name === "team_id") {
+     // console.log("Selected team_id: ", value);
+      axios.get(`http://localhost:3000/admin/pending_team_tasks/${value}`)
+      .then((res) => {
+       // console.log("Pending task response:", res.data);
+        if(res.data.status) {
+          setPendingTasks(res.data.pendingTasks);
+        } else {
+          setPendingTasks([]);
+        }
+      })
+      .catch((err) => console.log("Error fetching pending tasks: ", err));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -104,6 +116,20 @@ const TeamWorkAllocation = () => {
             ))}
           </select>
         </div>
+
+        {pendingTasks.length > 0 && (
+  <div className="bg-yellow-100 p-4 rounded-md shadow">
+    <h3 className="font-semibold text-yellow-800 mb-2">Pending Tasks for this Team</h3>
+    <ul className="list-disc list-inside text-sm text-gray-700">
+      {pendingTasks.map((task) => (
+        <li key={task.team_id}>
+          <strong>{task.title}</strong> - {task.date} ({task.from_time} to {task.to_time})
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+
 
         {/* Title */}
         <div>
