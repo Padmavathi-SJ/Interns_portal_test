@@ -36,7 +36,6 @@ const AddTask = () => {
         console.error("Error fetching departments:", error);
       });
   }, []);
-  
 
   const handleDeptChange = (e) => {
     const departmentId = e.target.value;
@@ -106,113 +105,124 @@ const AddTask = () => {
   };
 
   return (
-    <div className="p-6 bg-gradient-to-r from-blue-100 via-white to-blue-50 rounded-lg max-w-2xl mx-auto">
-      <h2 className="text-2xl font-semibold text-blue-700 mb-6">Allocate Work</h2>
+    <div className="p-3 rounded-lg max-w-2xl mx-auto">
       {message && <p className="mb-4 text-red-600">{message}</p>}
 
       <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label>Department</label>
-          <select
-            name="department_id"
-            value={formData.department_id}
-            onChange={handleDeptChange}
-            className="w-full px-4 py-2 mt-1 border rounded"
-            required
-          >
-            <option value="">-- Select Department --</option>
-            {departments.map((dept) => (
-              <option key={dept.id} value={dept.id}>{dept.name}</option>
-            ))}
-          </select>
-        </div>
+        <div className="grid grid-cols-2 gap-20">
+          {/* Column 1 */}
+          <div className="space-y-4"> 
+            <div className="mb-4">
+              <label>Department</label>
+              <select
+                name="department_id"
+                value={formData.department_id}
+                onChange={handleDeptChange}
+                className="w-full px-4 py-2 mt-1 border rounded"
+                required
+              >
+                <option value="">-- Select Department --</option>
+                {departments.map((dept) => (
+                  <option key={dept.id} value={dept.id}>{dept.name}</option>
+                ))}
+              </select>
+            </div>
+ 
+            <div className="mb-4">
+              <label>Employee</label>
+              <select
+                name="employee_id"
+                value={formData.employee_id}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 mt-1 border rounded"
+                required
+              >
+                <option value="">-- Select Employee --</option>
+                {employees.map((emp) => (
+                  <option key={emp.id} value={emp.id}>{emp.name}</option>
+                ))}
+              </select>
+            </div>
 
-        <div className="mb-4">
-          <label>Employee</label>
-          <select
-            name="employee_id"
-            value={formData.employee_id}
-            onChange={handleInputChange}
-            className="w-full px-4 py-2 mt-1 border rounded"
-            required
-          >
-            <option value="">-- Select Employee --</option>
-            {employees.map((emp) => (
-              <option key={emp.id} value={emp.id}>{emp.name}</option>
-            ))}
-          </select>
+            <div className="mb-4">
+              <label>Title</label>
+              <input
+                name="title"
+                value={formData.title}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 border rounded"
+                required
+              />
+            </div>
+
+            <div className="mb-4">
+              <label>Description</label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 border rounded"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label>Date</label>
+              <input 
+                type="date" 
+                name="date" 
+                value={formData.date} 
+                onChange={handleInputChange} 
+                className="w-full border px-4 py-2 rounded" 
+                required 
+              />
+            </div>
+          </div>
+
+          {/* Column 2 */}
+          <div className="space-y-4">
+            <div className="mb-4">
+              <label>Deadline</label>
+              <input type="date" name="deadline" value={formData.deadline} onChange={handleInputChange} className="w-full border px-4 py-2 rounded" required />
+            </div>
+
+            <div className="mb-4">
+              <label>From Time</label>
+              <input type="time" name="from_time" value={formData.from_time} onChange={handleInputChange} className="w-full border px-4 py-2 rounded" required />
+            </div>
+
+            <div className="mb-4">
+              <label>To Time</label>
+              <input type="time" name="to_time" value={formData.to_time} onChange={handleInputChange} className="w-full border px-4 py-2 rounded" required />
+            </div>
+
+            <div className="mb-4">
+              <label>Venue</label>
+              <input type="text" name="venue" value={formData.venue} onChange={handleInputChange} className="w-full border px-4 py-2 rounded" required />
+            </div>
+
+            <div className="mb-4">
+              <label>Priority</label>
+              <select name="priority" value={formData.priority} onChange={handleInputChange} className="w-full px-4 py-2 border rounded">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
+          </div>
         </div>
 
         {pendingTasks.length > 0 && (
-  <div className="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-500">
-    <h3 className="text-lg font-semibold text-yellow-700 mb-2">Pending Allocations</h3>
-    <ul className="list-disc pl-5 space-y-1 text-gray-700">
-      {pendingTasks.map((task) => (
-        <li key={task.id}>
-          <strong>{task.title}</strong> ({task.date} | {task.from_time} - {task.to_time}) at {task.venue}
-        </li>
-      ))}
-    </ul>
-  </div>
-)}
-
-
-        <div className="mb-4">
-          <label>Title</label>
-          <input
-            name="title"
-            value={formData.title}
-            onChange={handleInputChange}
-            className="w-full px-4 py-2 border rounded"
-            required
-          />
-        </div>
-
-        <div className="mb-4">
-          <label>Description</label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            className="w-full px-4 py-2 border rounded"
-          />
-        </div>
-
-        <div className="mb-4 grid grid-cols-2 gap-4">
-          <div>
-            <label>Date</label>
-            <input type="date" name="date" value={formData.date} onChange={handleInputChange} className="w-full border px-4 py-2 rounded" required />
+          <div className="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-500">
+            <h3 className="text-lg font-semibold text-yellow-700 mb-2">Pending Allocations</h3>
+            <ul className="list-disc pl-5 space-y-1 text-gray-700">
+              {pendingTasks.map((task) => (
+                <li key={task.id}>
+                  <strong>{task.title}</strong> ({task.date} | {task.from_time} - {task.to_time}) at {task.venue}
+                </li>
+              ))}
+            </ul>
           </div>
-          <div>
-            <label>Deadline</label>
-            <input type="date" name="deadline" value={formData.deadline} onChange={handleInputChange} className="w-full border px-4 py-2 rounded" required />
-          </div>
-        </div>
-
-        <div className="mb-4 grid grid-cols-2 gap-4">
-          <div>
-            <label>From Time</label>
-            <input type="time" name="from_time" value={formData.from_time} onChange={handleInputChange} className="w-full border px-4 py-2 rounded" required />
-          </div>
-          <div>
-            <label>To Time</label>
-            <input type="time" name="to_time" value={formData.to_time} onChange={handleInputChange} className="w-full border px-4 py-2 rounded" required />
-          </div>
-        </div>
-
-        <div className="mb-4">
-          <label>Venue</label>
-          <input type="text" name="venue" value={formData.venue} onChange={handleInputChange} className="w-full border px-4 py-2 rounded" required />
-        </div>
-
-        <div className="mb-4">
-          <label>Priority</label>
-          <select name="priority" value={formData.priority} onChange={handleInputChange} className="w-full px-4 py-2 border rounded">
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-          </select>
-        </div>
+        )}
 
         <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Allocate Work</button>
       </form>

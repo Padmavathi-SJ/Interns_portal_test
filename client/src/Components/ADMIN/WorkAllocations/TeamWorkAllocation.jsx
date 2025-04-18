@@ -26,231 +26,196 @@ const TeamWorkAllocation = () => {
     const fetchTeams = async () => {
       try {
         const response = await axios.get("http://localhost:3000/admin/get-teams");
-        setTeams(response.data.Teams || []);
+        setTeams(response.data.teams || []);
       } catch (err) {
+        setMessage("Failed to fetch teams");
         console.error("Error fetching teams:", err);
       }
     };
     fetchTeams();
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleTeamChange = (e) => {
+    const teamId = e.target.value;
+    setFormData({ ...formData, team_id: teamId });
 
-    if(name === "team_id") {
-     // console.log("Selected team_id: ", value);
-      axios.get(`http://localhost:3000/admin/pending_team_tasks/${value}`)
-      .then((res) => {
-       // console.log("Pending task response:", res.data);
-        if(res.data.status) {
-          setPendingTasks(res.data.pendingTasks);
-        } else {
-          setPendingTasks([]);
-        }
-      })
-      .catch((err) => console.log("Error fetching pending tasks: ", err));
+    if (teamId) {
+      axios.get(`http://localhost:3000/admin/pending_team_tasks/${teamId}`)
+        .then((res) => {
+          if (res.data.status) {
+            setPendingTasks(res.data.pendingTasks);
+          } else {
+            setPendingTasks([]);
+          }
+        })
+        .catch((err) => {
+          console.error("Error fetching pending tasks:", err);
+        });
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const requiredFields = [
-      "team_id",
-      "title",
-      "description",
-      "date",
-      "from_time",
-      "to_time",
-      "deadline",
-      "venue",
-      "priority",
-      "status",
-      "created_at",
-    ];
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const requiredFields = ["team_id", "title", "date", "from_time", "to_time", "venue", "priority", "deadline"];
     for (let field of requiredFields) {
       if (!formData[field]) {
-        setMessage(`Please fill in the "${field}" field.`);
+        setMessage("Please fill all required fields.");
         return;
       }
     }
 
-    try {
-      const response = await axios.post("http://localhost:3000/admin/allocate_team_work", formData);
-
-      if (response.data.status) {
-        setMessage("Team work allocated successfully!");
-        setTimeout(() => {
-          navigate("/admin-dashboard/work_allocation");
-        }, 2000);
-      } else {
-        setMessage("Failed to allocate team work.");
-      }
-    } catch (err) {
-      console.error("Error allocating work:", err);
-      setMessage("Server error while allocating work.");
-    }
+    axios.post("http://localhost:3000/admin/allocate_team_work", formData)
+      .then((res) => {
+        if (res.data.status) {
+          setMessage("Work allocated to team successfully!");
+          navigate("/admin-dashboard/team_work_allocation");
+        } else {
+          setMessage("Error allocating work to the team.");
+        }
+      }).catch((err) => {
+        setMessage("Error allocating work to team.");
+        console.error("Error in allocating team work:", err);
+      });
   };
 
   return (
-    <div className="p-6 bg-gradient-to-r from-blue-100 via-white to-blue-50 rounded-lg max-w-3xl mx-auto">
-      <h2 className="text-2xl font-semibold text-blue-700 mb-6">Team Work Allocation</h2>
+    <div className="p-6 bg-gradient-to-r from-green-100 via-white to-green-50 rounded-lg max-w-2xl mx-auto shadow-md">
+      <h2 className="text-2xl font-semibold text-green-700 mb-6">Allocate Work to Team</h2>
       {message && <p className="mb-4 text-red-600">{message}</p>}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Team Dropdown */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Select Team</label>
+      <form onSubmit={handleSubmit}>
+        <div className="mb-4">
+          <label className="text-sm font-medium">Team</label>
           <select
             name="team_id"
-            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm"
             value={formData.team_id}
-            onChange={handleChange}
+            onChange={handleTeamChange}
+            className="w-full px-4 py-2 mt-1 border rounded"
+            required
           >
-            <option value="">Select a Team</option>
+            <option value="">-- Select Team --</option>
             {teams.map((team) => (
-              <option key={team.team_id} value={team.team_id}>
-                {team.team_name}
-              </option>
+              <option key={team.id} value={team.id}>{team.name}</option>
             ))}
           </select>
         </div>
 
         {pendingTasks.length > 0 && (
-  <div className="bg-yellow-100 p-4 rounded-md shadow">
-    <h3 className="font-semibold text-yellow-800 mb-2">Pending Tasks for this Team</h3>
-    <ul className="list-disc list-inside text-sm text-gray-700">
-      {pendingTasks.map((task) => (
-        <li key={task.team_id}>
-          <strong>{task.title}</strong> - {task.date} ({task.from_time} to {task.to_time})
-        </li>
-      ))}
-    </ul>
-  </div>
-)}
+          <div className="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded">
+            <h3 className="text-lg font-semibold text-yellow-700 mb-2">Pending Tasks</h3>
+            <ul className="list-disc pl-5 space-y-1 text-gray-700">
+              {pendingTasks.map((task) => (
+                <li key={task.id}>
+                  <strong>{task.title}</strong> ({task.date} | {task.from_time} - {task.to_time}) at {task.venue}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
-
-        {/* Title */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Task Title</label>
+        <div className="mb-4">
+          <label className="text-sm font-medium">Title</label>
           <input
             name="title"
-            type="text"
-            className="w-full px-4 py-2 mt-1 border rounded-md"
             value={formData.title}
-            onChange={handleChange}
+            onChange={handleInputChange}
+            className="w-full px-4 py-2 border rounded"
+            required
           />
         </div>
 
-        {/* Description */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Description</label>
+        <div className="mb-4">
+          <label className="text-sm font-medium">Description</label>
           <textarea
             name="description"
-            className="w-full px-4 py-2 mt-1 border rounded-md"
             value={formData.description}
-            onChange={handleChange}
+            onChange={handleInputChange}
+            className="w-full px-4 py-2 border rounded"
           />
         </div>
 
-        {/* Date */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Date</label>
-          <input
-            name="date"
-            type="date"
-            className="w-full px-4 py-2 mt-1 border rounded-md"
-            value={formData.date}
-            onChange={handleChange}
-          />
-        </div>
-
-        {/* From Time & To Time */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="mb-4 grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">From Time</label>
+            <label className="text-sm font-medium">Date</label>
             <input
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleInputChange}
+              className="w-full border px-4 py-2 rounded"
+              required
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium">Deadline</label>
+            <input
+              type="date"
+              name="deadline"
+              value={formData.deadline}
+              onChange={handleInputChange}
+              className="w-full border px-4 py-2 rounded"
+              required
+            />
+          </div>
+        </div>
+
+        <div className="mb-4 grid grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm font-medium">From Time</label>
+            <input
+              type="time"
               name="from_time"
-              type="time"
-              className="w-full px-4 py-2 mt-1 border rounded-md"
               value={formData.from_time}
-              onChange={handleChange}
+              onChange={handleInputChange}
+              className="w-full border px-4 py-2 rounded"
+              required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">To Time</label>
+            <label className="text-sm font-medium">To Time</label>
             <input
-              name="to_time"
               type="time"
-              className="w-full px-4 py-2 mt-1 border rounded-md"
+              name="to_time"
               value={formData.to_time}
-              onChange={handleChange}
+              onChange={handleInputChange}
+              className="w-full border px-4 py-2 rounded"
+              required
             />
           </div>
         </div>
 
-        {/* Deadline */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Deadline</label>
+        <div className="mb-4">
+          <label className="text-sm font-medium">Venue</label>
           <input
-            name="deadline"
-            type="date"
-            className="w-full px-4 py-2 mt-1 border rounded-md"
-            value={formData.deadline}
-            onChange={handleChange}
-          />
-        </div>
-
-        {/* Venue */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Venue</label>
-          <input
-            name="venue"
             type="text"
-            className="w-full px-4 py-2 mt-1 border rounded-md"
+            name="venue"
             value={formData.venue}
-            onChange={handleChange}
+            onChange={handleInputChange}
+            className="w-full border px-4 py-2 rounded"
+            required
           />
         </div>
 
-        {/* Priority */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Priority</label>
+        <div className="mb-4">
+          <label className="text-sm font-medium">Priority</label>
           <select
             name="priority"
-            className="w-full px-4 py-2 mt-1 border rounded-md"
             value={formData.priority}
-            onChange={handleChange}
+            onChange={handleInputChange}
+            className="w-full px-4 py-2 border rounded"
           >
-            <option>Low</option>
-            <option>Medium</option>
-            <option>High</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
           </select>
         </div>
 
-        {/* Status */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Status</label>
-          <select
-            name="status"
-            className="w-full px-4 py-2 mt-1 border rounded-md"
-            value={formData.status}
-            onChange={handleChange}
-          >
-            <option>Pending</option>
-            <option>In Progress</option>
-            <option>Completed</option>
-          </select>
-        </div>
-
-        {/* Submit */}
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
-        >
-          Allocate Work
-        </button>
+        <button type="submit" className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Allocate Team Work</button>
       </form>
     </div>
   );
