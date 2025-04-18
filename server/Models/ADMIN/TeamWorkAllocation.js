@@ -43,3 +43,19 @@ export const Allocate_Team_Work = async(
                       })
 }
 
+
+export const getPendingAllocationByTeam = async (team_id) => {
+  const query = `SELECT * FROM team_work_allocation WHERE team_id = ?`;
+ // console.log("Running query for team_id:", team_id); // log before query execution
+  
+  return new Promise((resolve, reject) => {
+    db.query(query, [team_id], (err, result) => {
+      if (err) {
+       // console.log("Error executing query:", err); // log query error
+        return reject(err);
+      }
+    //  console.log("Query result:", result); // log query result
+      return resolve(result);
+    });
+  });
+};

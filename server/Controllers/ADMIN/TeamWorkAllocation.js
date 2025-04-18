@@ -1,4 +1,4 @@
-import { Allocate_Team_Work} from "../../Models/ADMIN/TeamWorkAllocation.js";
+import { Allocate_Team_Work, getPendingAllocationByTeam } from "../../Models/ADMIN/TeamWorkAllocation.js";
 
 export const allocate_work = async(req, res) => {
     const { 
@@ -40,3 +40,18 @@ export const allocate_work = async(req, res) => {
         return res.status(500).json({status: false, Error: "Database Query Error"});
     }
 }
+
+export const fetchPendingAllocations = async (req, res) => {
+    const { team_id } = req.params;
+  //  console.log("team_id received in backend:", team_id); // log the team_id received
+  
+    try {
+      const pending = await getPendingAllocationByTeam(team_id);
+    //  console.log("Pending tasks fetched:", pending); // log the fetched tasks
+      return res.json({ status: true, pendingTasks: pending });
+    } catch (error) {
+      console.log("Error fetching pending team work:", error);
+      return res.status(500).json({ status: false, Error: "Database Query Error" });
+    }
+  };
+  
