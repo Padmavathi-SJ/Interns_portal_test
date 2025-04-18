@@ -1,4 +1,4 @@
-import { createTeam, get_teams, edit_team, get_team, delete_team } from "../../Models/ADMIN/Teams.js";
+import { createTeam, get_teams, edit_team, get_team, delete_team, getEmployeesByTeamId } from "../../Models/ADMIN/Teams.js";
 
 export const CreateTeam = async(req, res) => {
     const {team_name, team_members} = req.body;
@@ -70,7 +70,38 @@ export const remove_team = async(req, res) => {
       
         return res.json({status: true, Team: removed});
     } catch(error){
-        console.log("Error fetching Teams: ", error);
+        console.log("Error removing Teams: ", error);
         return res.status(500).json({status: false, Error: "Database Query Error"});
     }
 }
+
+export const fetchEmployeesByTeam = async (req, res) => {
+    const { team_id } = req.params;
+
+    try {
+        const fetched = await getEmployeesByTeamId(team_id);
+        if (!fetched.length) {
+            return res.status(404).json({ status: false, message: "Team not found" });
+        }
+
+        let teamMembers = [];
+        const raw = fetched[0].team_members;
+
+        // Safe parsing based on type
+        if (Array.isArray(raw)) {
+            teamMembers = raw;
+        } else {
+            try {
+                teamMembers = JSON.parse(raw);
+            } catch (err) {
+                console.error("Invalid JSON in team_members:", raw);
+                return res.status(500).json({ status: false, Error: "Invalid team_members JSON" });
+            }
+        }
+
+        return res.json({ status: true, TeamEmployees: teamMembers });
+    } catch (error) {
+        console.log("Error fetching Team members: ", error);
+        return res.status(500).json({ status: false, Error: "Database Query Error" });
+    }
+};

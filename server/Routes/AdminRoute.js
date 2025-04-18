@@ -594,7 +594,7 @@ router.post("/allocate_work", (req, res) => {
   );
 });
 
-*/
+
 router.get("/get_tasks", (req, res) => {
   const sql = `
     SELECT 
@@ -638,7 +638,7 @@ LEFT JOIN teams ON team_work_allocation.team_id = teams.team_id;
     return res.json({ Status: true, Result: result });
   });
 });
-
+*/
 
 router.get("/get_task/:taskId", (req, res) => {
   const { taskId } = req.params;

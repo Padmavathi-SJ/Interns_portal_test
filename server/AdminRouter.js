@@ -11,6 +11,7 @@ import TeamWorkAllocation from './Routes/ADMIN/TeamWorkAllocation.js';
 import Dashboard from './Routes/ADMIN/Dashboard.js';
 import AdminProfile from './Routes/ADMIN/AdminProfile.js';
 import Performance from './Routes/ADMIN/Performance.js';
+import Announcemnet from './Routes/ADMIN/Announcements.js';
 
 const AdminRouter = express.Router();
 
@@ -26,5 +27,6 @@ AdminRouter.use("/admin", TeamWorkAllocation);
 AdminRouter.use("/admin", Dashboard);
 AdminRouter.use("/admin", AdminProfile);
 AdminRouter.use("/admin", Performance);
+AdminRouter.use("/admin", Announcemnet);
 
 export default AdminRouter;

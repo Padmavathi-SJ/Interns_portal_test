@@ -50,3 +50,13 @@ export const delete_team = async (teamId) => {
         })
     })
 }
+
+export const getEmployeesByTeamId = async(team_id) => {
+  const query = `select team_members from teams where team_id = ? `;
+  return new Promise((resolve, reject) => {
+    db.query(query, [team_id], (err, result) => {
+      if(err) return reject(err);
+      return resolve(result);
+    })
+  })
+}
