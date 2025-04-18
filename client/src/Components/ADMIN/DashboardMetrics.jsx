@@ -1,14 +1,14 @@
-import EmployeeMetric from "../../utils/EmployeeMetric";
-import DepartmentMetric from "../../utils/DepartmentMetric";
-import TeamMetric from "../../utils/TeamMetric";
-import TaskAssignedMetric from "../../utils/TaskAssignedMetric";
-import TaskStatusChart from "../../utils/TaskStatusChart";
-import TeamTaskStatusChart from "../../utils/TeamTaskStatusChart";
-import LeaveMetric from "../../utils/LeaveMetric";
-import PendingLeave from "../../utils/PendingLeave";
-import PendingFeedback from "../../utils/PendingFeedback";
-import AdminsMetric from "../../utils/AdminsMetric";
-
+import EmployeeMetric from "./utils/EmployeeMetric";
+import DepartmentMetric from "./utils/DepartmentMetric";
+import TeamMetric from "./utils/TeamMetric";
+import TaskAssignedMetric from "./utils/TaskAssignedMetric";
+import TaskStatusChart from "./utils/TaskStatusChart";
+import TeamTaskStatusChart from "./utils/TeamTaskStatusChart";
+import LeaveMetric from "./utils/LeaveMetric";
+import PendingLeave from "./utils/PendingLeave";
+import PendingFeedback from "./utils/PendingFeedback";
+import AdminsMetric from "./utils/AdminsMetric";
+import PerformanceMetric from "./utils/PerformanceMetric"; // 🆕 Import here
 
 const DashboardMetric = () => {
   return (
@@ -48,6 +48,9 @@ const DashboardMetric = () => {
         </div>
         <div>
           <TeamTaskStatusChart />
+        </div>
+        <div>
+          <PerformanceMetric /> {/* 🆕 Added Performance Donut Chart */}
         </div>
       </div>
     </div>

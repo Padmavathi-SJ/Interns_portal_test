@@ -169,9 +169,7 @@ const Dashboard = () => {
       {/* Main Content */}
       {/* Main Content */}
 <div className="flex-1 p-8 bg-white shadow-lg rounded-lg">
-  <h2 className="text-3xl font-bold text-gray-900 mb-6 border-b-2 border-gray-200 pb-2">
-    BIT Interns Portal
-  </h2>
+  
   <Outlet />
 </div>
 

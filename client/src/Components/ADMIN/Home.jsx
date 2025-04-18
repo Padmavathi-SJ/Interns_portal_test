@@ -1,10 +1,17 @@
-// src/pages/Admin/Home.jsx
+import React from "react";
+import Topbar from "./TopBar";
 import DashboardMetric from "./DashboardMetrics";
 
 const Home = () => {
   return (
     <div>
-      <DashboardMetric />
+      {/* Topbar at the top */}
+      <Topbar />
+
+      {/* Main Dashboard Content */}
+      <div className="p-4">
+        <DashboardMetric />
+      </div>
     </div>
   );
 };
