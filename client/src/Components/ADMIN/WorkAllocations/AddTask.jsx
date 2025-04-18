@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 const AddTask = () => {
   const [departments, setDepartments] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [pendingTasks, setPendingTasks] = useState([]);
   const [formData, setFormData] = useState({
     employee_id: "",
     department_name: "",
@@ -35,6 +36,7 @@ const AddTask = () => {
         console.error("Error fetching departments:", error);
       });
   }, []);
+  
 
   const handleDeptChange = (e) => {
     const departmentId = e.target.value;
@@ -63,6 +65,18 @@ const AddTask = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "employee_id") {
+      axios.get(`http://localhost:3000/admin/pending_tasks/${value}`)
+        .then((res) => {
+          if (res.data.status) {
+            setPendingTasks(res.data.pendingTasks);
+          } else {
+            setPendingTasks([]);
+          }
+        })
+        .catch((err) => console.error("Error fetching pending tasks:", err));
+    }
   };
 
   const handleSubmit = (e) => {
@@ -128,6 +142,20 @@ const AddTask = () => {
             ))}
           </select>
         </div>
+
+        {pendingTasks.length > 0 && (
+  <div className="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-500">
+    <h3 className="text-lg font-semibold text-yellow-700 mb-2">Pending Allocations</h3>
+    <ul className="list-disc pl-5 space-y-1 text-gray-700">
+      {pendingTasks.map((task) => (
+        <li key={task.id}>
+          <strong>{task.title}</strong> ({task.date} | {task.from_time} - {task.to_time}) at {task.venue}
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+
 
         <div className="mb-4">
           <label>Title</label>

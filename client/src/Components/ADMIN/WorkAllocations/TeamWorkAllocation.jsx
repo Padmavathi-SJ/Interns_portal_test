@@ -4,21 +4,29 @@ import { useNavigate } from "react-router-dom";
 
 const TeamWorkAllocation = () => {
   const [teams, setTeams] = useState([]);
-  const [selectedTeam, setSelectedTeam] = useState(null);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [deadline, setDeadline] = useState("");
-  const [priority, setPriority] = useState("Low");
-  const [status, setStatus] = useState("Pending");
   const [message, setMessage] = useState("");
-  
-  const navigate = useNavigate(); // Initialize navigate
+
+  const [formData, setFormData] = useState({
+    team_id: "",
+    title: "",
+    description: "",
+    date: "",
+    from_time: "",
+    to_time: "",
+    deadline: "",
+    venue: "",
+    priority: "Low",
+    status: "Pending",
+    created_at: new Date(),
+  });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTeams = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/auth/get_teams");
-        setTeams(response.data.Result || []);
+        const response = await axios.get("http://localhost:3000/admin/get-teams");
+        setTeams(response.data.Teams || []);
       } catch (err) {
         console.error("Error fetching teams:", err);
       }
@@ -26,53 +34,69 @@ const TeamWorkAllocation = () => {
     fetchTeams();
   }, []);
 
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedTeam || !title || !deadline) {
-      setMessage("Please fill in all required fields.");
-      return;
+    const requiredFields = [
+      "team_id",
+      "title",
+      "description",
+      "date",
+      "from_time",
+      "to_time",
+      "deadline",
+      "venue",
+      "priority",
+      "status",
+      "created_at",
+    ];
+
+    for (let field of requiredFields) {
+      if (!formData[field]) {
+        setMessage(`Please fill in the "${field}" field.`);
+        return;
+      }
     }
 
     try {
-      const response = await axios.post("http://localhost:3000/auth/allocate_team_work", {
-        team_id: selectedTeam,
-        title,
-        description,
-        deadline,
-        priority,
-        status,
-      });
+      const response = await axios.post("http://localhost:3000/admin/allocate_team_work", formData);
 
-      if (response.data.Status) {
-        setMessage("Work allocated successfully!");
+      if (response.data.status) {
+        setMessage("Team work allocated successfully!");
         setTimeout(() => {
-          navigate("/admin-dashboard/work_allocation"); // Navigate to the work_allocation component
-        }, 2000); // Optional delay to show success message
+          navigate("/admin-dashboard/work_allocation");
+        }, 2000);
       } else {
-        setMessage("Failed to allocate work.");
+        setMessage("Failed to allocate team work.");
       }
     } catch (err) {
       console.error("Error allocating work:", err);
-      setMessage("Error allocating work.");
+      setMessage("Server error while allocating work.");
     }
   };
 
   return (
-    <div className="p-6 bg-gradient-to-r from-blue-100 via-white to-blue-50 rounded-lg max-w-2xl mx-auto">
+    <div className="p-6 bg-gradient-to-r from-blue-100 via-white to-blue-50 rounded-lg max-w-3xl mx-auto">
       <h2 className="text-2xl font-semibold text-blue-700 mb-6">Team Work Allocation</h2>
       {message && <p className="mb-4 text-red-600">{message}</p>}
 
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Team Dropdown */}
+        <div>
           <label className="block text-sm font-medium text-gray-700">Select Team</label>
           <select
-            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
-            value={selectedTeam || ""}
-            onChange={(e) => setSelectedTeam(e.target.value)}
+            name="team_id"
+            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm"
+            value={formData.team_id}
+            onChange={handleChange}
           >
-            <option value="" disabled>
-              Select a Team
-            </option>
+            <option value="">Select a Team</option>
             {teams.map((team) => (
               <option key={team.team_id} value={team.team_id}>
                 {team.team_name}
@@ -81,64 +105,123 @@ const TeamWorkAllocation = () => {
           </select>
         </div>
 
-        <div className="mb-4">
+        {/* Title */}
+        <div>
           <label className="block text-sm font-medium text-gray-700">Task Title</label>
           <input
+            name="title"
             type="text"
-            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            className="w-full px-4 py-2 mt-1 border rounded-md"
+            value={formData.title}
+            onChange={handleChange}
           />
         </div>
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Task Description</label>
+        {/* Description */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Description</label>
           <textarea
-            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            name="description"
+            className="w-full px-4 py-2 mt-1 border rounded-md"
+            value={formData.description}
+            onChange={handleChange}
           />
         </div>
 
-        <div className="mb-4">
+        {/* Date */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Date</label>
+          <input
+            name="date"
+            type="date"
+            className="w-full px-4 py-2 mt-1 border rounded-md"
+            value={formData.date}
+            onChange={handleChange}
+          />
+        </div>
+
+        {/* From Time & To Time */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">From Time</label>
+            <input
+              name="from_time"
+              type="time"
+              className="w-full px-4 py-2 mt-1 border rounded-md"
+              value={formData.from_time}
+              onChange={handleChange}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">To Time</label>
+            <input
+              name="to_time"
+              type="time"
+              className="w-full px-4 py-2 mt-1 border rounded-md"
+              value={formData.to_time}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+
+        {/* Deadline */}
+        <div>
           <label className="block text-sm font-medium text-gray-700">Deadline</label>
           <input
+            name="deadline"
             type="date"
-            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
-            value={deadline}
-            onChange={(e) => setDeadline(e.target.value)}
+            className="w-full px-4 py-2 mt-1 border rounded-md"
+            value={formData.deadline}
+            onChange={handleChange}
           />
         </div>
 
-        <div className="mb-4">
+        {/* Venue */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Venue</label>
+          <input
+            name="venue"
+            type="text"
+            className="w-full px-4 py-2 mt-1 border rounded-md"
+            value={formData.venue}
+            onChange={handleChange}
+          />
+        </div>
+
+        {/* Priority */}
+        <div>
           <label className="block text-sm font-medium text-gray-700">Priority</label>
           <select
-            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
-            value={priority}
-            onChange={(e) => setPriority(e.target.value)}
+            name="priority"
+            className="w-full px-4 py-2 mt-1 border rounded-md"
+            value={formData.priority}
+            onChange={handleChange}
           >
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
           </select>
         </div>
 
-        <div className="mb-4">
+        {/* Status */}
+        <div>
           <label className="block text-sm font-medium text-gray-700">Status</label>
           <select
-            className="w-full px-4 py-2 mt-1 border rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
+            name="status"
+            className="w-full px-4 py-2 mt-1 border rounded-md"
+            value={formData.status}
+            onChange={handleChange}
           >
-            <option value="Pending">Pending</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Completed">Completed</option>
+            <option>Pending</option>
+            <option>In Progress</option>
+            <option>Completed</option>
           </select>
         </div>
 
+        {/* Submit */}
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-blue-700 focus:ring-2 focus:ring-indigo-600"
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
         >
           Allocate Work
         </button>
