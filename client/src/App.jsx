@@ -38,6 +38,8 @@ import AnnouncementForm from './Components/ADMIN/Announcements/AnnouncementsForm
 import EditAnnouncement from './Components/ADMIN/Announcements/EditAnnouncement';
 import EditDepartment from './Components/ADMIN/Departments/EditDepartment';
 import EditTeamTask from './Components/ADMIN/WorkAllocations/EditTeamTask';
+import TasksAssigned from './Components/ADMIN/WorkAllocations/TasksAssigned';
+import TeamTasksAssigned from './Components/ADMIN/WorkAllocations/TeamTasksAssigned';
 
 function App() {
   return (
@@ -70,6 +72,8 @@ function App() {
           <Route path="admins" element={<Admins/>} />
           <Route path="add_admin" element={<AddAdmin/>} />
           <Route path="team_work_allocation" element={<TeamWorkAllocation/>} />
+          <Route path="tasks_assigned" element={<TasksAssigned />} />
+          <Route path="team_tasks_assigned" element={<TeamTasksAssigned />} />
         </Route>
 
         {/* User (Employee) Routes */}
