@@ -564,7 +564,6 @@ router.get("/get_employee_by_id/:employeeId", (req, res) => {
   });
 });
 
-*/
 
 router.post("/allocate_work", (req, res) => {
   const { employee_id, title, description, deadline, priority } = req.body;
@@ -595,6 +594,7 @@ router.post("/allocate_work", (req, res) => {
   );
 });
 
+*/
 router.get("/get_tasks", (req, res) => {
   const sql = `
     SELECT 
