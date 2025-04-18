@@ -62,3 +62,14 @@ export const AllocateWork = async (
     );
   });
 };
+
+
+export const getPendingAllocationByEmployee = async (employee_id) => {
+    const query = `select * from work_allocation where employee_id = ? and status = 'Pending'`;
+    return new Promise((resolve, reject) => {
+        db.query(query, [employee_id], (err, result) => {
+            if(err) return reject(err);
+            return resolve(result);
+        })
+    })
+}

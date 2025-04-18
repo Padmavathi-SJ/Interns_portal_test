@@ -7,6 +7,7 @@ import Teams from './Routes/ADMIN/Teams.js';
 import Leaves from './Routes/ADMIN/Leave.js';
 import Feedbacks from './Routes/ADMIN/Feedback.js';
 import WorkAllocation from './Routes/ADMIN/WorkAllocations.js'
+import TeamWorkAllocation from './Routes/ADMIN/TeamWorkAllocation.js';
 
 const AdminRouter = express.Router();
 
@@ -18,5 +19,6 @@ AdminRouter.use("/admin", Teams);
 AdminRouter.use("/admin", Leaves);
 AdminRouter.use("/admin", Feedbacks);
 AdminRouter.use("/admin", WorkAllocation);
+AdminRouter.use("/admin", TeamWorkAllocation);
 
 export default AdminRouter;
