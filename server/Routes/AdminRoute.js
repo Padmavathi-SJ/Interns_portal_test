@@ -991,7 +991,6 @@ router.put("/feedback/:id", (req, res) => {
     }
   });
 });
-*/
 
 // Update feedback solution
 router.put("/feedback/:id/solution", (req, res) => {
@@ -1024,6 +1023,8 @@ router.put("/feedback/:id/solution", (req, res) => {
     }
   });
 });
+
+*/
 
 /*
 router.post("/create_team", (req, res) => {
@@ -1100,7 +1101,7 @@ router.get("/get_teams", (req, res) => {
 });
 */
 
-
+/*
 router.get("/get_team/:team_id", (req, res) => {
   const { team_id } = req.params;
   const sql = "SELECT * FROM teams WHERE team_id = ?";
