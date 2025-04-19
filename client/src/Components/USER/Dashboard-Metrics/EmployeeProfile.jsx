@@ -17,13 +17,13 @@ const EmployeeProfile = () => {
           return;
         }
 
-        const response = await axios.get("http://localhost:3000/auth/about_employee", {
+        const response = await axios.get("http://localhost:3000/user/user_details", {
           headers: {
             Authorization: `Bearer ${token}`,  // Send the token with the request
           },
         });
 
-        setEmployee(response.data.Data);  // Set the fetched employee data
+        setEmployee(response.data.EmployeeDetails);  // Set the fetched employee data
         setLoading(false);
       } catch (error) {
         console.error("Error fetching employee details:", error);
@@ -50,16 +50,7 @@ const EmployeeProfile = () => {
         <div className="grid grid-cols-1 md:grid-cols-2">
           {/* Left Column: Profile Image and First Half of Details */}
           <div className="space-y-6">
-            {/* Profile Image */}
-            <div className="w-40 h-40 bg-gray-300 overflow-hidden rounded-full">
-            {employee.profile_img && (
-    <img
-      src={`http://localhost:3000/${employee.profile_img}`}
-      alt="Profile"
-      className="w-full h-full object-cover "
-    />
-  )}
-</div>
+
 
 
 

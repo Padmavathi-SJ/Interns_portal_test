@@ -64,16 +64,6 @@ const Profile = () => {
   return (
     <div className="flex flex-col justify-start items-start p-4 w-full ">
       <div className="flex flex-col md:flex-row w-full max-w-4xl space-x-6">
-       {/* Profile Picture */}
-<div className="w-72 h-48 bg-gray-300 overflow-hidden border-5 mb-4" style={{ borderRadius: "20%", backgroundSize: "cover", backgroundPosition: "center" }}>
-  {employeeDetails.profile_img && (
-    <img
-      src={`http://localhost:3000/${employeeDetails.profile_img}`}
-      alt="Profile"
-      className="w-full h-full object-cover "
-    />
-  )}
-</div>
 
 
         {/* Employee Details */}

@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import axios from "axios";
-import { SunIcon, MoonIcon, UserIcon, LogoutIcon } from "@heroicons/react/solid";
-import EmployeeProfile from './EmployeeProfile';
-import logo from '../../../assets/bit.png';
-
+import {
+  SunIcon,
+  MoonIcon,
+  UserIcon,
+  LogoutIcon,
+} from "@heroicons/react/solid";
+import EmployeeProfile from "../../../assets/profile.jpg";
+import logo from "../../../assets/bit.png";
 
 const EmployeeDashboard = () => {
   const location = useLocation();
   const [employeeName, setEmployeeName] = useState("");
-  const [employeeProfileImg, setEmployeeProfileImg] = useState(""); // State to hold profile image URL
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("darkMode") === "true";
   });
@@ -55,14 +58,18 @@ const EmployeeDashboard = () => {
     const fetchEmployeeDetails = async () => {
       try {
         const token = localStorage.getItem("userToken");
-        const response = await axios.get("http://localhost:3000/auth/get_employee", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          "http://localhost:3000/auth/get_employee",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         if (response.data.Status) {
           setEmployeeName(response.data.Data.name);
-          setEmployeeProfileImg(response.data.Data.profile_img); // Set the profile image URL
         } else {
-          console.error(response.data.Error || "Failed to fetch employee details.");
+          console.error(
+            response.data.Error || "Failed to fetch employee details."
+          );
         }
       } catch (error) {
         console.error("Error fetching employee details:", error);
@@ -77,12 +84,7 @@ const EmployeeDashboard = () => {
       <div className="bg-white dark:bg-gray-800 px-6 py-4 border-b border-gray-300 dark:border-gray-700 shadow-lg rounded-b-3xl">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <img
-              src={logo}
-              alt="Logo"
-              className="h-12 w-auto cursor-pointer"
-
-            />
+          <img src={logo} alt="Logo" className="h-12 w-auto cursor-pointer" />
 
           <div className="flex-1 flex justify-center items-center space-x-6">
             {navLinks.map((link) => (
@@ -102,26 +104,22 @@ const EmployeeDashboard = () => {
           </div>
 
           <div className="relative flex items-center space-x-4">
-            <span className="text-lg font-medium text-gray-700 dark:text-gray-300">{employeeName}</span>
+            <span className="text-lg font-medium text-gray-700 dark:text-gray-300">
+              {employeeName}
+            </span>
             <button
               onClick={toggleDropdown}
               className="w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center text-lg font-bold shadow-md dark:bg-blue-700 hover:opacity-80"
             >
-              {employeeProfileImg ? (
-                <img
-                  src={`http://localhost:3000/${employeeProfileImg}`} // Dynamic profile image URL
-                  alt="Profile"
-                  className="w-full h-full object-cover rounded-full"
-                />
-              ) : (
-                <span>{employeeName ? employeeName.slice(0, 2).toUpperCase() : "XX"}</span>
-              )}
+              <img
+                src={EmployeeProfile}
+                alt="Default Profile"
+                className="w-full h-full object-cover rounded-full"
+              />
             </button>
 
             {showDropdown && (
-              <div
-                className="absolute right-0 top-full mt-2 min-w-max bg-white text-gray-800 border border-gray-300 shadow-lg rounded-md z-10 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
-              >
+              <div className="absolute right-0 top-full mt-2 min-w-max bg-white text-gray-800 border border-gray-300 shadow-lg rounded-md z-10 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600">
                 <button
                   onClick={toggleDarkMode}
                   className="block w-full px-4 py-2 text-left hover:bg-blue-100 hover:text-blue-500 dark:hover:bg-gray-600 dark:hover:text-blue-300 transition-colors"
