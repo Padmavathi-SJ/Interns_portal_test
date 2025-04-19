@@ -12,9 +12,16 @@ const EmployeeTask = () => {
   const getLoggedInEmployeeId = () => {
     const token = localStorage.getItem("userToken");
     if (!token) return null;
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    return payload.id;
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      console.log("Decoded payload:", payload);
+      return payload.id;
+    } catch (err) {
+      console.error("Failed to decode token:", err);
+      return null;
+    }
   };
+  
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -32,6 +39,7 @@ const EmployeeTask = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
+        console.log("Sending token in header:", token);
 
         if (todayResponse.data.Status) {
           setTodayTasks(todayResponse.data.Result);
@@ -40,7 +48,7 @@ const EmployeeTask = () => {
         }
 
         const allResponse = await axios.get(
-          "http://localhost:3000/auth/get_all_tasks",
+          "http://localhost:3000/admin/get_all_tasks",
           {
             headers: { Authorization: `Bearer ${token}` },
           }

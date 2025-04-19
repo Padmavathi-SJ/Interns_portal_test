@@ -80,7 +80,7 @@ function App() {
         <Route path="/userLogin" element={<UserLogin />} />
         <Route path="/employee-dashboard" element={<EmployeeDashboard />}>
           <Route index element={<EmployeeHome />} /> {/* Default Employee Home */}
-          <Route path="profile" element={<Profile />} />
+          <Route path="profile" element={<Profile />} /> 
           <Route path="employee_task" element={<EmployeeTask />} />
           <Route path="employee_leave" element={<EmployeeLeave />} />
           <Route path="apply_leave" element={<ApplyLeave />} />
