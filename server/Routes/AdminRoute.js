@@ -659,6 +659,7 @@ router.get("/get_task/:taskId", (req, res) => {
   });
 });
 
+
 router.put("/edit_task/:taskId", (req, res) => {
   const { taskId } = req.params;
   const { title, description, deadline, priority } = req.body;
@@ -1215,7 +1216,6 @@ router.post("/allocate_team_work", (req, res) => {
   );
 });
 
-*/
 
 router.post("/add_announcement", async (req, res) => {
   const { category, target, title, description, extraInfo, priority } =
@@ -1304,6 +1304,7 @@ router.post("/add_announcement", async (req, res) => {
     res.status(500).json({ Status: false, Error: "Internal server error." });
   }
 });
+*/
 
 router.get("/get_announcements", (req, res) => {
   const query = `
