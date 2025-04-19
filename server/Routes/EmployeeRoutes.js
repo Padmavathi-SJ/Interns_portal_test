@@ -10,6 +10,7 @@ dotenv.config();
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_KEY; // Ensure this is the same key
 
+/*
 router.post("/user_login", (req, res) => {
     const { employee_id, email, password } = req.body;
 
@@ -77,6 +78,8 @@ const verifyToken = (req, res, next) => {
       next();
     });
 };
+*/
+
 
 // Get employee details based on logged-in employee's ID from the token
 router.get("/get_employee", verifyToken, (req, res) => {

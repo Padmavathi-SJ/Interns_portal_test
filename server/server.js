@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import { adminRouter } from './Routes/AdminRoute.js';  // Import the route for file uploads
 import { employeeRouter } from './Routes/EmployeeRoutes.js';  // Import other routes if needed
 import AdminRouter from './AdminRouter.js';
+import EmployeeRouter from './EmployeeRouter.js';
 
 const app = express();
 
@@ -22,7 +23,7 @@ app.use('/uploads', express.static('uploads'));  // Make sure 'uploads' folder i
 
 // Define the routes
 app.use('/', AdminRouter);  // Admin routes for handling file uploads
-app.use('/auth', employeeRouter);  // Employee routes for other functionalities
+app.use('/', EmployeeRouter);  // Employee routes for other functionalities
 
 // Start the server
 app.listen(3000, () => {
