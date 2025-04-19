@@ -20,6 +20,10 @@ export const allocate_work = async(req, res) => {
             return res.status(400).json({Status: false, Error: "Missing required feilds"});
         }
 
+        if (typeof team_id === 'string' && team_id.startsWith('team')) {
+          team_id = parseInt(team_id.replace('team', ''));
+        }
+
     try{
         const allocated = await Allocate_Team_Work(
         team_id,
