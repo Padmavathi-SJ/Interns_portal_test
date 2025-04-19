@@ -79,7 +79,7 @@ const verifyToken = (req, res, next) => {
       next();
     });
 };
-*/
+
 
 
 // Get employee details based on logged-in employee's ID from the token
@@ -142,6 +142,8 @@ router.get("/get_task", verifyToken, (req, res) => {
     res.json({ Status: true, Result: results });
   });
 });
+
+*/
 
 router.get('/get_today_tasks', verifyToken, (req, res) => {
   const { id: employeeId } = req.user; // Extract employeeId from the token
