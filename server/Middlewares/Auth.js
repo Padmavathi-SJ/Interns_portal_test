@@ -8,10 +8,10 @@ const JWT_SECRET = process.env.JWT_KEY;
 
 export const verifyToken = (req, res, next) => {
     const token = req.headers['authorization']?.split(' ')[1];
+if (!token) {
+    return res.status(401).json({ message: "Token not provided, Unauthorized" });
+}
 
-    if(!token) {
-        return res.status(401).json({ message: "Token not provided, Unauthorized" });
-    }
     console.log("Received token: ", token);
 
     jwt.verify(token, JWT_SECRET, (err, decoded) => {
@@ -26,3 +26,6 @@ export const verifyToken = (req, res, next) => {
         next();
     });
 };
+
+
+export default verifyToken;

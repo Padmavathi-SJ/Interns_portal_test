@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import { adminRouter } from './Routes/AdminRoute.js';  // Import the route for file uploads
+//import { adminRouter } from './Routes/AdminRoute.js';  // Import the route for file uploads
 import { employeeRouter } from './Routes/EmployeeRoutes.js';  // Import other routes if needed
 import AdminRouter from './AdminRouter.js';
 import EmployeeRouter from './EmployeeRouter.js';
@@ -13,7 +13,10 @@ app.use(cors({
   origin: "http://localhost:5173", // explicitly set the allowed origin
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], // allowed methods
   credentials: true, // allow cookies and credentials
+  allowedHeaders: 'Content-Type,Authorization',
 }));
+
+
 
 // Middleware to handle JSON requests
 app.use(express.json());
