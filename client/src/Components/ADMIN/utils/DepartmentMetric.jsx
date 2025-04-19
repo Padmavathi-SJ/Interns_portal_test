@@ -20,7 +20,7 @@ const DepartmentMetric = () => {
   }, []);
 
   return (
-    <div className="p-4 bg-white shadow-md rounded-xl text-center">
+    <div className="p-4 bg-white border border-blue-600 rounded-xl text-center">
       <h2 className="text-xl font-semibold text-gray-700">Total Departments</h2>
       <p className="text-3xl font-bold text-blue-600 mt-2">
         {count !== null ? count : "Loading..."}

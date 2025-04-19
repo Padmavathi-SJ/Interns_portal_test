@@ -59,7 +59,7 @@ const fetchPerformance = async (selectedMonth) => {
   }, [month]);
 
   return (
-    <div className="w-full p-4 bg-white rounded-2xl shadow-md relative">
+    <div className="w-full p-4 bg-white rounded-2xl border border-blue-600 relative mt-4">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
       <label className="font-semibold text-gray-700">Performance</label>

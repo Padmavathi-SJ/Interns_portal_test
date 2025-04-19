@@ -33,7 +33,7 @@ const TaskStatusChart = () => {
   };
 
   return (
-    <div className="bg-white p-4 rounded-xl shadow-md mt-4">
+    <div className="bg-white p-4 rounded-xl border border-blue-600 mt-4">
       <div className="mb-4">
         <label className="font-semibold text-gray-700">Interns Tasks:</label>
         <input

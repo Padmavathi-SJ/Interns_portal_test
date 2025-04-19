@@ -17,7 +17,8 @@ const TeamWorkAllocation = () => {
     venue: "",
     priority: "Low",
     status: "Pending",
-    created_at: new Date(),
+    created_at: new Date().toISOString(),
+
   });
 
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const TeamWorkAllocation = () => {
     const fetchTeams = async () => {
       try {
         const response = await axios.get("http://localhost:3000/admin/get-teams");
-        setTeams(response.data.teams || []);
+        setTeams(response.data.Teams || []);
       } catch (err) {
         setMessage("Failed to fetch teams");
         console.error("Error fetching teams:", err);
@@ -73,7 +74,7 @@ const TeamWorkAllocation = () => {
       .then((res) => {
         if (res.data.status) {
           setMessage("Work allocated to team successfully!");
-          navigate("/admin-dashboard/team_work_allocation");
+          navigate("/admin-dashboard/work_allocation");
         } else {
           setMessage("Error allocating work to the team.");
         }
@@ -100,7 +101,7 @@ const TeamWorkAllocation = () => {
           >
             <option value="">-- Select Team --</option>
             {teams.map((team) => (
-              <option key={team.id} value={team.id}>{team.name}</option>
+              <option key={team.id} value={team.team_id}>{team.team_name}</option>
             ))}
           </select>
         </div>

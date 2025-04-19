@@ -105,7 +105,7 @@ const AddTask = () => {
   };
 
   return (
-    <div className="p-3 rounded-lg max-w-2xl mx-auto">
+    <div className="p-3 rounded-lg max-w-6xl mx-auto">
       {message && <p className="mb-4 text-red-600">{message}</p>}
 
       <form onSubmit={handleSubmit}>
@@ -143,6 +143,19 @@ const AddTask = () => {
                 ))}
               </select>
             </div>
+
+            {pendingTasks.length > 0 && (
+          <div className="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-500">
+            <h3 className="text-lg font-semibold text-yellow-700 mb-2">Pending Allocations</h3>
+            <ul className="list-disc pl-5 space-y-1 text-gray-700">
+              {pendingTasks.map((task) => (
+                <li key={task.id}>
+                  <strong>{task.title}</strong> ({task.date} | {task.from_time} - {task.to_time}) at {task.venue}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
             <div className="mb-4">
               <label>Title</label>
@@ -211,20 +224,7 @@ const AddTask = () => {
           </div>
         </div>
 
-        {pendingTasks.length > 0 && (
-          <div className="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-500">
-            <h3 className="text-lg font-semibold text-yellow-700 mb-2">Pending Allocations</h3>
-            <ul className="list-disc pl-5 space-y-1 text-gray-700">
-              {pendingTasks.map((task) => (
-                <li key={task.id}>
-                  <strong>{task.title}</strong> ({task.date} | {task.from_time} - {task.to_time}) at {task.venue}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Allocate Work</button>
+        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded mt-10 hover:bg-blue-700">Allocate Work</button>
       </form>
     </div>
   );
