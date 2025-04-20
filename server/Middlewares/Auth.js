@@ -14,16 +14,16 @@ export const verifyToken = (req, res, next) => {
 
     const token = authHeader.split(" ")[1];
 
-    console.log("Received token: ", token);
+    //console.log("Received token: ", token);
 
     jwt.verify(token, JWT_SECRET, (err, decoded) => {
         if(err){
-            console.log("token verification failed: ", err);
+          //  console.log("token verification failed: ", err);
             return res.status(401).json({message: 'Invalid or expired token'});
         }
 
         req.user = decoded;
-        console.log("Decoded userToken: ", decoded);
+       // console.log("Decoded userToken: ", decoded);
 
         next();
     });

@@ -43,3 +43,14 @@ export const get_todays_tasks = async (employeeId, today) => {
         });
     });
 };
+
+
+export const update_Task = async(status, taskId) => {
+    const query = `update work_allocation set status = ? where id = ?`;
+    return new Promise((resolve, reject) => {
+        db.query(query, [status, taskId], (err, result) => {
+            if(err) return reject(err);
+            return resolve(result);
+        })
+    })
+}

@@ -214,7 +214,6 @@ router.get('/get_all_tasks', verifyToken, (req, res) => {
   });
 });
 
-*/
 
 // Backend: Update task status
 router.put("/update_task_status/:taskId", (req, res) => {
@@ -369,7 +368,7 @@ router.get("/about_employee", verifyToken, (req, res) => {
   });
 });
 
-
+/*
 router.get("/get_my_team", verifyToken, (req, res) => {
   const { id: employeeId } = req.user;
 
@@ -416,6 +415,8 @@ router.get("/get_team_tasks/:teamId", verifyToken, (req, res) => {
     res.json({ Status: true, Result: results });
   });
 });
+
+*/
 
 // Router to fetch the number of teams the employee is part of
 router.get("/get_team_count", verifyToken, (req, res) => {
