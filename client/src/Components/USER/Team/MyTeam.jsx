@@ -13,12 +13,12 @@ const MyTeam = () => {
   useEffect(() => {
     const fetchMyTeams = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/auth/get_my_team", {
+        const response = await axios.get("http://localhost:3000/user/get_teams", {
           headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
         });
         
-        if (response.data.Status) {
-          setTeams(response.data.Result);
+        if (response.data.status) {
+          setTeams(response.data.Teams);
         } else {
           setMessage(response.data.Message);
         }

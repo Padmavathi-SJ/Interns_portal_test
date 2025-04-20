@@ -15,14 +15,14 @@ const EmployeeTeamWork = () => {
     const fetchTeamTasks = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/auth/get_team_tasks/${teamId}`,
+          `http://localhost:3000/user/get_team_tasks/${teamId}`,
           {
             headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` }, // Add token for authentication
           }
         );
 
-        if (response.data.Status) {
-          setTasks(response.data.Result);
+        if (response.data.status) {
+          setTasks(response.data.TeamTasks);
         } else {
           setMessage(response.data.Message);
         }
@@ -40,14 +40,14 @@ const EmployeeTeamWork = () => {
     if (!statusToUpdate) return; // Don't proceed if no status selected
     try {
       const response = await axios.put(
-        `http://localhost:3000/auth/update_team_task_status/${teamId}/${taskId}`,
+        `http://localhost:3000/user/update_teamTask_status/${teamId}/${taskId}`,
         { status: statusToUpdate },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
         }
       );
 
-      if (response.data.Status) {
+      if (response.data.status) {
         setTasks((prevTasks) =>
           prevTasks.map((task) =>
             task.id === taskId ? { ...task, status: statusToUpdate } : task

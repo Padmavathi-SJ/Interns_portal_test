@@ -83,12 +83,12 @@ const EmployeeTask = () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:3000/auth/update_task_status/${taskId}`,
+        `http://localhost:3000/user/update_task_status/${taskId}`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      if (response.data.Status) {
+      if (response.data.status) {
         setTasks((prev) =>
           prev.map((task) =>
             task.taskId === taskId ? { ...task, status: newStatus } : task
