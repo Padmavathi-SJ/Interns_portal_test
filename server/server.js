@@ -2,9 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 //import { adminRouter } from './Routes/AdminRoute.js';  // Import the route for file uploads
-import { employeeRouter } from './Routes/EmployeeRoutes.js';  // Import other routes if needed
-import AdminRouter from './AdminRouter.js';
-import EmployeeRouter from './EmployeeRouter.js';
+//import { employeeRouter } from './Routes/EmployeeRoutes.js';  // Import other routes if needed
+import AdminRouter from './ServerRoutes/AdminRouter.js';
+import EmployeeRouter from './ServerRoutes/EmployeeRouter.js';
 
 const app = express();
 
