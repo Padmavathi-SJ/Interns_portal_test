@@ -297,8 +297,6 @@ router.get("/leave_request", verifyToken, (req, res) => {
   });
 });
 
-*/
-
 router.post("/feedback", (req, res) => {
   const { employee_id, feedback_type, description, priority } = req.body;
 
@@ -342,6 +340,7 @@ router.get("/feedback_list", verifyToken, (req, res) => {
     res.json({ Status: true, Result: results });
   });
 });
+
 
 router.get("/about_employee", verifyToken, (req, res) => {
   const { id: employeeId } = req.user;  // Extract employeeId from the verified token
@@ -416,8 +415,6 @@ router.get("/get_team_tasks/:teamId", verifyToken, (req, res) => {
   });
 });
 
-*/
-
 // Router to fetch the number of teams the employee is part of
 router.get("/get_team_count", verifyToken, (req, res) => {
   const { id: employeeId } = req.user;
@@ -440,6 +437,7 @@ router.get("/get_team_count", verifyToken, (req, res) => {
   });
 });
 
+*/
 
 // Route to get leave dashboard data for an employee
 router.get("/leave_dashboard", verifyToken, (req, res) => {
@@ -589,7 +587,7 @@ router.get("/employee-performance", verifyToken, (req, res) => {
   });
 });
 
-
+/*
 router.get("/get_announcements", verifyToken, (req, res) => {
   const { id: employeeId } = req.user;
 
@@ -615,7 +613,7 @@ router.get("/get_announcements", verifyToken, (req, res) => {
   });
 });
 
-
+/*
 router.put("/update_team_task_status/:teamId/:taskId", (req, res) => {
   const { teamId, taskId } = req.params; // Get team ID and task ID from the URL params
   const { status } = req.body; // Get status from the request body
@@ -647,7 +645,7 @@ router.put("/update_team_task_status/:teamId/:taskId", (req, res) => {
   });
 });
 
-
+*/
 
 
 export { router as employeeRouter };
