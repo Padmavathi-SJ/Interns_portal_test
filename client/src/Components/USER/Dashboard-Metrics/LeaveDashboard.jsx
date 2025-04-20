@@ -16,11 +16,11 @@ const LeaveDashboard = () => {
           return;
         }
 
-        const response = await axios.get("http://localhost:3000/auth/leave_dashboard", {
+        const response = await axios.get("http://localhost:3000/user/leave_summary", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (response.data.Status) {
+        if (response.data.status) {
           setLeaveData(response.data.Data); // Set the leave data
         } else {
           setError(response.data.Message || "No leave data found.");
