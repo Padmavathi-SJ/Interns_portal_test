@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import ProfileImg from "../../../assets/profile.jpg";
 
 const EmployeeProfile = () => {
   const [employee, setEmployee] = useState(null);
@@ -51,8 +52,7 @@ const EmployeeProfile = () => {
           {/* Left Column: Profile Image and First Half of Details */}
           <div className="space-y-6">
 
-
-
+          <img src={ProfileImg} alt="Profile" className="w-40 h-13 rounded-full" />
 
             {/* Employee Details for Left Column */}
             <div className="space-y-6">

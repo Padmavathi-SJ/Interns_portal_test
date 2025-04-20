@@ -66,14 +66,7 @@ const Admins = () => {
       <div key={admin.id} className="bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
         <div className="text-lg font-semibold text-blue-700 mb-2">Admin ID: {admin.id}</div>
         <div className="text-gray-800 text-sm mb-4">Email: {admin.email}</div>
-        <div className="flex justify-end">
-          <button
-            onClick={() => {/* Add any actions here for each admin */}}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300"
-          >
-            View Details
-          </button>
-        </div>
+        
       </div>
     ))
   ) : (

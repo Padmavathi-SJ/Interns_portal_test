@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import ProfileImg from "../../../assets/profile.jpg";
 
 const Profile = () => {
   const { employeeId } = useParams(); // Retrieve employeeId from route
@@ -22,7 +22,7 @@ const Profile = () => {
         });
 
         if (response.data.status) {
-          setEmployeeDetails(response.data.EmployeeDetails); // Set the employee details
+          setEmployeeDetails(response.data.EmployeeDetails[0]); // Set the employee details
         } else {
           setError(response.data.Message || "Unable to fetch employee details");
         }
@@ -61,14 +61,18 @@ const Profile = () => {
     university,
   } = employeeDetails;
 
+  const formattedSkills = skills ? skills.split("\r\n").map(skill => skill.trim()).join(", ") : "N/A";
+
   return (
     <div className="flex flex-col justify-start items-start p-4 w-full ">
       <div className="flex flex-col md:flex-row w-full max-w-4xl space-x-6">
 
+<img src={ProfileImg} alt="Profile" className="w-40 h-13 rounded-full " />
 
         {/* Employee Details */}
         <div className="flex flex-col w-full text-gray-600 dark:text-gray-200">
           <div className="flex flex-col space-y-2">
+
             <p><span>12345678IT{id}</span></p>
             <p><span>{name}</span></p>
             <p><span>{department}</span></p>
@@ -85,7 +89,7 @@ const Profile = () => {
           <p><span>University: {university}</span></p>
           <p><span>Experience: {experience} years</span></p>
           <p><span>Mobile no: {mobile_no}</span></p>
-          <p><span>High Skills: {skills.join(", ")}</span></p>
+          <p><span>High Skills: {formattedSkills}</span></p>
         </div>
       </div>
     </div>

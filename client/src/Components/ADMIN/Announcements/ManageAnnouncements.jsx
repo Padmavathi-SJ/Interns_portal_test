@@ -15,12 +15,8 @@ const ManageAnnouncements = () => {
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/auth/get_announcements", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-          },
-        });
-        if (response.data.Status) {
+        const response = await axios.get("http://localhost:3000/admin/get_announcements");
+        if (response.data.status) {
           setAnnouncements(response.data.Result);
           setFilteredAnnouncements(response.data.Result);
         } else {
@@ -41,11 +37,7 @@ const ManageAnnouncements = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this announcement?")) {
       try {
-        await axios.delete(`http://localhost:3000/auth/delete_announcement/${id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-          },
-        });
+        await axios.delete(`http://localhost:3000/admin/delete_announcement/${id}`);
         setAnnouncements((prev) => prev.filter(announcement => announcement.id !== id));
         setFilteredAnnouncements((prev) => prev.filter(announcement => announcement.id !== id));
       } catch (error) {
