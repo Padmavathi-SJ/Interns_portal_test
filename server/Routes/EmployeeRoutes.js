@@ -437,7 +437,6 @@ router.get("/get_team_count", verifyToken, (req, res) => {
   });
 });
 
-*/
 
 // Route to get leave dashboard data for an employee
 router.get("/leave_dashboard", verifyToken, (req, res) => {
@@ -519,6 +518,7 @@ router.get("/leave_dashboard", verifyToken, (req, res) => {
   });
 });
 
+*/
 
 // Employee performance route with the token verification middleware
 router.get("/employee-performance", verifyToken, (req, res) => {

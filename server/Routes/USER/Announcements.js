@@ -7,3 +7,4 @@ const router = express.Router();
 router.get("/get_announcements", verifyToken, fetch_announcements);
 
 export default router;
+

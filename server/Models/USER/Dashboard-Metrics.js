@@ -55,3 +55,64 @@ export const leave_dashboard = async(employeeId, currentMonth, currentYear) => {
         })
     })
 }
+
+export const getLeaveCount = (employeeId, month, year) => {
+    const query = `
+      SELECT COUNT(*) AS leave_count 
+      FROM leave_requests 
+      WHERE employee_id = ? 
+      AND status = 'Approved'
+      AND ((MONTH(from_date) = ? AND YEAR(from_date) = ?) 
+           OR (MONTH(to_date) = ? AND YEAR(to_date) = ?));
+    `;
+  
+    return new Promise((resolve, reject) => {
+      db.query(query, [employeeId, month, year, month, year], (err, result) => {
+        if (err) return reject(err);
+        return resolve(result[0]?.leave_count || 0); // return numeric value
+      });
+    });
+  };
+  
+
+export const getFeedbackCount = async(employeeId, month) => {
+    const query = `select count(*) as feedback_count
+                    from feedback
+                    where employee_id = ? and month(created_at) = ?
+                    `;
+    return new Promise((resolve, reject) => {
+        db.query(query, [employeeId, month], (err, result) => {
+            if(err) return reject(err);
+            return resolve(result);
+        })
+    })
+}
+
+export const getTeamContribution = async(employeeId) => {
+    const query = `select count(*) as team_contribution
+                    from teams
+                    where JSON_CONTAINS(team_members, JSON_ARRAY(?), '$')
+                    `;
+
+    return new Promise((resolve, reject) => {
+        db.query(query, [employeeId], (err, result) => {
+            if(err) return reject(err);
+            return resolve(result);
+        })
+    })
+}
+
+export const getWorkCompletion = async(employeeId, month) => {
+    const query = `select count(*) as completed_tasks 
+                    from work_allocation 
+                    where employee_id = ?
+                    and status = 'Completed'
+                    and month(deadline)
+                    `;
+        return new Promise((resolve, reject) => {
+            db.query(query, [employeeId, month], (err, result) => {
+                if(err) return reject(err);
+                return resolve(result);
+            })
+        })
+}

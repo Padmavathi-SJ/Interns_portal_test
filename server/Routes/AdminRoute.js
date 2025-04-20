@@ -1304,7 +1304,6 @@ router.post("/add_announcement", async (req, res) => {
     res.status(500).json({ Status: false, Error: "Internal server error." });
   }
 });
-*/
 
 router.get("/get_announcements", (req, res) => {
   const query = `
@@ -1378,6 +1377,7 @@ router.put("/announcements/:id", (req, res) => {
     }
   );
 });
+*/
 
 router.delete("/delete_announcement/:id", (req, res) => {
   const { id } = req.params;
