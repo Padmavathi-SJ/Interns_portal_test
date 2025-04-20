@@ -38,3 +38,20 @@ export const team_count = async(employeeId) => {
         })
     })
 }
+
+export const leave_dashboard = async(employeeId, currentMonth, currentYear) => {
+    const query = `select leave_type, from_date, to_date
+                    from leave_requests
+                    where employee_id = ? 
+                    and month(from_date) = ?
+                    and year(from_date) = ?
+                    and (status = 'Approved' or status = 'Pending' 
+                    )`;
+
+    return new Promise((resolve, reject) =>  {
+        db.query(query, [employeeId, currentMonth, currentYear], (err, result) => {
+            if(err) return reject(err);
+            return resolve(result);
+        })
+    })
+}
