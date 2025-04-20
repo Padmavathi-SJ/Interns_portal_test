@@ -143,8 +143,6 @@ router.get("/get_task", verifyToken, (req, res) => {
   });
 });
 
-*/
-
 router.get('/get_today_tasks', verifyToken, (req, res) => {
   const { id: employeeId } = req.user; // Extract employeeId from the token
 
@@ -216,6 +214,8 @@ router.get('/get_all_tasks', verifyToken, (req, res) => {
   });
 });
 
+*/
+
 // Backend: Update task status
 router.put("/update_task_status/:taskId", (req, res) => {
   const { taskId } = req.params;
@@ -239,7 +239,7 @@ router.put("/update_task_status/:taskId", (req, res) => {
   });
 });
 
-
+/*
 // Employee applying for leave
 router.post("/apply_leave", (req, res) => {
   // Destructure required fields from the request body
@@ -270,8 +270,9 @@ router.post("/apply_leave", (req, res) => {
     }
   );
 });
+*/
 
-
+/*
 // Fetch leave requests for logged-in employee
 router.get("/leave_request", verifyToken, (req, res) => {
   // Extract employeeId from the verified token
@@ -297,6 +298,7 @@ router.get("/leave_request", verifyToken, (req, res) => {
   });
 });
 
+*/
 
 router.post("/feedback", (req, res) => {
   const { employee_id, feedback_type, description, priority } = req.body;
