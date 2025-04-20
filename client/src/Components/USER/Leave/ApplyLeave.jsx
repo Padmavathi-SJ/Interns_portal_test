@@ -36,7 +36,7 @@ const ApplyLeave = () => {
   
     try {
       const response = await axios.post(
-        "http://localhost:3000/auth/apply_leave",
+        "http://localhost:3000/user/apply_leave",
         {
           employee_id: employeeId,
           leave_type: leaveType,

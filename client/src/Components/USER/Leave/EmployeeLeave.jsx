@@ -11,13 +11,35 @@ const EmployeeLeave = () => {
   const leaveRequestsPerPage = 8;
   const navigate = useNavigate();
 
+  const getLoggedInEmployeeId = () => {
+    const token = localStorage.getItem("userToken");
+    if(!token) return null;
+    try{
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.id;
+    } catch (err){
+      console.log("Failed to decode token: ", err);
+      return null;
+    }
+  }
+
   useEffect(() => {
     const fetchLeaveRequests = async () => {
+      const token = localStorage.getItem("userToken");
+      const employeeId = getLoggedInEmployeeId();
+      if(!token || !employeeId) {
+        setError("Unable to retreive employee tasks. Please log in. ");
+        return;
+      }
+        
       try {
-        const response = await axios.get('http://localhost:3000/auth/leave_requests');
-        if (Array.isArray(response.data.Result)) {
-          setLeaveRequests(response.data.Result);
-          setFilteredLeaveRequests(response.data.Result);
+        const response = await axios.get('http://localhost:3000/user/get_leave_requests',
+          {headers: { Authorization: `Bearer ${token}` }}
+        );
+
+        if (Array.isArray(response.data.Leaves)) {
+          setLeaveRequests(response.data.Leaves);
+          setFilteredLeaveRequests(response.data.Leaves);
         } else {
           console.error('Expected an array but received:', response.data);
         }
@@ -30,11 +52,20 @@ const EmployeeLeave = () => {
   }, []);
 
   const fetchReason = async (id) => {
+    const token = localStorage.getItem("userToken");
+    const employeeId = getLoggedInEmployeeId();
+    if (!token || !employeeId) {
+      setError("Unable to retrieve employee tasks. Please log in.");
+      return;
+    }
     try {
-      const response = await axios.get(`http://localhost:3000/auth/leave_request_reason/${id}`);
+      const response = await axios.get(`http://localhost:3000/user/get_reason/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
   
-      if (response.data.Status && response.data.Reason) {
-        setSelectedReason(response.data.Reason);
+      if (response.data.status && response.data.LeaveReason) {
+        console.log("Fetched LeaveReason:", response.data.LeaveReason); // Log to inspect
+        setSelectedReason(response.data.LeaveReason); // Make sure this is a string or extract the necessary field
         setIsModalOpen(true);
       } else {
         console.error('No reason found or error:', response.data.Error);
@@ -43,7 +74,8 @@ const EmployeeLeave = () => {
       console.error('Error fetching reason:', error);
     }
   };
-
+  
+  
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedReason(null);
@@ -138,20 +170,20 @@ const EmployeeLeave = () => {
         </div>
       )}
 
-      {isModalOpen && (
-        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg max-w-md w-full dark:bg-gray-800 dark:text-white">
-            <h3 className="text-xl font-semibold mb-4">Leave Reason</h3>
-            <p>{selectedReason}</p>
-            <button
-              onClick={handleCloseModal}
-              className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300 dark:bg-red-600 dark:hover:bg-red-700"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+{isModalOpen && (
+  <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
+    <div className="bg-white p-6 rounded-lg max-w-md w-full dark:bg-gray-800 dark:text-white">
+      <h3 className="text-xl font-semibold mb-4">Leave Reason</h3>
+      <p>{selectedReason[0].Reason}</p> {/* Adjusted this line */}
+      <button
+        onClick={handleCloseModal}
+        className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300 dark:bg-red-600 dark:hover:bg-red-700"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
     </div>
   );
 };

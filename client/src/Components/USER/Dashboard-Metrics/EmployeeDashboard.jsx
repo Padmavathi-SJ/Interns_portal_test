@@ -7,7 +7,8 @@ import {
   UserIcon,
   LogoutIcon,
 } from "@heroicons/react/solid";
-import EmployeeProfile from "../../../assets/profile.jpg";
+import EmployeeProfile from './EmployeeProfile';
+import ProfileImg from "../../../assets/profile.jpg";
 import logo from "../../../assets/bit.png";
 
 const EmployeeDashboard = () => {
@@ -64,8 +65,8 @@ const EmployeeDashboard = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        if (response.data.Status) {
-          setEmployeeName(response.data.Data.name);
+        if (response.data.status) {
+          setEmployeeName(response.data.EmployeeDetails.name);
         } else {
           console.error(
             response.data.Error || "Failed to fetch employee details."
@@ -112,7 +113,7 @@ const EmployeeDashboard = () => {
               className="w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center text-lg font-bold shadow-md dark:bg-blue-700 hover:opacity-80"
             >
               <img
-                src={EmployeeProfile}
+                src={ProfileImg}
                 alt="Default Profile"
                 className="w-full h-full object-cover rounded-full"
               />

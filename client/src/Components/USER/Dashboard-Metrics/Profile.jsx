@@ -17,7 +17,7 @@ const Profile = () => {
           return;
         }
         // Fetch employee details
-        const response = await axios.get("http://localhost:3000/user.user_details", {
+        const response = await axios.get("http://localhost:3000/user/user_details", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
