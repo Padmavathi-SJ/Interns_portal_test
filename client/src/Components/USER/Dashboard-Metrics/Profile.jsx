@@ -17,12 +17,12 @@ const Profile = () => {
           return;
         }
         // Fetch employee details
-        const response = await axios.get("http://localhost:3000/user/user_details", {
+        const response = await axios.get("http://localhost:3000/user/about_employee", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (response.data.Status) {
-          setEmployeeDetails(response.data.Data); // Set the employee details
+        if (response.data.status) {
+          setEmployeeDetails(response.data.EmployeeDetails); // Set the employee details
         } else {
           setError(response.data.Message || "Unable to fetch employee details");
         }

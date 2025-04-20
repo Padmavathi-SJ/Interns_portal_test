@@ -13,13 +13,13 @@ const EmployeeFeedback = () => {
   useEffect(() => {
     const fetchFeedbackList = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/auth/feedback_list", {
+        const response = await axios.get("http://localhost:3000/user/get_feedbacks", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("userToken")}`,
           },
         });
-        if (response.data.Status && Array.isArray(response.data.Result)) {
-          setFeedbackList(response.data.Result);
+        if (response.data.status && Array.isArray(response.data.Feedbacks)) {
+          setFeedbackList(response.data.Feedbacks);
         } else {
           setMessage(response.data.Message || "No feedback found.");
         }

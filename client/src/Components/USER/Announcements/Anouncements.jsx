@@ -11,12 +11,12 @@ const Announcements = () => {
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/auth/get_announcements", {
+        const response = await axios.get("http://localhost:3000/user/get_announcements", {
           headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
         });
 
-        if (response.data.Status) {
-          setAnnouncements(response.data.Result);
+        if (response.data.status) {
+          setAnnouncements(response.data.Announcements);
         } else {
           setMessage(response.data.Message);
         }

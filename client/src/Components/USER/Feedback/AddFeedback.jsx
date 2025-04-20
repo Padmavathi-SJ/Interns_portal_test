@@ -28,7 +28,7 @@ const AddFeedback = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/auth/feedback",
+        "http://localhost:3000/user/push_feedback",
         {
           employee_id: employeeId,
           feedback_type: feedbackType,

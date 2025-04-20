@@ -8,12 +8,12 @@ const TeamDashboard = () => {
   useEffect(() => {
     const fetchTeamCount = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/auth/get_team_count", {
+        const response = await axios.get("http://localhost:3000/user/team_count", {
           headers: { Authorization: `Bearer ${localStorage.getItem("userToken")}` },
         });
 
-        if (response.data.Status) {
-          setTeamCount(response.data.Result.teamCount);
+        if (response.data.status) {
+          setTeamCount(response.data.Result.TeamCount);
         } else {
           setMessage(response.data.Message || "No contribution data found.");
         }
